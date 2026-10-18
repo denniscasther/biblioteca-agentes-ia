@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Castor y el Plano — Spec-Driven Development con agentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Paleta — "plano de ingeniería" */
+    --tinta:#18221F;
+    --tinta-suave:#3C4A46;
+    --papel:#FAF8F3;
+    --papel-2:#F2EEE4;
+    --teal:#0E6B66;        /* color protagonista */
+    --teal-osc:#0A4D49;
+    --teal-claro:#E6F1EE;
+    --ambar:#C57B36;       /* acento madera */
+    --ambar-osc:#9C5C22;
+    --linea:#D8D2C4;
+    --gris:#6E7B77;
+    --rojo:#B3492F;        /* para "antipatrón" */
+    --verde:#2E7D5B;       /* para "patrón correcto" */
+
+    --serif:"Source Serif 4",Georgia,serif;
+    --display:"Space Grotesk","Segoe UI",sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+
+    --ancho:760px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--papel);
+    color:var(--tinta);
+    font-family:var(--serif);
+    font-size:19px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---- Estructura de página ---- */
+  .pagina{
+    max-width:var(--ancho);
+    margin:0 auto;
+    padding:0 28px;
+  }
+  section.cap{padding:84px 0 40px;border-top:1px solid var(--linea);}
+  section.cap:first-of-type{border-top:none;}
+
+  /* ---- Tipografía ---- */
+  h1,h2,h3,h4{font-family:var(--display);line-height:1.18;letter-spacing:-.01em;font-weight:700;}
+  p{margin:0 0 1.05em;}
+  a{color:var(--teal-osc);}
+  .eyebrow{
+    font-family:var(--display);
+    font-size:.72rem;
+    font-weight:600;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ambar-osc);
+    margin:0 0 14px;
+  }
+  .cap-num{
+    font-family:var(--mono);
+    font-size:.8rem;
+    color:var(--teal);
+    letter-spacing:.1em;
+  }
+  h2.titulo-cap{font-size:2.35rem;margin:.1em 0 .1em;}
+  h3{font-size:1.4rem;margin:2.2em 0 .5em;color:var(--teal-osc);}
+  h4{font-size:1.06rem;margin:1.6em 0 .3em;font-weight:600;font-family:var(--display);}
+  .lede{font-size:1.22rem;color:var(--tinta-suave);font-style:italic;margin:.6em 0 1.6em;line-height:1.55;}
+  strong{font-weight:600;}
+  em{color:var(--tinta-suave);}
+
+  /* ---- Componentes ---- */
+  code:not(pre code){
+    font-family:var(--mono);font-size:.82em;
+    background:var(--teal-claro);color:var(--teal-osc);
+    padding:.1em .4em;border-radius:4px;
+  }
+  pre{
+    font-family:var(--mono);font-size:.8rem;line-height:1.6;
+    background:var(--tinta);color:#E8EDE9;
+    border-radius:10px;padding:20px 22px;overflow-x:auto;
+    margin:1.4em 0;border:1px solid #28332F;
+  }
+  pre .c{color:#7FA89C;}      /* comentario */
+  pre .k{color:#E0A864;}      /* keyword/comando */
+  pre .s{color:#9FD0A6;}      /* string */
+  pre .d{color:#8FB8E0;}      /* etiqueta/clave */
+
+  .caja{
+    background:var(--papel-2);
+    border:1px solid var(--linea);
+    border-left:4px solid var(--teal);
+    border-radius:0 10px 10px 0;
+    padding:18px 22px;margin:1.6em 0;
+    font-size:.96rem;
+  }
+  .caja .et{
+    font-family:var(--display);font-weight:600;font-size:.74rem;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--teal-osc);
+    display:block;margin-bottom:6px;
+  }
+  .caja.castor{border-left-color:var(--ambar);}
+  .caja.castor .et{color:var(--ambar-osc);}
+  .caja.aviso{border-left-color:var(--rojo);}
+  .caja.aviso .et{color:var(--rojo);}
+
+  .figura{margin:2.2em 0;text-align:center;}
+  .figura svg{max-width:100%;height:auto;}
+  .figcap{font-family:var(--display);font-size:.82rem;color:var(--gris);margin-top:10px;letter-spacing:.01em;}
+  .figcap b{color:var(--teal-osc);}
+
+  ul,ol{margin:0 0 1.1em;padding-left:1.3em;}
+  li{margin:.3em 0;}
+
+  /* ---- Portada ---- */
+  .cover{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    background:
+      radial-gradient(120% 80% at 50% 0%, #11605E 0%, var(--teal-osc) 55%, #07332F 100%);
+    color:#F3F1E9;text-align:center;padding:60px 28px 48px;position:relative;overflow:hidden;
+  }
+  .cover-grid{position:absolute;inset:0;opacity:.10;
+    background-image:linear-gradient(#CFE7E2 1px,transparent 1px),linear-gradient(90deg,#CFE7E2 1px,transparent 1px);
+    background-size:38px 38px;}
+  .cover-inner{position:relative;z-index:2;max-width:680px;margin:0 auto;}
+  .cover .serie{font-family:var(--display);letter-spacing:.3em;text-transform:uppercase;font-size:.74rem;color:#8FD3C9;margin-bottom:30px;}
+  .cover h1{font-size:clamp(2.4rem,6vw,3.7rem);margin:0;color:#FBFAF3;line-height:1.05;}
+  .cover .sub{font-family:var(--display);font-weight:400;font-size:clamp(1rem,2.6vw,1.3rem);color:#CDE7E1;margin:18px 0 0;}
+  .cover .autoria{margin-top:36px;font-family:var(--mono);font-size:.82rem;color:#9FD3CB;letter-spacing:.05em;}
+  .cover .medallon{margin:6px auto 30px;width:230px;height:230px;}
+  .scroll-hint{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-family:var(--display);font-size:.74rem;letter-spacing:.18em;color:#7FC3B9;text-transform:uppercase;z-index:2;}
+
+  /* ---- Tabla de contenidos ---- */
+  .toc{background:var(--papel-2);border-radius:14px;padding:30px 30px 12px;border:1px solid var(--linea);margin:1em 0;}
+  .toc-parte{font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ambar-osc);margin:22px 0 8px;}
+  .toc-parte:first-child{margin-top:0;}
+  .toc-item{display:flex;gap:12px;padding:7px 0;border-bottom:1px dotted var(--linea);align-items:baseline;}
+  .toc-item a{text-decoration:none;color:var(--tinta);font-family:var(--display);font-weight:500;font-size:.98rem;flex:1;}
+  .toc-item a:hover{color:var(--teal);}
+  .toc-n{font-family:var(--mono);font-size:.78rem;color:var(--teal);min-width:30px;}
+  .toc-subs{margin:2px 0 6px 42px;color:var(--gris);font-size:.86rem;font-family:var(--serif);font-style:italic;}
+
+  /* ---- Glosario ---- */
+  .glos{border-top:1px solid var(--linea);padding:20px 0;}
+  .glos:first-of-type{border-top:none;}
+  .glos dt{font-family:var(--display);font-weight:600;font-size:1.08rem;color:var(--teal-osc);}
+  .glos dd{margin:.3em 0 0;color:var(--tinta-suave);font-size:.98rem;}
+  .glos .term-en{font-family:var(--mono);font-size:.78rem;color:var(--ambar-osc);font-weight:400;}
+
+  /* ---- Tabla comparativa ---- */
+  table.comp{width:100%;border-collapse:collapse;margin:1.6em 0;font-size:.9rem;font-family:var(--display);}
+  table.comp th,table.comp td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--linea);vertical-align:top;}
+  table.comp th{background:var(--teal);color:#fff;font-weight:600;font-size:.82rem;letter-spacing:.03em;}
+  table.comp tr:nth-child(even) td{background:var(--papel-2);}
+  table.comp td:first-child{font-weight:600;color:var(--teal-osc);}
+
+  /* ---- Cierre ---- */
+  .fin{text-align:center;padding:70px 0 90px;color:var(--gris);}
+  .fin svg{width:60px;height:60px;opacity:.7;margin-bottom:14px;}
+
+  @media (max-width:620px){
+    body{font-size:17px;}
+    h2.titulo-cap{font-size:1.85rem;}
+    .toc{padding:22px 18px 8px;}
+    .toc-subs{margin-left:20px;}
+  }
+  @media print{
+    .scroll-hint{display:none;}
+    .pagina{padding:0 15mm;max-width:none;}
+    /* portada a página completa */
+    .cover{min-height:100vh;page-break-after:always;}
+    /* cada sección empieza en página nueva */
+    section.cap{page-break-before:always;border-top:none;padding:34px 0 20px;}
+    #prologo{page-break-before:auto;}
+    /* no cortar elementos visuales ni bloques */
+    .figura,pre,.caja,table.comp,.toc,.glos{page-break-inside:avoid;}
+    h2.titulo-cap,h3,h4{page-break-after:avoid;}
+    .lede{page-break-after:avoid;}
+    .fin{page-break-before:avoid;}
+    body{font-size:11.5pt;}
+  }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= PORTADA ================= -->
+<header class="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-inner">
+    <div class="serie">Biblioteca de Ingeniería con Agentes · Vol. 1</div>
+
+    <!-- Medallón con castor -->
+    <svg class="medallon" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Castor ingeniero">
+      <defs>
+        <radialgradient id="med" cx="50%" cy="42%" r="62%">
+          <stop offset="0%" stop-color="#FBF7EC"/>
+          <stop offset="100%" stop-color="#EFE6D0"/>
+        </radialgradient>
+      </defs>
+      <!-- sello exterior -->
+      <circle cx="120" cy="120" r="114" fill="none" stroke="#CDE7E1" stroke-width="2"/>
+      <circle cx="120" cy="120" r="106" fill="url(#med)" stroke="#0A4D49" stroke-width="3"/>
+      <!-- texto curvo del sello -->
+      <path id="arcoTop" d="M40,120 A80,80 0 0,1 200,120" fill="none"/>
+      <path id="arcoBot" d="M40,120 A80,80 0 0,0 200,120" fill="none"/>
+      <text font-family="'Space Grotesk',sans-serif" font-size="10.5" letter-spacing="3" fill="#0A4D49" font-weight="600">
+        <textPath href="#arcoTop" startOffset="50%" text-anchor="middle">SPEC · FIRST · BUILD · WELL</textPath>
+      </text>
+      <text font-family="'Space Grotesk',sans-serif" font-size="9" letter-spacing="4" fill="#9C5C22" font-weight="600">
+        <textPath href="#arcoBot" startOffset="50%" text-anchor="middle">PRIMERO · EL · PLANO</textPath>
+      </text>
+
+      <!-- ===== CASTOR ===== -->
+      <g transform="translate(120,118)">
+        <!-- cola plana escamosa -->
+        <g>
+          <path d="M28,30 C58,22 74,40 70,60 C66,80 40,78 22,62 Z" fill="#9C5C22" stroke="#5E3712" stroke-width="2.5"/>
+          <path d="M34,38 L58,46 M30,48 L60,56 M30,58 L52,64" stroke="#5E3712" stroke-width="1.4" fill="none" opacity=".7"/>
+        </g>
+        <!-- cuerpo -->
+        <path d="M-46,2 C-52,-34 -20,-52 6,-46 C30,-40 40,-14 34,16 C28,44 -10,52 -34,38 C-46,30 -44,14 -46,2 Z"
+              fill="#A36A3A" stroke="#5E3712" stroke-width="3"/>
+        <!-- panza -->
+        <path d="M-30,18 C-26,40 4,44 20,30 C8,40 -18,38 -30,18 Z" fill="#C99A63" opacity=".8"/>
+        <!-- pata sosteniendo tronco -->
+        <ellipse cx="-8" cy="34" rx="11" ry="7" fill="#7A4E27" stroke="#5E3712" stroke-width="2"/>
+        <!-- tronco con marcas de mordida -->
+        <g transform="rotate(-18 -34 6)">
+          <rect x="-72" y="-4" width="44" height="14" rx="6" fill="#C9A36A" stroke="#5E3712" stroke-width="2.2"/>
+          <line x1="-66" y1="-4" x2="-66" y2="10" stroke="#5E3712" stroke-width="1.2" opacity=".6"/>
+          <line x1="-58" y1="-4" x2="-58" y2="10" stroke="#5E3712" stroke-width="1.2" opacity=".6"/>
+          <path d="M-30,-4 l5,4 l-5,3 l5,3 l-5,4" fill="none" stroke="#5E3712" stroke-width="1.6"/>
+        </g>
+        <!-- cabeza -->
+        <path d="M-44,-22 C-58,-30 -58,-50 -42,-56 C-26,-62 -10,-54 -10,-38 C-10,-24 -24,-16 -38,-18 Z"
+              fill="#A36A3A" stroke="#5E3712" stroke-width="3"/>
+        <!-- oreja -->
+        <circle cx="-30" cy="-52" r="6" fill="#7A4E27" stroke="#5E3712" stroke-width="2"/>
+        <!-- hocico -->
+        <path d="M-56,-40 C-64,-40 -64,-30 -56,-30 C-50,-30 -48,-36 -52,-40 Z" fill="#C99A63" stroke="#5E3712" stroke-width="2"/>
+        <!-- nariz -->
+        <ellipse cx="-58" cy="-37" rx="4" ry="3.4" fill="#3A2410"/>
+        <!-- dientes incisivos -->
+        <rect x="-56" y="-30" width="7" height="9" rx="1.5" fill="#FBF7EC" stroke="#5E3712" stroke-width="1.4"/>
+        <line x1="-52.5" y1="-30" x2="-52.5" y2="-21" stroke="#5E3712" stroke-width="1"/>
+        <!-- ojo -->
+        <circle cx="-38" cy="-44" r="4.2" fill="#2A1B0C"/>
+        <circle cx="-39.4" cy="-45.4" r="1.3" fill="#FBF7EC"/>
+      </g>
+      <!-- estrellas separadoras -->
+      <text x="120" y="222" text-anchor="middle" font-size="12" fill="#0A4D49">✦</text>
+    </svg>
+
+    <h1>El Castor y el Plano</h1>
+    <p class="sub">Spec-Driven Development: cómo dirigir agentes de código<br>escribiendo la especificación antes que el código</p>
+    <div class="autoria">Una guía didáctica · Edición 2026</div>
+  </div>
+  <div class="scroll-hint">Desliza para empezar ↓</div>
+</header>
+
+<!-- ================= CÓMO USAR ================= -->
+<main>
+<section class="cap" id="prologo">
+  <div class="pagina">
+    <p class="eyebrow">Antes de empezar</p>
+    <h2 class="titulo-cap">Cómo leer este libro</h2>
+    <p class="lede">Un castor no nace sabiendo construir presas perfectas. Aprende observando el agua, midiendo la corriente y colocando cada tronco con intención. Este libro enseña a programar con esa misma disciplina, ahora que quien coloca los troncos puede ser un agente de inteligencia artificial.</p>
+
+    <p>Durante décadas, escribir software fue sinónimo de escribir código. Llegaron los agentes de IA y, por un momento, pareció que bastaba con pedirles las cosas en lenguaje natural: el famoso <em>vibe coding</em>. Funciona de maravilla para un prototipo de fin de semana y fracasa estrepitosamente cuando hay que mantener un sistema real en producción. <strong>Spec-Driven Development (SDD)</strong> es la respuesta de la ingeniería a ese problema: volver a poner un plan —la especificación— en el centro, pero un plan vivo, ejecutable, que los agentes puedan leer y obedecer.</p>
+
+    <p>El libro está pensado para leerse en orden, aunque cada capítulo se sostiene por sí mismo. Encontrarás tres tipos de recuadros que te acompañarán:</p>
+
+    <div class="caja castor">
+      <span class="et">🦫 El castor dice</span>
+      Metáforas y reglas mnemotécnicas para fijar la idea central de cada capítulo. Cuando veas al castor, estás ante algo que conviene recordar.
+    </div>
+    <div class="caja">
+      <span class="et">En la práctica</span>
+      Comandos reales, archivos de ejemplo y fragmentos de especificación que puedes copiar y adaptar a tus proyectos hoy mismo.
+    </div>
+    <div class="caja aviso">
+      <span class="et">⚠ Cuidado con esto</span>
+      Errores frecuentes y malentendidos que hacen que SDD se convierta en burocracia inútil en lugar de una ventaja real.
+    </div>
+
+    <p>Cada término técnico aparece <strong>en negrita la primera vez</strong> y está recogido al final, en el <a href="#glosario">Diccionario en lenguaje claro</a>. Si te topas con una palabra que no conoces, búscala ahí: las definiciones están escritas para entenderse sin jerga previa.</p>
+  </div>
+</section>
+
+<!-- ================= TEMARIO ================= -->
+<section class="cap" id="temario">
+  <div class="pagina">
+    <p class="eyebrow">Mapa de la obra</p>
+    <h2 class="titulo-cap">Temario</h2>
+    <p class="lede">Tres partes: primero entendemos el porqué, luego dominamos el método paso a paso, y finalmente lo llevamos a un caso real de principio a fin.</p>
+
+    <div class="toc">
+      <div class="toc-parte">Parte I · Por qué especificar</div>
+
+      <div class="toc-item"><span class="toc-n">01</span><a href="#cap1">¿Qué es Spec-Driven Development?</a></div>
+      <div class="toc-subs">1.1 La especificación como única fuente de verdad · 1.2 Del <em>vibe coding</em> al spec · 1.3 SDD frente a TDD · 1.4 Los tres niveles de rigor · 1.5 La parábola del castor</div>
+
+      <div class="toc-item"><span class="toc-n">02</span><a href="#cap2">Agentes: el motor que ejecuta el plano</a></div>
+      <div class="toc-subs">2.1 Qué es un agente de codificación · 2.2 El bucle agéntico · 2.3 Por qué un agente necesita un spec · 2.4 Contexto: la memoria del agente</div>
+
+      <div class="toc-parte">Parte II · El método, fase por fase</div>
+
+      <div class="toc-item"><span class="toc-n">03</span><a href="#cap3">La Constitución del proyecto</a></div>
+      <div class="toc-subs">3.1 Principios no negociables · 3.2 Cómo redactar una buena constitución · 3.3 Ejemplo comentado</div>
+
+      <div class="toc-item"><span class="toc-n">04</span><a href="#cap4">Especificar y clarificar</a></div>
+      <div class="toc-subs">4.1 Anatomía de una especificación · 4.2 Los seis elementos imprescindibles · 4.3 La caza de ambigüedades · 4.4 Ejemplo paso a paso</div>
+
+      <div class="toc-item"><span class="toc-n">05</span><a href="#cap5">Planificar, descomponer y analizar</a></div>
+      <div class="toc-subs">5.1 Del qué al cómo · 5.2 Tareas atómicas · 5.3 La revisión previa que evita desastres</div>
+
+      <div class="toc-item"><span class="toc-n">06</span><a href="#cap6">Implementar y mantener vivo el spec</a></div>
+      <div class="toc-subs">6.1 Ejecución por fases · 6.2 Cuando los requisitos cambian · 6.3 La revisión humana sigue siendo tuya</div>
+
+      <div class="toc-parte">Parte III · Manos a la obra</div>
+
+      <div class="toc-item"><span class="toc-n">07</span><a href="#cap7">El ecosistema de herramientas en 2026</a></div>
+      <div class="toc-subs">7.1 GitHub Spec Kit · 7.2 AWS Kiro · 7.3 Claude Code y las Skills · 7.4 Cómo elegir</div>
+
+      <div class="toc-item"><span class="toc-n">08</span><a href="#cap8">Caso completo: de la idea al código</a></div>
+      <div class="toc-subs">Construimos juntos un módulo real siguiendo las siete fases</div>
+
+      <div class="toc-parte">Apéndice</div>
+      <div class="toc-item"><span class="toc-n">★</span><a href="#glosario">Diccionario en lenguaje claro</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INTRODUCCIÓN ================= -->
+<section class="cap" id="intro">
+  <div class="pagina">
+    <p class="eyebrow">Introducción</p>
+    <h2 class="titulo-cap">El día en que el código dejó de ser el centro</h2>
+    <p class="lede">A principios de 2025, Andrej Karpathy puso nombre a una forma de programar que ya practicaban millones: el vibe coding. Le pides cosas a una IA, te da código, lo pruebas, falla, vuelves a pedir. Magia pura… hasta que el proyecto crece.</p>
+
+    <p>El problema del vibe coding no es la IA. Es la <strong>ausencia de un plan</strong>. Cuando le hablas a un agente solo con prompts sueltos, cada respuesta es una interpretación nueva de lo que crees que quieres. El agente rellena los huecos a su manera, inventa nombres de funciones que no existen —lo que llamamos <strong>alucinación</strong>—, y poco a poco el código se aleja de tu intención original. A esa deriva silenciosa se le llama <strong>drift</strong>, y es la razón por la que un estudio de comienzos de 2026 llegó a contar más de cien mil incidencias introducidas por IA que seguían vivas en repositorios de producción.</p>
+
+    <p>La industria reaccionó con una idea vieja vestida de nueva: si el problema es la falta de un plan claro, escribamos el plan primero y hagamos que el agente lo obedezca. Ese plan es la <strong>especificación</strong>, o <em>spec</em>. Y la metodología que la coloca en el centro es <strong>Spec-Driven Development</strong>.</p>
+
+    <p>La frase que resume todo el movimiento, repetida en los blogs de GitHub y AWS durante 2025 y 2026, es deliciosamente simple: <em>«la especificación es el prompt»</em>. Ya no improvisas instrucciones. Escribes un documento estructurado, versionado, que describe qué debe hacer el sistema, y de ahí derivas el plan, las tareas y, por último, el código.</p>
+
+    <div class="figura">
+      <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparación entre el bucle del vibe coding y el pipeline ordenado de SDD">
+        <!-- IZQUIERDA: vibe coding -->
+        <text x="20" y="30" font-family="'Space Grotesk',sans-serif" font-size="14" font-weight="700" fill="#B3492F">VIBE CODING — el bucle que se degrada</text>
+        <g>
+          <circle cx="120" cy="150" r="70" fill="none" stroke="#B3492F" stroke-width="2" stroke-dasharray="5 5"/>
+          <!-- nodos del bucle -->
+          <g font-family="'Space Grotesk',sans-serif" font-size="11" fill="#18221F" text-anchor="middle">
+            <circle cx="120" cy="80" r="22" fill="#F4D9D0" stroke="#B3492F" stroke-width="1.5"/><text x="120" y="84">prompt</text>
+            <circle cx="190" cy="150" r="22" fill="#F4D9D0" stroke="#B3492F" stroke-width="1.5"/><text x="190" y="154">código</text>
+            <circle cx="120" cy="220" r="22" fill="#F4D9D0" stroke="#B3492F" stroke-width="1.5"/><text x="120" y="224">falla</text>
+            <circle cx="50" cy="150" r="22" fill="#F4D9D0" stroke="#B3492F" stroke-width="1.5"/><text x="50" y="154">parche</text>
+          </g>
+          <!-- flechas del bucle -->
+          <g stroke="#B3492F" stroke-width="2" fill="none">
+            <path d="M142,92 A70,70 0 0,1 178,128" marker-end="url(#arRed)"/>
+            <path d="M178,172 A70,70 0 0,1 142,208" marker-end="url(#arRed)"/>
+            <path d="M98,208 A70,70 0 0,1 62,172" marker-end="url(#arRed)"/>
+            <path d="M62,128 A70,70 0 0,1 98,92" marker-end="url(#arRed)"/>
+          </g>
+          <text x="120" y="280" text-anchor="middle" font-family="'Source Serif 4',serif" font-style="italic" font-size="12" fill="#6E7B77">La calidad baja a medida que el proyecto crece</text>
+        </g>
+
+        <!-- separador -->
+        <line x1="360" y1="50" x2="360" y2="250" stroke="#D8D2C4" stroke-width="1.5"/>
+
+        <!-- DERECHA: SDD pipeline -->
+        <text x="410" y="30" font-family="'Space Grotesk',sans-serif" font-size="14" font-weight="700" fill="#0E6B66">SPEC-DRIVEN — la línea de ensamblaje</text>
+        <g font-family="'Space Grotesk',sans-serif" font-size="11" text-anchor="middle">
+          <g>
+            <rect x="400" y="120" width="74" height="42" rx="8" fill="#E6F1EE" stroke="#0E6B66" stroke-width="1.5"/>
+            <text x="437" y="138" fill="#0A4D49" font-weight="600">spec</text><text x="437" y="152" fill="#6E7B77" font-size="9">el qué</text>
+          </g>
+          <path d="M476,141 L500,141" stroke="#0E6B66" stroke-width="2" marker-end="url(#arTeal)"/>
+          <g>
+            <rect x="502" y="120" width="74" height="42" rx="8" fill="#E6F1EE" stroke="#0E6B66" stroke-width="1.5"/>
+            <text x="539" y="138" fill="#0A4D49" font-weight="600">plan</text><text x="539" y="152" fill="#6E7B77" font-size="9">el cómo</text>
+          </g>
+          <path d="M578,141 L602,141" stroke="#0E6B66" stroke-width="2" marker-end="url(#arTeal)"/>
+          <g>
+            <rect x="604" y="120" width="74" height="42" rx="8" fill="#0E6B66" stroke="#0A4D49" stroke-width="1.5"/>
+            <text x="641" y="138" fill="#fff" font-weight="600">código</text><text x="641" y="152" fill="#CDE7E1" font-size="9">derivado</text>
+          </g>
+          <!-- realimentación: cambia el spec, no el código -->
+          <path d="M641,162 C641,210 437,210 437,164" stroke="#C57B36" stroke-width="2" fill="none" stroke-dasharray="4 4" marker-end="url(#arAmber)"/>
+          <text x="539" y="232" text-anchor="middle" font-family="'Source Serif 4',serif" font-style="italic" font-size="12" fill="#9C5C22">¿Cambian los requisitos? Edita el spec y regenera</text>
+        </g>
+
+        <defs>
+          <marker id="arRed" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#B3492F"/></marker>
+          <marker id="arTeal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#0E6B66"/></marker>
+          <marker id="arAmber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#C57B36"/></marker>
+        </defs>
+      </svg>
+      <div class="figcap"><b>Figura 0.1</b> · El vibe coding gira sobre sí mismo; SDD avanza en una dirección y trata la especificación como la pieza que regeneras cuando algo cambia.</div>
+    </div>
+
+    <p>Para 2026, esto dejó de ser un experimento. Toda herramienta seria de programación con IA —GitHub Spec Kit, AWS Kiro, Claude Code, Cursor, Gemini— incorpora su propia versión de SDD. Spec Kit superó las noventa mil estrellas en GitHub, y plataformas educativas lanzaron cursos dedicados. La pregunta ya no es <em>si</em> usar especificaciones, sino <em>cómo escribirlas bien</em>. A eso dedicamos el resto del libro.</p>
+  </div>
+</section>
+
+<!-- ================= CAPÍTULO 1 ================= -->
+<section class="cap" id="cap1">
+  <div class="pagina">
+    <p class="cap-num">PARTE I · CAPÍTULO 01</p>
+    <h2 class="titulo-cap">¿Qué es Spec-Driven Development?</h2>
+    <p class="lede">Una metodología en la que el código deja de ser el documento principal. El protagonista pasa a ser una especificación ejecutable y versionada, de la que el código se deriva.</p>
+
+    <h3>1.1 La especificación como única fuente de verdad</h3>
+    <p>En el desarrollo tradicional, el código <em>es</em> la verdad. Los documentos de diseño envejecen, los comentarios mienten, pero el código siempre dice lo que el sistema hace realmente. SDD invierte esa relación. Aquí la <strong>fuente de verdad</strong> —el documento que manda cuando hay una discrepancia— es la especificación. El código es una consecuencia de ella.</p>
+    <p>Esto solo es posible porque ahora tenemos agentes capaces de leer una especificación detallada y producir código a partir de ella. La spec deja de ser «documentación pasiva» que nadie actualiza y se convierte en un <strong>contrato ejecutable</strong>: un texto que no solo describe el sistema, sino que activamente lo gobierna. Si quieres cambiar el comportamiento, cambias la spec y regeneras; no parcheas el código a mano y dejas la documentación desactualizada.</p>
+
+    <div class="caja castor">
+      <span class="et">🦫 El castor dice</span>
+      Un castor nunca empieza colocando troncos al azar. Primero «lee» el río: dónde está la corriente, qué profundidad hay, por dónde escapa el agua. Esa lectura es su especificación. La presa es solo la consecuencia física de haberla entendido bien.
+    </div>
+
+    <h3>1.2 Del vibe coding al spec: el mismo agente, distinta disciplina</h3>
+    <p>Conviene no demonizar el vibe coding. Para explorar una idea, hacer un prototipo desechable o aprender una librería nueva, prompts sueltos son perfectos: rápidos y sin ceremonia. El problema aparece cuando ese prototipo, sin querer, se convierte en producción. Lo que servía para experimentar empieza a sostener datos reales de usuarios reales, y la falta de estructura se paga cara.</p>
+    <p>SDD es, literalmente, <em>lo que viene después del vibe coding</em> cuando necesitas código que puedas mantener y desplegar con confianza. No es una herramienta distinta: es el mismo agente, trabajando bajo una disciplina.</p>
+
+    <h3>1.3 SDD frente a TDD: parientes, no rivales</h3>
+    <p>Si conoces el <strong>desarrollo guiado por pruebas (TDD)</strong>, la idea de «escribir algo antes que el código» te resultará familiar. La diferencia está en el nivel. Las pruebas unitarias de TDD verifican funciones individuales: comprueban que <code>sumar(2,2)</code> devuelva <code>4</code>. Pero no detectan violaciones de arquitectura, contratos de API que se rompen entre servicios, o decisiones de diseño que contradicen lo acordado. La especificación de SDD opera a nivel de <em>sistema</em>: captura clases de errores que las pruebas unitarias, por su naturaleza, no pueden ver.</p>
+
+    <table class="comp">
+      <thead><tr><th>Dimensión</th><th>Vibe coding</th><th>TDD</th><th>Spec-Driven Development</th></tr></thead>
+      <tbody>
+        <tr><td>Artefacto principal</td><td>El prompt del momento</td><td>Las pruebas</td><td>La especificación</td></tr>
+        <tr><td>Qué se escribe primero</td><td>Nada, se improvisa</td><td>Una prueba que falla</td><td>Qué debe hacer el sistema</td></tr>
+        <tr><td>Nivel que protege</td><td>Ninguno</td><td>La función</td><td>El sistema completo</td></tr>
+        <tr><td>Bueno para</td><td>Prototipos, exploración</td><td>Lógica concreta</td><td>Producción y escala</td></tr>
+        <tr><td>Riesgo principal</td><td>Drift y alucinaciones</td><td>Cobertura sin visión global</td><td>Specs burocráticas e inútiles</td></tr>
+      </tbody>
+    </table>
+    <p>No tienes que elegir uno. En la práctica, una buena spec exige pruebas, y SDD y TDD conviven sin problema: el spec dice <em>qué</em> y <em>por qué</em>, las pruebas confirman que cada pieza cumple su parte.</p>
+
+    <h3>1.4 Los tres niveles de rigor</h3>
+    <p>No todo proyecto necesita la misma dosis de especificación. El equipo de Martin Fowler popularizó una distinción de tres niveles, según cuánta autoridad le das a la spec frente al código:</p>
+
+    <div class="figura">
+      <svg viewBox="0 0 700 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Espectro de tres niveles: spec-first, spec-anchored y spec-as-source">
+        <!-- barra de gradiente -->
+        <defs>
+          <linearGradient id="grad3" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#C57B36"/><stop offset="50%" stop-color="#2E8A7E"/><stop offset="100%" stop-color="#0A4D49"/>
+          </linearGradient>
+        </defs>
+        <rect x="40" y="40" width="620" height="10" rx="5" fill="url(#grad3)"/>
+        <text x="40" y="30" font-family="'Space Grotesk',sans-serif" font-size="11" fill="#9C5C22">menos autoridad de la spec</text>
+        <text x="660" y="30" text-anchor="end" font-family="'Space Grotesk',sans-serif" font-size="11" fill="#0A4D49">más autoridad de la spec</text>
+
+        <!-- nivel 1 -->
+        <circle cx="120" cy="45" r="9" fill="#C57B36" stroke="#fff" stroke-width="2"/>
+        <g font-family="'Space Grotesk',sans-serif" text-anchor="middle">
+          <text x="120" y="90" font-size="14" font-weight="700" fill="#9C5C22">spec-first</text>
+        </g>
+        <foreignObject x="30" y="98" width="180" height="110">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:'Source Serif 4',serif;font-size:12px;color:#3C4A46;line-height:1.45;text-align:center;">La spec dirige la generación inicial, pero a partir de ahí <b>mantienes el código a mano</b>. La spec puede quedar atrás.</div>
+        </foreignObject>
+
+        <!-- nivel 2 -->
+        <circle cx="350" cy="45" r="9" fill="#2E8A7E" stroke="#fff" stroke-width="2"/>
+        <g font-family="'Space Grotesk',sans-serif" text-anchor="middle">
+          <text x="350" y="90" font-size="14" font-weight="700" fill="#0E6B66">spec-anchored</text>
+        </g>
+        <foreignObject x="260" y="98" width="180" height="110">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:'Source Serif 4',serif;font-size:12px;color:#3C4A46;line-height:1.45;text-align:center;">Spec y código <b>conviven y se sincronizan</b>. La spec es referencia permanente; ambos se mantienen alineados.</div>
+        </foreignObject>
+
+        <!-- nivel 3 -->
+        <circle cx="580" cy="45" r="9" fill="#0A4D49" stroke="#fff" stroke-width="2"/>
+        <g font-family="'Space Grotesk',sans-serif" text-anchor="middle">
+          <text x="580" y="90" font-size="14" font-weight="700" fill="#0A4D49">spec-as-source</text>
+        </g>
+        <foreignObject x="490" y="98" width="180" height="110">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:'Source Serif 4',serif;font-size:12px;color:#3C4A46;line-height:1.45;text-align:center;">La spec es el <b>único artefacto</b> que editas. El código se genera entero y se trata como algo desechable.</div>
+        </foreignObject>
+      </svg>
+      <div class="figcap"><b>Figura 1.1</b> · Elige tu nivel según el proyecto. Lo más común y sensato hoy es empezar en <b>spec-anchored</b>: ni descuidas la spec ni renuncias a tocar el código.</div>
+    </div>
+
+    <h3>1.5 La parábola del castor</h3>
+    <p>A lo largo del libro, el castor será nuestro modelo de ingeniero. No por simpático, sino porque encarna exactamente lo que SDD pide: un constructor que no improvisa, que entiende el problema antes de actuar, que construye con piezas reutilizables (cada tronco cumple una función) y que, cuando el río cambia de curso, no demuele todo: ajusta el plan y reconstruye lo necesario. Si en algún momento te pierdes entre comandos y artefactos, vuelve a la imagen del castor leyendo el río. Esa es toda la metodología en una estampa.</p>
+  </div>
+</section>
+
+<!-- ================= CAPÍTULO 2 ================= -->
+<section class="cap" id="cap2">
+  <div class="pagina">
+    <p class="cap-num">PARTE I · CAPÍTULO 02</p>
+    <h2 class="titulo-cap">Agentes: el motor que ejecuta el plano</h2>
+    <p class="lede">Una especificación sin nadie que la ejecute es solo un deseo. El que coloca los troncos según el plano es el agente de codificación. Entender cómo «piensa» es entender por qué necesita una buena spec.</p>
+
+    <h3>2.1 Qué es un agente de codificación</h3>
+    <p>Un <strong>agente de codificación</strong> es un programa que usa un modelo de lenguaje grande (LLM) para realizar tareas de programación de forma semiautónoma: leer archivos, escribir código, ejecutar comandos, revisar los resultados y corregirse. La diferencia con un simple chat es la <strong>autonomía</strong>: un chat te responde y espera; un agente actúa, observa qué pasó y decide el siguiente paso por su cuenta, repitiendo el ciclo hasta cumplir el objetivo. Claude Code, Cursor o los agentes de Copilot son ejemplos.</p>
+
+    <h3>2.2 El bucle agéntico</h3>
+    <p>Todo agente, por dentro, gira en un mismo ciclo de cuatro movimientos. Reconocerlo te ayuda a entender dónde encaja la especificación y por qué, sin ella, el ciclo se descontrola.</p>
+
+    <div class="figura">
+      <svg viewBox="0 0 460 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="El bucle agéntico de cuatro pasos: percibir, planificar, actuar, verificar">
+        <!-- círculo guía -->
+        <circle cx="230" cy="190" r="120" fill="none" stroke="#D8D2C4" stroke-width="1.5" stroke-dasharray="3 5"/>
+
+        <!-- nodos -->
+        <g font-family="'Space Grotesk',sans-serif" text-anchor="middle">
+          <!-- percibir (arriba) -->
+          <circle cx="230" cy="70" r="48" fill="#E6F1EE" stroke="#0E6B66" stroke-width="2"/>
+          <text x="230" y="66" font-size="14" font-weight="700" fill="#0A4D49">1 · Percibir</text>
+          <text x="230" y="84" font-size="9.5" fill="#3C4A46">lee spec y código</text>
+
+          <!-- planificar (derecha) -->
+          <circle cx="350" cy="190" r="48" fill="#E6F1EE" stroke="#0E6B66" stroke-width="2"/>
+          <text x="350" y="186" font-size="14" font-weight="700" fill="#0A4D49">2 · Planificar</text>
+          <text x="350" y="204" font-size="9.5" fill="#3C4A46">decide qué hacer</text>
+
+          <!-- actuar (abajo) -->
+          <circle cx="230" cy="310" r="48" fill="#FBEFE2" stroke="#C57B36" stroke-width="2"/>
+          <text x="230" y="306" font-size="14" font-weight="700" fill="#9C5C22">3 · Actuar</text>
+          <text x="230" y="324" font-size="9.5" fill="#3C4A46">escribe / ejecuta</text>
+
+          <!-- verificar (izquierda) -->
+          <circle cx="110" cy="190" r="48" fill="#E6F1EE" stroke="#0E6B66" stroke-width="2"/>
+          <text x="110" y="186" font-size="14" font-weight="700" fill="#0A4D49">4 · Verificar</text>
+          <text x="110" y="204" font-size="9.5" fill="#3C4A46">¿coincide?</text>
+        </g>
+
+        <!-- flechas -->
+        <g stroke="#0E6B66" stroke-width="2.5" fill="none">
+          <path d="M278,95 A120,120 0 0,1 326,142" marker-end="url(#ar2)"/>
+          <path d="M326,238 A120,120 0 0,1 278,285" marker-end="url(#ar2)"/>
+          <path d="M182,285 A120,120 0 0,1 134,238" marker-end="url(#ar2)"/>
+          <path d="M134,142 A120,120 0 0,1 182,95" marker-end="url(#ar2)"/>
+        </g>
+        <!-- centro -->
+        <text x="230" y="186" text-anchor="middle" font-family="'Source Serif 4',serif" font-style="italic" font-size="13" fill="#6E7B77">la spec es</text>
+        <text x="230" y="204" text-anchor="middle" font-family="'Source Serif 4',serif" font-style="italic" font-size="13" fill="#6E7B77">la brújula</text>
+        <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#0E6B66"/></marker></defs>
+      </svg>
+      <div class="figcap"><b>Figura 2.1</b> · El bucle agéntico. En el paso 4, «¿coincide?» significa <em>¿coincide con la especificación?</em>. Sin spec, el agente verifica contra su propia interpretación, que va cambiando en cada vuelta.</div>
+    </div>
+
+    <h3>2.3 Por qué un agente necesita un spec</h3>
+    <p>Aquí está el corazón del asunto. Tanto un humano como un agente rellenan los huecos de un requisito ambiguo. La diferencia es <em>cómo</em> los rellenan. Una persona usa el contexto de la organización, sabe qué se hizo antes, intuye qué espera el jefe. El agente también rellena huecos, pero no como tú querrías: completa con lo más probable estadísticamente, no con lo que tu negocio necesita. Una spec bien escrita es, en el fondo, un mecanismo para <strong>no dejar huecos peligrosos</strong>.</p>
+
+    <div class="caja aviso">
+      <span class="et">⚠ Cuidado con esto</span>
+      Un mito común dice que con SDD «cualquiera puede programar escribiendo specs». Es falso. La spec no sustituye el criterio técnico: sigues necesitando saber cómo es un buen esquema de base de datos, reconocer cuándo la salida del agente tiene un error sutil y entender tus patrones de arquitectura. La spec es una herramienta de comunicación, no un reemplazo de la experiencia.
+    </div>
+
+    <h3>2.4 Contexto: la memoria del agente</h3>
+    <p>La especificación es una parte del <strong>contexto</strong> que recibe el agente, pero no la única. El contexto también incluye las convenciones del proyecto, la arquitectura existente y lo que el agente «aprendió» en sesiones anteriores —su memoria del código. Obsesionarse con la spec perfecta mientras ignoras el resto del contexto es como escribir una receta detalladísima y olvidarte de surtir la cocina. La spec importa, pero no es lo único que importa: es la pieza que formaliza el <em>qué</em> y el <em>por qué</em>, dentro de un contexto más amplio que también debes cuidar.</p>
+  </div>
+</section>
+
+<!-- ================= CAPÍTULO 3 ================= -->
+<section class="cap" id="cap3">
+  <div class="pagina">
+    <p class="cap-num">PARTE II · CAPÍTULO 03</p>
+    <h2 class="titulo-cap">La Constitución del proyecto</h2>
+    <p class="lede">Antes de especificar la primera funcionalidad, defines las reglas que ninguna funcionalidad podrá romper. Eso es la constitución: la ley fundamental de tu proyecto.</p>
+
+    <p>El método SDD, tal como lo implementan herramientas como GitHub Spec Kit, sigue una secuencia de fases encadenadas. Cada fase produce un artefacto —un archivo— que alimenta a la siguiente, como estaciones de una línea de ensamblaje: entra una idea vaga por un extremo y sale código probado por el otro. Este es el panorama completo que iremos desglosando en los próximos capítulos:</p>
+
+    <div class="figura">
+      <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Las siete fases del pipeline SDD encadenadas">
+        <defs><marker id="arP" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#0E6B66"/></marker></defs>
+        <!-- fases -->
+        <g font-family="'Space Grotesk',sans-serif" text-anchor="middle">
+          <!-- fila superior -->
+          <g>
+            <rect x="14" y="40" width="92" height="54" rx="9" fill="#0A4D49"/><text x="60" y="63" font-size="11" font-weight="700" fill="#fff">Constitución</text><text x="60" y="80" font-size="8.5" fill="#9FD3CB">/constitution</text>
+            <rect x="140" y="40" width="92" height="54" rx="9" fill="#0E6B66"/><text x="186" y="63" font-size="11" font-weight="700" fill="#fff">Especificar</text><text x="186" y="80" font-size="8.5" fill="#CDE7E1">/specify</text>
+            <rect x="266" y="40" width="92" height="54" rx="9" fill="#0E6B66"/><text x="312" y="63" font-size="11" font-weight="700" fill="#fff">Clarificar</text><text x="312" y="80" font-size="8.5" fill="#CDE7E1">/clarify</text>
+            <rect x="392" y="40" width="92" height="54" rx="9" fill="#0E6B66"/><text x="438" y="63" font-size="11" font-weight="700" fill="#fff">Planificar</text><text x="438" y="80" font-size="8.5" fill="#CDE7E1">/plan</text>
+            <rect x="518" y="40" width="92" height="54" rx="9" fill="#0E6B66"/><text x="564" y="63" font-size="11" font-weight="700" fill="#fff">Tareas</text><text x="564" y="80" font-size="8.5" fill="#CDE7E1">/tasks</text>
+          </g>
+          <!-- conectores fila sup -->
+          <g stroke="#0E6B66" stroke-width="2">
+            <line x1="106" y1="67" x2="138" y2="67" marker-end="url(#arP)"/>
+            <line x1="232" y1="67" x2="264" y2="67" marker-end="url(#arP)"/>
+            <line x1="358" y1="67" x2="390" y2="67" marker-end="url(#arP)"/>
+            <line x1="484" y1="67" x2="516" y2="67" marker-end="url(#arP)"/>
+          </g>
+          <!-- baja a fila inferior -->
+          <path d="M564,94 C564,118 564,118 438,118" stroke="#0E6B66" stroke-width="2" fill="none" marker-end="url(#arP)"/>
+          <!-- fila inferior -->
+          <g>
+            <rect x="392" y="120" width="92" height="54" rx="9" fill="#C57B36"/><text x="438" y="143" font-size="11" font-weight="700" fill="#fff">Analizar</text><text x="438" y="160" font-size="8.5" fill="#FBEFE2">/analyze</text>
+            <rect x="266" y="120" width="92" height="54" rx="9" fill="#0A4D49"/><text x="312" y="143" font-size="11" font-weight="700" fill="#fff">Implementar</text><text x="312" y="160" font-size="8.5" fill="#9FD3CB">/implement</text>
+          </g>
+          <line x1="390" y1="147" x2="360" y2="147" stroke="#0E6B66" stroke-width="2" marker-end="url(#arP)"/>
+          <text x="60" y="150" font-size="10" fill="#6E7B77" font-style="italic" font-family="'Source Serif 4',serif">una vez por</text>
+          <text x="60" y="164" font-size="10" fill="#6E7B77" font-style="italic" font-family="'Source Serif 4',serif">proyecto →</text>
+          <text x="186" y="150" font-size="10" fill="#6E7B77" font-style="italic" font-family="'Source Serif 4',serif">una vez por</text>
+          <text x="186" y="164" font-size="10" fill="#6E7B77" font-style="italic" font-family="'Source Serif 4',serif">funcionalidad ↑</text>
+        </g>
+      </svg>
+      <div class="figcap"><b>Figura 3.1</b> · El pipeline SDD. La <b>constitución</b> se escribe una vez para todo el proyecto; el resto del ciclo se repite por cada funcionalidad. <em>Analizar</em> (en ámbar) es la auditoría previa que evita implementar sobre cimientos torcidos.</div>
+    </div>
+
+    <h3>3.1 Principios no negociables</h3>
+    <p>La <strong>constitución</strong> es un documento que recoge los principios innegociables de tu proyecto: reglas que toda funcionalidad debe respetar, pase lo que pase. No describe <em>qué</em> construyes, sino <em>cómo</em> debe construirse siempre. Por ejemplo: «toda entrada de usuario debe validarse», «usamos arquitectura de microservicios», «cada funcionalidad nace como una librería reutilizable antes de integrarse».</p>
+    <p>Su utilidad real aparece en la fase de análisis: el agente compara el plan y las tareas contra la constitución, y marca como <strong>crítico</strong> cualquier punto que la viole. Es tu forma de codificar el criterio de tu equipo una sola vez para que se aplique en cada funcionalidad, sin repetirlo en cada prompt.</p>
+
+    <h3>3.2 Cómo redactar una buena constitución</h3>
+    <p>Una buena constitución es corta, concreta y verificable. Evita los buenos deseos vagos («el código debe ser limpio») y prefiere reglas comprobables («ninguna función supera 50 líneas», «toda consulta a base de datos usa parámetros, nunca concatenación de cadenas»). Piensa en cada artículo como algo que un revisor podría marcar con un sí o un no.</p>
+
+    <h3>3.3 Ejemplo comentado</h3>
+    <p>Así se vería el comando para inicializar la constitución de un portal interno de proveedores, con principios de seguridad por delante:</p>
+<pre><span class="c"># En tu agente (Claude Code, Copilot, etc.), tras instalar Spec Kit:</span>
+<span class="k">/speckit.constitution</span> Este proyecto es un portal de proveedores con
+  seguridad como prioridad. Principios no negociables:
+  1. Toda entrada de usuario se valida en servidor, nunca solo en cliente.
+  2. Acceso a datos siempre con consultas parametrizadas (anti inyeccion SQL).
+  3. Cada proveedor solo accede a sus propios documentos (control de autorizacion).
+  4. Toda accion sensible queda registrada en una bitacora de auditoria.
+  5. El codigo se organiza en modulos reutilizables, no en un monolito.</pre>
+    <p>El agente convierte esto en un archivo <code>constitution.md</code> versionado. A partir de ahí, cada vez que especifiques una funcionalidad nueva, esos cinco principios actúan como guardarraíles automáticos.</p>
+
+    <div class="caja castor">
+      <span class="et">🦫 El castor dice</span>
+      La constitución es el suelo de roca sobre el que el castor ancla la presa. No es la presa, pero sin él todo lo demás se lo lleva la corriente. Se pone una vez, y aguanta toda la obra.
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAPÍTULO 4 ================= -->
+<section class="cap" id="cap4">
+  <div class="pagina">
+    <p class="cap-num">PARTE II · CAPÍTULO 04</p>
+    <h2 class="titulo-cap">Especificar y clarificar</h2>
+    <p class="lede">El corazón del método. Aquí transformas una idea difusa en un documento estructurado del que un agente puede derivar código sin inventarse lo que no le dijiste.</p>
+
+    <h3>4.1 Anatomía de una especificación</h3>
+    <p>Una spec no es un documento de requisitos (PRD) con otro nombre. Un PRD se escribe para humanos, que interpretan la ambigüedad y rellenan vacíos con contexto organizacional. Una spec se escribe para que un agente la ejecute, así que debe cerrar esos vacíos de forma explícita. La diferencia es sutil pero decisiva.</p>
+
+    <h3>4.2 Los seis elementos imprescindibles</h3>
+    <p>Una buena especificación define seis cosas. Si falta alguna, el agente la rellenará por ti, y rara vez como esperabas:</p>
+
+    <div class="figura">
+      <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Los seis elementos de una especificación dispuestos alrededor de la spec central">
+        <!-- centro -->
+        <rect x="285" y="115" width="130" height="50" rx="10" fill="#0A4D49"/>
+        <text x="350" y="138" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="13" font-weight="700" fill="#fff">LA SPEC</text>
+        <text x="350" y="154" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="9" fill="#9FD3CB">contrato ejecutable</text>
+
+        <!-- 6 satélites -->
+        <g font-family="'Space Grotesk',sans-serif">
+          <!-- 1 resultados -->
+          <g><rect x="40" y="20" width="170" height="48" rx="9" fill="#E6F1EE" stroke="#0E6B66" stroke-width="1.5"/>
+          <text x="56" y="40" font-size="12" font-weight="700" fill="#0A4D49">① Resultados</text>
+          <text x="56" y="56" font-size="10" fill="#3C4A46" font-family="'Source Serif 4',serif">qué debe lograrse</text></g>
+          <!-- 2 alcance -->
+          <g><rect x="40" y="116" width="170" height="48" rx="9" fill="#E6F1EE" stroke="#0E6B66" stroke-width="1.5"/>
+          <text x="56" y="136" font-size="12" font-weight="700" fill="#0A4D49">② Alcance</text>
+          <text x="56" y="152" font-size="10" fill="#3C4A46" font-family="'Source Serif 4',serif">qué queda dentro y fuera</text></g>
+          <!-- 3 restricciones -->
+          <g><rect x="40" y="212" width="170" height="48" rx="9" fill="#E6F1EE" stroke="#0E6B66" stroke-width="1.5"/>
+          <text x="56" y="232" font-size="12" font-weight="700" fill="#0A4D49">③ Restricciones</text>
+          <text x="56" y="248" font-size="10" fill="#3C4A46" font-family="'Source Serif 4',serif">límites técnicos y de negocio</text></g>
+          <!-- 4 decisiones -->
+          <g><rect x="490" y="20" width="170" height="48" rx="9" fill="#FBEFE2" stroke="#C57B36" stroke-width="1.5"/>
+          <text x="506" y="40" font-size="12" font-weight="700" fill="#9C5C22">④ Decisiones previas</text>
+          <text x="506" y="56" font-size="10" fill="#3C4A46" font-family="'Source Serif 4',serif">qué ya se acordó y por qué</text></g>
+          <!-- 5 tareas -->
+          <g><rect x="490" y="116" width="170" height="48" rx="9" fill="#FBEFE2" stroke="#C57B36" stroke-width="1.5"/>
+          <text x="506" y="136" font-size="12" font-weight="700" fill="#9C5C22">⑤ Plan de tareas</text>
+          <text x="506" y="152" font-size="10" fill="#3C4A46" font-family="'Source Serif 4',serif">cómo se descompone</text></g>
+          <!-- 6 criterios -->
+          <g><rect x="490" y="212" width="170" height="48" rx="9" fill="#FBEFE2" stroke="#C57B36" stroke-width="1.5"/>
+          <text x="506" y="232" font-size="12" font-weight="700" fill="#9C5C22">⑥ Criterios de aceptación</text>
+          <text x="506" y="248" font-size="10" fill="#3C4A46" font-family="'Source Serif 4',serif">cómo sabemos que terminó</text></g>
+        </g>
+        <!-- conectores -->
+        <g stroke="#D8D2C4" stroke-width="1.5">
+          <line x1="210" y1="44" x2="285" y2="125"/>
+          <line x1="210" y1="140" x2="285" y2="140"/>
+          <line x1="210" y1="236" x2="285" y2="155"/>
+          <line x1="490" y1="44" x2="415" y2="125"/>
+          <line x1="490" y1="140" x2="415" y2="140"/>
+          <line x1="490" y1="236" x2="415" y2="155"/>
+        </g>
+      </svg>
+      <div class="figcap"><b>Figura 4.1</b> · Los seis elementos. Los tres de la izquierda definen <b>el problema</b>; los tres de la derecha, <b>cómo reconocer la solución</b>. El sexto —criterios de aceptación— es el que más se olvida y el que más drift evita.</div>
+    </div>
+
+    <h3>4.3 La caza de ambigüedades</h3>
+    <p>Las primeras specs casi siempre tienen huecos. Por eso existe una fase intermedia, <strong>clarificar</strong>, pensada justo para cuando la descripción es vaga o incompleta. La herramienta hace un barrido de ambigüedades en categorías como alcance funcional, modelo de datos, flujo de experiencia, casos límite y terminología. Luego te hace hasta cinco preguntas muy concretas, una a una, y escribe tus respuestas de vuelta en la spec. Así ningún acuerdo se pierde.</p>
+
+    <h3>4.4 Ejemplo paso a paso</h3>
+    <p>Imagina que quieres una funcionalidad de exportación de facturas. Una primera orden vaga sería:</p>
+<pre><span class="k">/speckit.specify</span> Que el usuario pueda exportar sus facturas.</pre>
+    <p>El comando <code>/speckit.clarify</code> detectaría enseguida los huecos y preguntaría, por ejemplo:</p>
+<pre><span class="c"># Preguntas que el agente plantea, una a una:</span>
+<span class="d">P1.</span> ¿En que formatos? (CSV, Excel, PDF)
+<span class="d">P2.</span> ¿Que rango de fechas puede elegir el usuario?
+<span class="d">P3.</span> ¿Que pasa si no hay facturas en el rango elegido?
+<span class="d">P4.</span> ¿La exportacion incluye facturas anuladas?
+<span class="d">P5.</span> ¿Hay limite de registros por exportacion?</pre>
+    <p>Tras responder, la spec deja de ser un deseo y se convierte en un contrato. Fíjate en cómo cada pregunta corresponde a uno de los seis elementos: las P3 y P4 son casos límite (restricciones), la P5 es una restricción técnica, la P1 es parte del resultado. Ese es el valor de clarificar: convierte lo implícito en explícito antes de que el agente lo decida por su cuenta.</p>
+
+    <div class="caja">
+      <span class="et">En la práctica</span>
+      Para experimentos rápidos puedes ir directo: <code>specify → plan → tasks → implement</code>. Pero para cualquier trabajo de producción o con ambigüedad real, intercala <code>clarify</code>, <code>checklist</code> y <code>analyze</code>. La regla es simple: a mayor ambigüedad o riesgo, más fases de control.
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAPÍTULO 5 ================= -->
+<section class="cap" id="cap5">
+  <div class="pagina">
+    <p class="cap-num">PARTE II · CAPÍTULO 05</p>
+    <h2 class="titulo-cap">Planificar, descomponer y analizar</h2>
+    <p class="lede">Ya sabes qué construir. Ahora el agente decide cómo, lo parte en tareas pequeñas y —antes de tocar una sola línea— auditas que todo encaje.</p>
+
+    <h3>5.1 Del qué al cómo</h3>
+    <p>El comando <code>/plan</code> toma tu spec y la convierte en un <strong>plan de implementación</strong>: el documento que traduce el <em>qué</em> en un <em>cómo</em> técnico. Aquí el agente lee la spec, relee la constitución para no contradecirla, y produce decisiones de arquitectura, modelos de datos, contratos de API y, a veces, una guía de arranque rápido. Si algo en el plan choca con la constitución, debería detenerse y avisarte.</p>
+    <p>Una idea clave: la spec y el plan están desacoplados. Puedes reutilizar la misma spec con un plan distinto —por ejemplo, cambiar de base de datos manteniendo intacto el <em>qué</em>—. El qué perdura; el cómo es intercambiable.</p>
+
+    <h3>5.2 Tareas atómicas</h3>
+    <p>El comando <code>/tasks</code> desmenuza el plan en una lista de <strong>tareas atómicas</strong>: unidades de trabajo lo bastante pequeñas como para completarse y verificarse de una en una. Cada historia de usuario suele convertirse en su propia fase, con sus tareas. ¿Por qué tan pequeñas? Porque un agente, igual que una persona, comete menos errores con instrucciones acotadas que con un encargo gigante y difuso.</p>
+
+    <div class="caja castor">
+      <span class="et">🦫 El castor dice</span>
+      El castor no carga el bosque entero al río. Corta un tronco, lo coloca, comprueba que sujeta, y va por el siguiente. Tareas atómicas son sus troncos: pequeñas, verificables, una tras otra.
+    </div>
+
+    <h3>5.3 La revisión previa que evita desastres</h3>
+    <p>Antes de implementar, el comando <code>/analyze</code> revisa todos los artefactos —constitución, spec, plan y tareas— buscando incoherencias, ambigüedades o huecos de cobertura. Es de solo lectura: no cambia nada, solo te informa. Produce un informe ordenado por severidad, de <strong>crítico</strong> a bajo.</p>
+<pre><span class="c"># Informe tipico de /analyze (resumido):</span>
+<span class="k">[CRITICO]</span> La tarea T-07 viola el articulo 3 de la constitucion
+          (un proveedor podria ver documentos de otro).
+<span class="k">[ALTO]</span>    El requisito "exportar a PDF" no tiene ninguna tarea asociada.
+<span class="k">[MEDIO]</span>   Ambiguedad: "rango de fechas" no define zona horaria.
+<span class="k">[BAJO]</span>    Terminologia inconsistente: "factura" vs "comprobante".</pre>
+    <p>La regla de oro: <strong>los problemas críticos se resuelven antes de implementar</strong>. Un crítico casi siempre significa que el agente, de seguir adelante, escribiría código que falla en producción o que viola una regla de seguridad. Diez minutos de análisis aquí ahorran horas de depuración después.</p>
+  </div>
+</section>
+
+<!-- ================= CAPÍTULO 6 ================= -->
+<section class="cap" id="cap6">
+  <div class="pagina">
+    <p class="cap-num">PARTE II · CAPÍTULO 06</p>
+    <h2 class="titulo-cap">Implementar y mantener vivo el spec</h2>
+    <p class="lede">Llega el momento de escribir código. Y, sobre todo, de entender qué hace que SDD valga la pena a largo plazo: la spec no se archiva, se mantiene viva.</p>
+
+    <h3>6.1 Ejecución por fases</h3>
+    <p>El comando <code>/implement</code> recorre la lista de tareas y escribe el código, respetando dependencias y marcas de paralelismo. En proyectos grandes, la recomendación es <strong>implementar por fases</strong> para no saturar el contexto del agente: empieza por la funcionalidad central (la primera historia de usuario), valida que funciona, y solo entonces añades el resto de forma incremental. Cada fase produce algo demostrable y probable.</p>
+
+    <div class="caja aviso">
+      <span class="et">⚠ Cuidado con esto</span>
+      No trates la spec como una garantía. Que el agente haya seguido un documento impecable no te exime de revisar su salida con el mismo rigor que tendrías sin spec. La especificación reduce los errores; no los elimina. El último filtro sigues siendo tú.
+    </div>
+
+    <h3>6.2 Cuando los requisitos cambian</h3>
+    <p>Aquí está la diferencia que justifica todo el método. En el desarrollo tradicional, cuando cambia un requisito, modificas el código y, con suerte, alguien actualiza la documentación (normalmente no). En SDD, <strong>editas la spec y regeneras la parte afectada</strong>. La spec nunca queda obsoleta porque es el punto de partida, no un subproducto. A esto nos referimos cuando decimos que la spec está «viva»: es memoria persistente y contexto compartido entre tú y el agente, sesión tras sesión.</p>
+
+    <div class="figura">
+      <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ciclo de cambio: editar la spec y regenerar en lugar de parchear el código">
+        <defs><marker id="arC" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#C57B36"/></marker></defs>
+        <g font-family="'Space Grotesk',sans-serif" text-anchor="middle">
+          <rect x="30" y="50" width="120" height="50" rx="9" fill="#FBEFE2" stroke="#C57B36" stroke-width="1.5"/>
+          <text x="90" y="72" font-size="11" font-weight="700" fill="#9C5C22">Cambia un</text><text x="90" y="88" font-size="11" font-weight="700" fill="#9C5C22">requisito</text>
+          <rect x="260" y="50" width="120" height="50" rx="9" fill="#E6F1EE" stroke="#0E6B66" stroke-width="1.5"/>
+          <text x="320" y="72" font-size="11" font-weight="700" fill="#0A4D49">Editas</text><text x="320" y="88" font-size="11" font-weight="700" fill="#0A4D49">la spec</text>
+          <rect x="490" y="50" width="120" height="50" rx="9" fill="#0A4D49"/>
+          <text x="550" y="72" font-size="11" font-weight="700" fill="#fff">Regeneras</text><text x="550" y="88" font-size="11" font-weight="700" fill="#fff">el código</text>
+          <line x1="150" y1="75" x2="258" y2="75" stroke="#C57B36" stroke-width="2" marker-end="url(#arC)"/>
+          <line x1="380" y1="75" x2="488" y2="75" stroke="#C57B36" stroke-width="2" marker-end="url(#arC)"/>
+        </g>
+        <text x="320" y="130" text-anchor="middle" font-family="'Source Serif 4',serif" font-style="italic" font-size="12" fill="#6E7B77">Nunca parcheas el código directamente: la fuente de verdad es la spec.</text>
+      </svg>
+      <div class="figcap"><b>Figura 6.1</b> · El ciclo de mantenimiento en SDD. El código es siempre <em>aguas abajo</em> de la spec.</div>
+    </div>
+
+    <h3>6.3 La revisión humana sigue siendo tuya</h3>
+    <p>SDD no automatiza tu juicio; lo enfoca. Al sacarte de la tarea de teclear cada línea, te libera para concentrarte en lo que de verdad aporta valor: decidir <em>qué</em> debe hacer el sistema y <em>por qué</em>, y verificar que el resultado lo cumple. El esfuerzo humano se desplaza de escribir código a definir comportamientos con precisión. Esa, en una frase, es la promesa de Spec-Driven Development.</p>
+  </div>
+</section>
+
+<!-- ================= CAPÍTULO 7 ================= -->
+<section class="cap" id="cap7">
+  <div class="pagina">
+    <p class="cap-num">PARTE III · CAPÍTULO 07</p>
+    <h2 class="titulo-cap">El ecosistema de herramientas en 2026</h2>
+    <p class="lede">El método es independiente de la herramienta, pero conviene conocer a los protagonistas. Para mediados de 2026 había más de treinta marcos en este ecosistema; estos son los que marcan el rumbo.</p>
+
+    <h3>7.1 GitHub Spec Kit</h3>
+    <p><strong>Spec Kit</strong> es la opción de código abierto más popular, con más de noventa mil estrellas en GitHub. Curiosamente, sus comandos no son ejecutables tradicionales: son <strong>plantillas en formato Markdown</strong> que tu agente lee e interpreta. Cuando escribes <code>/speckit.specify</code>, el agente carga el archivo de instrucciones de ese comando y lo sigue. Funciona con más de veinte plataformas de agentes —Claude Code, Copilot, Gemini CLI, Amazon Q y muchas más— porque, al final, solo son prompts estructurados. Se instala así:</p>
+<pre><span class="c"># Instalar la CLI y crear un proyecto integrado con tu agente</span>
+<span class="k">uv tool install</span> specify-cli --from git+https://github.com/github/spec-kit.git
+<span class="k">specify init</span> mi-proyecto --integration claude</pre>
+    <p>Su gran ventaja es la personalización: con <em>extensiones</em> añades fases nuevas (integración con Jira, revisión de seguridad, trazabilidad regulatoria) y con <em>presets</em> cambias cómo trabaja sin añadir capacidades —por ejemplo, forzar un formato de spec orientado a cumplimiento, o traducir todo el flujo a otro idioma.</p>
+
+    <h3>7.2 AWS Kiro</h3>
+    <p><strong>Kiro</strong> es un entorno de desarrollo (IDE) construido enteramente alrededor del flujo spec-driven. En lugar de añadir SDD a un editor existente, lo hornea en el producto: codifica el ciclo completo con pasos de constitución, especificación, planificación, tareas e implementación como ciudadanos de primera clase. AWS ha documentado casos de clientes donde funcionalidades que tomaban cuarenta horas se entregaron en menos de ocho horas de trabajo humano cuando se escribieron como spec primero.</p>
+
+    <h3>7.3 Claude Code y las Skills</h3>
+    <p><strong>Claude Code</strong> es el agente de codificación de Anthropic, que opera desde la terminal o el editor y se integra de forma nativa con Spec Kit. Su pieza distintiva son las <strong>Skills</strong>: carpetas con instrucciones y recursos que enseñan al agente a hacer bien una tarea concreta y repetible —desde generar un tipo de documento hasta seguir las convenciones internas de un equipo—. Encajan de forma natural con SDD: una Skill puede encapsular «cómo escribimos nosotros las specs» y aplicarse en cada proyecto.</p>
+
+    <h3>7.4 Cómo elegir</h3>
+    <table class="comp">
+      <thead><tr><th>Si tú…</th><th>Empieza con</th><th>Por qué</th></tr></thead>
+      <tbody>
+        <tr><td>Ya usas un agente y quieres añadir disciplina</td><td>Spec Kit</td><td>Se monta encima de lo que ya tienes, sin cambiar de herramienta</td></tr>
+        <tr><td>Quieres una experiencia integral guiada</td><td>AWS Kiro</td><td>El flujo SDD viene incorporado de fábrica</td></tr>
+        <tr><td>Trabajas desde la terminal y valoras la flexibilidad</td><td>Claude Code + Spec Kit</td><td>Máximo control y Skills reutilizables</td></tr>
+        <tr><td>Solo quieres entender el método</td><td>Cualquiera</td><td>Las fases son las mismas en todas; cambia el envoltorio</td></tr>
+      </tbody>
+    </table>
+
+    <div class="caja">
+      <span class="et">En la práctica</span>
+      No te cases con una herramienta antes de dominar el método. Las siete fases —constitución, especificar, clarificar, planificar, tareas, analizar, implementar— son universales. Si las entiendes, migrar entre Spec Kit, Kiro o cualquier otra es cuestión de aprender comandos nuevos, no conceptos nuevos.
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAPÍTULO 8 ================= -->
+<section class="cap" id="cap8">
+  <div class="pagina">
+    <p class="cap-num">PARTE III · CAPÍTULO 08</p>
+    <h2 class="titulo-cap">Caso completo: de la idea al código</h2>
+    <p class="lede">Retomamos la exportación de facturas del capítulo 4 y la llevamos de punta a punta. Una funcionalidad pequeña, las siete fases reales, para que veas el método en movimiento.</p>
+
+    <p><strong>El encargo:</strong> «Necesitamos que cada usuario pueda exportar sus facturas a Excel para presentarlas ante el organismo tributario». Así de vago empieza casi todo. Veamos cómo SDD lo convierte en código fiable.</p>
+
+    <h3>Fase 1 · Constitución (ya existe)</h3>
+    <p>Nuestro proyecto ya tiene la constitución del capítulo 3. Sus artículos sobre validación, autorización por usuario y bitácora de auditoría se aplicarán automáticamente. No la reescribimos: la heredamos.</p>
+
+    <h3>Fase 2 · Especificar</h3>
+<pre><span class="k">/speckit.specify</span> Exportacion de facturas a Excel. El usuario autenticado
+  descarga sus propias facturas en un archivo .xlsx para tramites tributarios.</pre>
+
+    <h3>Fase 3 · Clarificar</h3>
+    <p>El agente detecta huecos y pregunta. Tras responder, la spec recoge las decisiones:</p>
+<pre><span class="c"># Fragmento de spec.md tras clarificar</span>
+<span class="d">## Clarificaciones</span>
+- Formato: solo .xlsx (una hoja, encabezados en fila 1).
+- Rango: el usuario elige fecha inicio y fin; maximo 12 meses.
+- Sin resultados: se descarga igual, con encabezados y aviso "Sin facturas".
+- Anuladas: se incluyen, con columna Estado = ANULADA.
+- Limite: 5000 filas por exportacion; mas alla, se sugiere acotar el rango.
+- Zona horaria: las fechas se interpretan en hora de Lima (UTC-5).</pre>
+
+    <h3>Fase 4 · Planificar</h3>
+<pre><span class="c"># Fragmento de plan.md</span>
+<span class="d">Endpoint:</span>   GET /api/facturas/exportar?desde=&amp;hasta=
+<span class="d">Auth:</span>       token de sesion; filtra por id_usuario del token (art. 3)
+<span class="d">Datos:</span>      consulta parametrizada a tabla facturas (art. 2)
+<span class="d">Libreria:</span>   generacion de .xlsx en streaming (no cargar todo en memoria)
+<span class="d">Auditoria:</span>  registrar exportacion en bitacora (art. 4)</pre>
+
+    <h3>Fase 5 · Tareas</h3>
+<pre><span class="c"># Fragmento de tasks.md</span>
+<span class="k">T-01</span> Validar parametros de fecha (rango, maximo 12 meses).
+<span class="k">T-02</span> Consulta parametrizada de facturas del usuario en el rango.
+<span class="k">T-03</span> Generar .xlsx en streaming con las columnas definidas.
+<span class="k">T-04</span> Caso sin resultados: archivo con aviso.
+<span class="k">T-05</span> Registrar la exportacion en la bitacora de auditoria.
+<span class="k">T-06</span> Pruebas: rango invalido, usuario ajeno, limite de filas.</pre>
+
+    <h3>Fase 6 · Analizar</h3>
+<pre><span class="k">[MEDIO]</span> T-03 no especifica que hacer si una factura tiene moneda distinta.
+<span class="k">[BAJO]</span>  Falta definir el nombre del archivo descargado.</pre>
+    <p>Ningún crítico: la autorización por usuario (artículo 3) ya está cubierta en T-02. Resolvemos los dos puntos menores ajustando la spec —añadimos columna Moneda y el patrón de nombre <code>facturas_AAAA-MM-DD.xlsx</code>— y seguimos.</p>
+
+    <h3>Fase 7 · Implementar</h3>
+    <p>Con todo verificado, <code>/speckit.implement</code> ejecuta las tareas en orden. El agente escribe el endpoint, la consulta parametrizada, el generador de Excel, el manejo del caso vacío, el registro de auditoría y las pruebas. Tú revisas el resultado —porque la revisión sigue siendo tuya— y confirmas que cumple cada criterio de aceptación.</p>
+
+    <div class="caja castor">
+      <span class="et">🦫 El castor termina la presa</span>
+      Fíjate en lo que <em>no</em> pasó: el agente nunca tuvo que adivinar la zona horaria, ni si incluir anuladas, ni qué hacer sin resultados. Todo estaba en la spec. El código no fue una sorpresa: fue la consecuencia previsible de un buen plano. Eso es construir como un castor.
+    </div>
+
+    <p>Y cuando dentro de tres meses el organismo tributario exija una columna nueva, no buscarás en el código dónde tocar. Editarás la spec, añadirás la columna, regenerarás. La presa se adapta al río sin demolerse.</p>
+  </div>
+</section>
+
+<!-- ================= GLOSARIO ================= -->
+<section class="cap" id="glosario">
+  <div class="pagina">
+    <p class="eyebrow">Apéndice</p>
+    <h2 class="titulo-cap">Diccionario en lenguaje claro</h2>
+    <p class="lede">Cada término técnico del libro, explicado como se lo contarías a alguien que empieza. Sin jerga que necesite más jerga.</p>
+
+    <dl>
+      <div class="glos"><dt>Spec-Driven Development (SDD) <span class="term-en">desarrollo guiado por especificaciones</span></dt>
+      <dd>Forma de programar en la que primero escribes un documento detallado de qué debe hacer el sistema (la especificación) y luego el código se deriva de él. El documento manda; el código obedece.</dd></div>
+
+      <div class="glos"><dt>Especificación (o spec)</dt>
+      <dd>Documento estructurado que describe qué debe hacer una funcionalidad: sus resultados, sus límites, sus reglas y cómo saber que está terminada. En SDD es la pieza central, no un papel que nadie lee.</dd></div>
+
+      <div class="glos"><dt>Vibe coding <span class="term-en">programar "a la intuición"</span></dt>
+      <dd>Pedirle cosas a una IA con instrucciones sueltas en lenguaje natural, sin plan previo. Genial para prototipos rápidos; arriesgado para sistemas reales que hay que mantener.</dd></div>
+
+      <div class="glos"><dt>Agente de codificación</dt>
+      <dd>Programa que usa una IA para programar de forma semiautónoma: lee archivos, escribe código, ejecuta comandos y se corrige solo, repitiendo el ciclo hasta lograr el objetivo. Ejemplos: Claude Code, Cursor, los agentes de Copilot.</dd></div>
+
+      <div class="glos"><dt>LLM <span class="term-en">large language model · modelo de lenguaje grande</span></dt>
+      <dd>El "cerebro" de IA que entiende y genera texto (y código). Es lo que hay dentro de un agente. Predice qué viene a continuación a partir de todo lo que ha leído.</dd></div>
+
+      <div class="glos"><dt>Alucinación</dt>
+      <dd>Cuando la IA inventa algo que suena plausible pero es falso: una función que no existe, un dato incorrecto. No miente a propósito; simplemente rellena un hueco con lo que le pareció probable.</dd></div>
+
+      <div class="glos"><dt>Drift <span class="term-en">deriva</span></dt>
+      <dd>El alejamiento gradual entre lo que querías y lo que el código realmente hace, que se acumula cuando das instrucciones sueltas sin un plan firme. Cada interpretación nueva lo aleja un poco más de tu intención.</dd></div>
+
+      <div class="glos"><dt>Fuente de verdad <span class="term-en">source of truth</span></dt>
+      <dd>El documento o artefacto que tiene la última palabra cuando hay una contradicción. En el desarrollo tradicional es el código; en SDD es la especificación.</dd></div>
+
+      <div class="glos"><dt>Contrato ejecutable</dt>
+      <dd>Una especificación que no solo describe el sistema, sino que un agente puede leer y convertir en código. "Ejecutable" porque la máquina actúa a partir de ella, no solo la archiva.</dd></div>
+
+      <div class="glos"><dt>TDD <span class="term-en">test-driven development · desarrollo guiado por pruebas</span></dt>
+      <dd>Metodología donde escribes la prueba antes que el código, función por función. SDD trabaja a un nivel más alto (el sistema completo); ambos se complementan.</dd></div>
+
+      <div class="glos"><dt>Bucle agéntico</dt>
+      <dd>El ciclo de cuatro pasos que repite un agente: percibir (leer), planificar (decidir), actuar (escribir/ejecutar) y verificar (comprobar). La especificación es la brújula que orienta ese ciclo.</dd></div>
+
+      <div class="glos"><dt>Contexto</dt>
+      <dd>Toda la información que el agente tiene presente al trabajar: la spec, las convenciones del proyecto, la arquitectura y lo aprendido en sesiones previas. La spec es una parte del contexto, no todo.</dd></div>
+
+      <div class="glos"><dt>Constitución</dt>
+      <dd>Documento con los principios no negociables del proyecto: reglas que toda funcionalidad debe cumplir siempre (seguridad, arquitectura, estilo). Se escribe una vez para todo el proyecto.</dd></div>
+
+      <div class="glos"><dt>Plan de implementación</dt>
+      <dd>El documento que traduce el "qué" de la spec en un "cómo" técnico: decisiones de arquitectura, modelos de datos, contratos de interfaz. Se genera tras especificar.</dd></div>
+
+      <div class="glos"><dt>Tarea atómica</dt>
+      <dd>Una unidad de trabajo lo bastante pequeña como para completarse y verificarse de una sola vez. Dividir en tareas atómicas reduce los errores, igual en personas que en agentes.</dd></div>
+
+      <div class="glos"><dt>Severidad <span class="term-en">crítico · alto · medio · bajo</span></dt>
+      <dd>Escala con la que la fase de análisis ordena los problemas detectados. Los críticos —violaciones de la constitución o requisitos sin cubrir— deben resolverse antes de escribir código.</dd></div>
+
+      <div class="glos"><dt>Criterios de aceptación</dt>
+      <dd>La lista de condiciones que deben cumplirse para considerar terminada una funcionalidad. Es el sexto elemento de una spec y el que más se olvida; sin él, nadie sabe cuándo "está listo".</dd></div>
+
+      <div class="glos"><dt>Spec-first / spec-anchored / spec-as-source</dt>
+      <dd>Los tres niveles de rigor según cuánta autoridad tiene la spec frente al código: dirige solo el arranque (first), conviven sincronizados (anchored), o es el único artefacto que editas y el código es desechable (as-source).</dd></div>
+
+      <div class="glos"><dt>GitHub Spec Kit</dt>
+      <dd>Conjunto de herramientas de código abierto para SDD. Sus comandos son plantillas de texto que tu agente interpreta. Compatible con muchas plataformas de agentes.</dd></div>
+
+      <div class="glos"><dt>AWS Kiro</dt>
+      <dd>Entorno de desarrollo (IDE) de Amazon construido enteramente alrededor del flujo spec-driven, con las fases incorporadas de fábrica.</dd></div>
+
+      <div class="glos"><dt>Claude Code · Skills</dt>
+      <dd>Claude Code es el agente de codificación de Anthropic. Las Skills son carpetas con instrucciones que le enseñan a hacer bien una tarea repetible y se reutilizan entre proyectos.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ================= CIERRE ================= -->
+<div class="fin">
+  <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="30" cy="30" r="28" fill="none" stroke="#0E6B66" stroke-width="2"/>
+    <text x="30" y="40" text-anchor="middle" font-size="26">🦫</text>
+  </svg>
+  <p style="font-family:var(--display);font-weight:600;color:var(--teal-osc);font-size:1.1rem;margin:0;">Lee el río. Dibuja el plano. Luego construye.</p>
+  <p style="font-size:.9rem;max-width:440px;margin:.6em auto 0;">Fin de <em>El Castor y el Plano</em>. Ahora te toca a ti escribir la primera especificación de tu próximo proyecto.</p>
+</div>
+
+</main>
+</body>
+</html>

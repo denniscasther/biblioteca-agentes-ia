@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>La Federación de Cerebros</title>
+<style>
+:root{
+  --ink:#23231f;
+  --ink-soft:#4a4a42;
+  --accent:#5f7233;
+  --accent-dark:#3c4a1d;
+  --accent-soft:#e7ecd6;
+  --rule:#c6c8b4;
+  --paper:#ffffff;
+  --box:#f6f6ee;
+}
+@page{
+  size:170mm 240mm;
+  margin:20mm 18mm 20mm 18mm;
+  @bottom-center{
+    content: counter(page);
+    font-family:"Carlito","DejaVu Sans",sans-serif;
+    font-size:8.5pt; color:#7a7a70;
+  }
+  @top-center{
+    content: string(runhead);
+    font-family:"Carlito","DejaVu Sans",sans-serif;
+    font-size:7.8pt; letter-spacing:.09em; text-transform:uppercase; color:#9a9488;
+  }
+}
+@page :first{ @top-center{content:""} @bottom-center{content:""} margin:0 }
+@page cover{ margin:0; @top-center{content:""} @bottom-center{content:""} }
+@page front{ @top-center{content:""} @bottom-center{content:""} }
+
+html{font-family:"Bitstream Charter","DejaVu Serif",serif;}
+body{margin:0;color:var(--ink);font-size:10.4pt;line-height:1.52;}
+p{margin:0 0 3.2mm 0;text-align:justify;hyphens:auto;}
+h1,h2,h3,h4{font-family:"Carlito","DejaVu Sans",sans-serif;color:var(--ink);line-height:1.2;}
+strong{color:var(--accent-dark);}
+em{color:var(--ink-soft);}
+code{font-family:"DejaVu Sans Mono",monospace;font-size:8.6pt;background:#f2f3e9;padding:0 .6mm;border-radius:1px;}
+
+/* ---------- PORTADA ---------- */
+section.cover{
+  page:cover;
+  height:240mm;width:170mm;
+  position:relative;
+  page-break-after:always;
+  background:var(--paper);
+}
+.cover .spine{position:absolute;left:0;top:0;width:9mm;height:240mm;background:var(--accent);}
+.cover .band{position:absolute;left:9mm;top:0;width:161mm;height:7mm;background:var(--accent-dark);}
+.cover .pub{position:absolute;left:20mm;top:14mm;font-family:"Carlito",sans-serif;font-size:8pt;
+  letter-spacing:.28em;text-transform:uppercase;color:#8d8579;}
+.cover h1{position:absolute;left:20mm;top:24mm;width:135mm;font-size:29pt;font-weight:700;
+  letter-spacing:-.01em;color:var(--ink);margin:0;}
+.cover .sub{position:absolute;left:20mm;top:56mm;width:132mm;font-family:"Carlito",sans-serif;
+  font-size:11.5pt;color:var(--accent-dark);line-height:1.35;}
+.cover .art{position:absolute;left:26mm;top:76mm;width:120mm;}
+.cover .author{position:absolute;left:20mm;bottom:20mm;font-family:"Carlito",sans-serif;}
+.cover .author .by{font-size:8pt;letter-spacing:.22em;text-transform:uppercase;color:#8d8579;}
+.cover .author .name{font-size:16pt;color:var(--ink);margin-top:1.5mm;}
+.cover .num{position:absolute;right:16mm;bottom:20mm;font-family:"Carlito",sans-serif;
+  font-size:8pt;letter-spacing:.2em;text-transform:uppercase;color:#8d8579;text-align:right;}
+
+/* ---------- PÁGINAS DE CORTESÍA ---------- */
+section.front{page:front;page-break-after:always;}
+section.titlepage{page:front;page-break-after:always;padding-top:45mm;}
+.titlepage h1{font-size:24pt;margin:0 0 4mm 0;}
+.titlepage .sub{font-family:"Carlito",sans-serif;font-size:12pt;color:var(--accent-dark);}
+.titlepage .rule{height:2px;background:var(--accent);width:38mm;margin:7mm 0;}
+.titlepage .meta{font-family:"Carlito",sans-serif;font-size:9.5pt;color:var(--ink-soft);text-align:left;}
+section.frontnote{page:front;page-break-after:always;}
+.frontnote h2{font-size:15pt;margin:0 0 5mm 0;padding-bottom:2mm;border-bottom:2px solid var(--accent);}
+.frontnote p.lead{font-size:11.4pt;color:var(--accent-dark);}
+
+/* ---------- ÍNDICE ---------- */
+.toc h2{font-size:15pt;margin:0 0 6mm 0;padding-bottom:2mm;border-bottom:2px solid var(--accent);}
+.toc .part{font-family:"Carlito",sans-serif;font-size:9pt;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin:6mm 0 2.5mm 0;}
+.toc ul{list-style:none;margin:0;padding:0;}
+.toc li{font-family:"Carlito",sans-serif;font-size:10pt;margin:0 0 1.9mm 0;color:var(--ink);}
+.toc li span.n{display:inline-block;width:8mm;color:var(--accent);font-weight:700;}
+.toc li .subs{display:block;margin:.8mm 0 0 8mm;font-size:8.6pt;color:#77736a;line-height:1.35;}
+
+/* ---------- ESTRUCTURA DE CAPÍTULOS ---------- */
+section.partpage{page-break-before:always;page-break-after:always;padding-top:80mm;text-align:center;}
+.partpage .kicker{font-family:"Carlito",sans-serif;font-size:9pt;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);}
+.partpage h2{font-size:22pt;margin:4mm 0 0 0;}
+.partpage .line{height:2px;width:30mm;background:var(--accent);margin:6mm auto;}
+.partpage p{text-align:center;font-size:10.5pt;color:var(--ink-soft);max-width:100mm;margin:0 auto;}
+
+section.chapter{page-break-before:always;}
+.chapter .chapnum{font-family:"Carlito",sans-serif;font-size:9pt;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);}
+.chapter h2{font-size:19pt;margin:2mm 0 4mm 0;string-set:runhead content();}
+.chapter .epi{border-left:3px solid var(--accent-soft);padding-left:5mm;margin:0 0 6mm 0;
+  font-style:italic;color:var(--ink-soft);font-size:10pt;}
+.chapter h3{font-size:12pt;margin:7mm 0 2.5mm 0;color:var(--accent-dark);}
+.chapter h4{font-size:10.2pt;margin:5mm 0 1.5mm 0;color:var(--ink);}
+
+/* ---------- CAJAS ---------- */
+.box{border:1px solid var(--rule);background:var(--box);padding:4mm 5mm;margin:5mm 0;
+  page-break-inside:avoid;border-radius:1.5mm;}
+.box .lab{display:block;font-family:"Carlito",sans-serif;font-size:7.6pt;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:2mm;font-weight:700;}
+.box p:last-child{margin-bottom:0;}
+.box.def{border-left:4px solid var(--accent);}
+.box.ana{border-left:4px solid #6b8f6b;background:#f2f6f0;}
+.box.ana .lab{color:#3f6b3f;}
+.box.warn{border-left:4px solid #b0512f;background:#fbf1ec;}
+.box.warn .lab{color:#8f3d22;}
+.box.case{border-left:4px solid #3f6480;background:#eef3f7;}
+.box.case .lab{color:#2f4f66;}
+.box.recall{border:1px dashed var(--accent);background:#fdfef8;}
+
+/* ---------- FIGURAS ---------- */
+figure{margin:6mm 0;page-break-inside:avoid;text-align:center;}
+figure svg{width:100%;height:auto;}
+figcaption{font-family:"Carlito",sans-serif;font-size:8.2pt;color:#77736a;margin-top:2mm;text-align:center;}
+figcaption b{color:var(--accent);}
+
+/* ---------- TABLAS ---------- */
+table{width:100%;border-collapse:collapse;margin:5mm 0;font-family:"Carlito",sans-serif;
+  font-size:8.8pt;page-break-inside:avoid;}
+th{background:var(--accent-dark);color:#fff;text-align:left;padding:2mm 2.5mm;font-weight:600;}
+td{border-bottom:1px solid var(--rule);padding:2mm 2.5mm;vertical-align:top;}
+tr:nth-child(even) td{background:#f9f9f2;}
+
+/* ---------- CÓDIGO ---------- */
+pre{background:#f4f5ec;border:1px solid var(--rule);border-left:3px solid var(--accent);
+  padding:3.5mm 4mm;font-family:"DejaVu Sans Mono",monospace;font-size:8pt;line-height:1.42;
+  overflow-wrap:break-word;white-space:pre-wrap;page-break-inside:avoid;margin:4mm 0;color:#33322c;}
+pre .c{color:#7d8a72;}
+pre .k{color:#5f7233;font-weight:700;}
+
+ul.plain{margin:0 0 3.5mm 0;padding-left:5mm;}
+ul.plain li{margin-bottom:1.6mm;}
+ol{padding-left:6mm;} ol li{margin-bottom:1.6mm;}
+dl.gloss dt{font-family:"Carlito",sans-serif;font-weight:700;color:var(--accent-dark);
+  font-size:9.6pt;margin-top:3.5mm;}
+dl.gloss dd{margin:.8mm 0 0 0;font-size:9.6pt;color:var(--ink-soft);}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- =================== PORTADA =================== -->
+<section class="cover">
+  <div class="spine"></div>
+  <div class="band"></div>
+  <div class="pub">Biblioteca de Agentes de IA &middot; Volumen IX</div>
+
+  <h1>La Federación<br>de Cerebros</h1>
+  <div class="sub">Cuando cada área tiene su segundo cerebro:<br>permisos, semántica compartida y reportes agénticos</div>
+
+  <div class="art">
+  <svg viewBox="0 0 200 178" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#23231f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <!-- suelo -->
+      <path d="M34 172 C54 163 74 158 94 157" stroke-width="1"/>
+      <path d="M114 158 C128 159 140 162 150 166" stroke-width="1" stroke-dasharray="7 5"/>
+      <path d="M46 168 L40 171 M62 163 L56 166" stroke-width="0.85"/>
+
+      <!-- cola: nace en la base de la cadera y barre hacia la derecha -->
+      <path d="M117 146 C135 146 151 153 161 168" stroke-width="1.7"/>
+      <path d="M112 157 C129 158 143 163 151 170" stroke-width="1.7"/>
+      <path d="M156 164 C163 165 166 169 160 170 C156 170 154 168 154 166 Z" fill="#23231f" stroke="none"/>
+
+      <!-- torso: hombros estrechos, caderas anchas -->
+      <path d="M93 68 C85 80 80 98 80 118 C80 134 85 148 93 157"/>
+      <path d="M107 68 C115 80 120 98 120 118 C120 134 115 148 107 157"/>
+      <!-- patas traseras y pies -->
+      <path d="M93 157 C86 161 87 167 96 167 L110 167 C118 167 119 161 112 157"/>
+      <path d="M99 167 L99 161 M104 167 L104 161" stroke-width="0.9"/>
+
+
+      <!-- franjas del lomo -->
+      <path d="M85 104 C90 102 96 102 99 103" stroke-width="1"/>
+      <path d="M84 116 C89 114 96 114 99 115" stroke-width="1"/>
+      <path d="M85 128 C90 126 96 126 99 127" stroke-width="1"/>
+      <path d="M115 104 C110 102 104 102 101 103" stroke-width="1"/>
+      <path d="M116 116 C111 114 104 114 101 115" stroke-width="1"/>
+      <path d="M115 128 C110 126 104 126 101 127" stroke-width="1"/>
+
+      <!-- patas delanteras: cortas, colgando juntas -->
+      <path d="M92 78 C87 86 87 95 92 101"/>
+      <path d="M108 78 C113 86 113 95 108 101"/>
+      <path d="M90 101 L90 105 M93 102 L93 106 M107 102 L107 106 M110 101 L110 105" stroke-width="0.85"/>
+
+      <!-- cabeza -->
+      <path d="M87 38 C87 24 113 24 113 38 C113 48 109 57 104 62 C101 65 99 65 96 62 C91 57 87 48 87 38 Z"/>
+      <!-- orejas -->
+      <path d="M87 35 C81 30 77 35 81 41 C83 43 86 43 88 40"/>
+      <path d="M113 35 C119 30 123 35 119 41 C117 43 114 43 112 40"/>
+      <!-- antifaces -->
+      <ellipse cx="94" cy="40" rx="4.6" ry="5.6" fill="#23231f" stroke="none"/>
+      <ellipse cx="106" cy="40" rx="4.6" ry="5.6" fill="#23231f" stroke="none"/>
+      <circle cx="95.4" cy="38" r="1.2" fill="#fff" stroke="none"/>
+      <circle cx="107.4" cy="38" r="1.2" fill="#fff" stroke="none"/>
+      <!-- hocico -->
+      <path d="M96 53 C98 51 102 51 104 53"/>
+      <ellipse cx="100" cy="57" rx="2.4" ry="1.9" fill="#23231f" stroke="none"/>
+      <path d="M100 59 L100 62 M100 62 C97 64 95 63 94 61 M100 62 C103 64 105 63 106 61" stroke-width="0.95"/>
+      <path d="M96 57 L87 59 M96 59 L89 63 M104 57 L113 59 M104 59 L111 63" stroke-width="0.85"/>
+
+      <!-- mirada de centinela -->
+      <path d="M136 32 L174 32" stroke-width="1" stroke-dasharray="4 4"/>
+      <path d="M168 28 L174 32 L168 36" stroke-width="1"/>
+    </g>
+  </svg>
+  </div>
+
+  <div class="author">
+    <div class="by">Escrito e ilustrado por</div>
+    <div class="name">Claude</div>
+  </div>
+  <div class="num">Edición de autor<br>Primera edición</div>
+</section>
+
+<!-- =================== PORTADILLA =================== -->
+<section class="titlepage">
+  <h1>La Federación de Cerebros</h1>
+  <div class="sub">Cuando cada área tiene su segundo cerebro: permisos, semántica compartida y reportes agénticos</div>
+  <div class="rule"></div>
+  <p class="meta">De un cerebro a seis: autonomía por área, capa pública, riesgo por agregación,<br>
+  diccionario semántico, cerebro gerencial y agentes que producen<br>
+  reportes recurrentes sin inventarse los números.</p>
+  <p class="meta" style="margin-top:16mm;">Escrito e ilustrado por Claude &middot; Anthropic<br>
+  Biblioteca de Agentes de IA &middot; Volumen IX<br>
+  Continuación de <em>El Segundo Cerebro Corporativo</em><br>
+  Edición de autor &middot; Primera edición</p>
+</section>
+
+<!-- =================== SOBRE LA PORTADA =================== -->
+<section class="frontnote">
+  <h2>Sobre la portada</h2>
+  <p>El animal de esta portada es una <strong>suricata</strong>, y la elegí por una razón muy específica:
+  es el mejor ejemplo natural de lo que este libro intenta diseñar.</p>
+  <p>Una colonia de suricatas opera con un sistema de vigilancia distribuido. Mientras el grupo forrajea,
+  uno o varios individuos se yerguen sobre un montículo y vigilan un sector del horizonte. Ninguno ve todo
+  el terreno —físicamente no puede—, pero el grupo entero está cubierto porque cada centinela cubre lo suyo
+  y comparte lo que ve mediante llamadas distintas según el tipo de amenaza y su cercanía. Un halcón no
+  suena igual que un chacal. La información viaja específica y contextualizada, no como un pánico
+  genérico.</p>
+  <p>Eso es exactamente una federación de cerebros bien hecha. Contabilidad no necesita ver el terreno de
+  Legal, ni Logística el de Recursos Humanos. Cada área vigila su sector con una profundidad que ninguna
+  otra podría igualar, y comparte hacia afuera una señal acotada y útil. El cerebro gerencial no es un
+  centinela más alto que ve todo: es quien escucha todas las llamadas y entiende que dos alertas
+  simultáneas de sectores distintos pueden significar algo que ningún centinela por separado podía saber.</p>
+  <p>Hay un detalle que redondea la metáfora. El centinela no forrajea mientras vigila: pierde comida para
+  que el grupo gane seguridad. Federar tiene ese mismo costo. Cada área invierte esfuerzo en mantener una
+  capa pública que ella misma casi no usa, para que las demás puedan confiar. Un libro sobre federación es,
+  en el fondo, un libro sobre quién paga ese costo y qué recibe a cambio.</p>
+</section>
+
+<!-- =================== PREFACIO =================== -->
+<section class="frontnote">
+  <h2>Prefacio</h2>
+  <p class="lead">El volumen VIII resolvía un problema de navegación. Este resuelve uno completamente
+  distinto —de gobierno— y por eso es un libro aparte y no tres capítulos añadidos al anterior.</p>
+  <p>Cuando un área monta su segundo cerebro y funciona, la reacción es inevitable y sana: <em>hagamos lo
+  mismo en las demás</em>. Contabilidad, Recursos Humanos, Operaciones, Logística, Legal. Y desde ahí, dos
+  ideas más: que los cerebros se consulten entre sí, y que exista un cerebro gerencial capaz de cruzar
+  información de todos para producir los reportes que hoy alguien arma a mano cada viernes.</p>
+  <p>Todo eso es factible. Ese es el veredicto y conviene decirlo de entrada, porque lo que sigue tiene
+  bastantes advertencias y no quiero que se lean como un «no». Se lee como un «sí, y estos son los cuatro
+  sitios donde esto se rompe».</p>
+  <p>El primero es de arquitectura: hay dos formas de comunicar cerebros y la más elegante es la peor.
+  El segundo es de seguridad, y es el que menos gente ve venir: el riesgo no aparece al exponer un dato,
+  aparece al <em>cruzar</em> dos que individualmente eran inocuos. El tercero es semántico —«proveedor
+  activo» no significa lo mismo en Logística que en Contabilidad, y un reporte que sume ambos está mal sin
+  que ningún número parezca raro—. El cuarto es de sostenimiento: seis cerebros multiplican por seis el
+  problema de mantenimiento del volumen anterior, y cinco de ellos no están bajo tu control.</p>
+  <p>La <strong>Parte I</strong> establece por qué federar no es replicar y cómo se mapea la organización.
+  La <strong>Parte II</strong> es el corazón técnico: los dos modelos de comunicación, la capa pública, los
+  permisos por agregación y el tratamiento de datos personales. La <strong>Parte III</strong> diseña el
+  cerebro gerencial, que —y esto sorprende a todos— no debe contener información. La <strong>Parte IV</strong>
+  aterriza el caso que motivó todo: agentes que cada semana descargan, cruzan, limpian y formatean, con una
+  regla que atraviesa el libro entero: <em>el cerebro especifica, el agente ejecuta, el código calcula y el
+  modelo interpreta</em>.</p>
+  <div class="box recall"><span class="lab">Requisito previo</span>
+  <p>Este libro asume que ya tienes al menos un cerebro funcionando según el volumen VIII: índice maestro,
+  fichas con front-matter, carga progresiva y dueños asignados. Si aún no lo tienes, federar es prematuro
+  —estarías coordinando algo que todavía no existe—. Los capítulos 1 y 14 te dirán si estás listo.</p></div>
+</section>
+
+<!-- =================== ÍNDICE =================== -->
+<section class="frontnote toc">
+  <h2>Índice</h2>
+
+  <div class="part">Parte I &middot; De uno a muchos</div>
+  <ul>
+    <li><span class="n">1</span>Por qué federar no es replicar
+      <span class="subs">El salto de navegación a gobierno · Las cuatro cosas que cambian · Señales de que aún no estás listo</span></li>
+    <li><span class="n">2</span>Autonomía por área: reglas de negocio y subáreas
+      <span class="subs">Lo que cada cerebro decide solo · Lo que se acuerda entre todos · Subáreas sin multiplicar niveles</span></li>
+    <li><span class="n">3</span>Mapa de la organización
+      <span class="subs">Qué áreas, qué preguntas, qué cruces · Matriz de flujos · Orden de incorporación</span></li>
+  </ul>
+
+  <div class="part">Parte II &middot; Comunicación y permisos</div>
+  <ul>
+    <li><span class="n">4</span>Federación por índice frente a agente-a-agente
+      <span class="subs">Los dos modelos · Por qué el elegante es el peligroso · Identidad delegada · Cuándo sí conviene A2A</span></li>
+    <li><span class="n">5</span>La capa pública de cada cerebro
+      <span class="subs">Anatomía del <code>_publico.md</code> · Qué se publica y qué no · Contratos entre áreas</span></li>
+    <li><span class="n">6</span>Permisos por agregación
+      <span class="subs">El riesgo que nace del cruce · Matriz de cruces permitidos · Reidentificación · Controles prácticos</span></li>
+    <li><span class="n">7</span>Datos personales y regímenes especiales
+      <span class="subs">RRHH y Legal no son «áreas más» · Finalidad declarada · Minimización · Qué nunca federar</span></li>
+  </ul>
+
+  <div class="part">Parte III &middot; El cerebro gerencial</div>
+  <ul>
+    <li><span class="n">8</span>Índice de índices, no superconjunto
+      <span class="subs">Por qué no debe contener datos · Sus tres contenidos legítimos · Enrutamiento transversal</span></li>
+    <li><span class="n">9</span>El diccionario semántico compartido
+      <span class="subs">Divergencia de términos · Anatomía de una definición canónica · Quién arbitra · Peras y manzanas</span></li>
+    <li><span class="n">10</span>Preguntas transversales y comparativas
+      <span class="subs">Tipología · Descomposición en subconsultas · Trazabilidad multi-área</span></li>
+  </ul>
+
+  <div class="part">Parte IV &middot; Reportes agénticos</div>
+  <ul>
+    <li><span class="n">11</span>La especificación de reporte como contrato
+      <span class="subs">Anatomía completa · Fuentes, llaves, reglas, formato · Versionado</span></li>
+    <li><span class="n">12</span>Qué es código y qué es modelo
+      <span class="subs">La línea divisoria · Determinismo y auditoría · La última milla narrativa</span></li>
+    <li><span class="n">13</span>Precondiciones y fallo honesto
+      <span class="subs">Archivos que se van completando · Semáforo de calidad · Emitir marcado, nunca limpio</span></li>
+    <li><span class="n">14</span>Gobierno multi-área y hoja de ruta
+      <span class="subs">Comité mínimo · Dueños y árbitro semántico · Plan de 12 meses · Cómo se ve el éxito</span></li>
+  </ul>
+
+  <div class="part">Material final</div>
+  <ul>
+    <li><span class="n">A</span>Plantillas de federación</li>
+    <li><span class="n">B</span>Glosario de terminología</li>
+  </ul>
+</section>
+<!-- =================== PARTE I =================== -->
+<section class="partpage">
+  <div class="kicker">Parte I</div>
+  <h2>De uno a muchos</h2>
+  <div class="line"></div>
+  <p>Multiplicar cerebros no es multiplicar carpetas. Tres capítulos para entender qué cambia de
+  naturaleza, qué decide cada área por su cuenta y en qué orden incorporarlas.</p>
+</section>
+
+<!-- ============ CAPÍTULO 1 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 1</div>
+  <h2>Por qué federar no es replicar</h2>
+  <p class="epi">Seis cerebros no son un cerebro seis veces. Son un problema distinto con el mismo
+  nombre.</p>
+
+  <p>La intuición natural, después de que el primer cerebro funcione, es que lo demás es copiar y pegar:
+  misma estructura, misma plantilla, otro contenido. Y en la superficie es cierto —cada área monta lo suyo
+  con el volumen VIII en la mano—. Lo que no es cierto es que el resultado sea la suma. En cuanto los
+  cerebros se pueden consultar entre sí, aparecen cuatro problemas que en un cerebro aislado sencillamente
+  no existían.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <text x="160" y="24" text-anchor="middle" font-size="12" font-weight="700" fill="#3c4a1d">Un cerebro: problema de navegación</text>
+      <circle cx="160" cy="130" r="52" fill="#e7ecd6" stroke="#5f7233" stroke-width="1.8"/>
+      <text x="160" y="128" text-anchor="middle" font-size="12" font-weight="700" fill="#3c4a1d">TI</text>
+      <text x="160" y="145" text-anchor="middle" font-size="9.5" fill="#4a4a42">4 dominios</text>
+      <g font-size="9.5" fill="#4a4a42">
+        <text x="160" y="205" text-anchor="middle">¿encuentra el agente el documento?</text>
+        <text x="160" y="222" text-anchor="middle">¿está vigente?</text>
+        <text x="160" y="239" text-anchor="middle">¿quién lo mantiene?</text>
+      </g>
+
+      <path d="M310 40 L310 265" stroke="#c6c8b4" stroke-width="1"/>
+
+      <text x="480" y="24" text-anchor="middle" font-size="12" font-weight="700" fill="#3c4a1d">Seis cerebros: problema de gobierno</text>
+      <g>
+        <circle cx="410" cy="80" r="26" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.4"/>
+        <text x="410" y="84" text-anchor="middle" font-size="9.5" fill="#3c4a1d">TI</text>
+        <circle cx="480" cy="62" r="26" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.4"/>
+        <text x="480" y="66" text-anchor="middle" font-size="9" fill="#3c4a1d">Conta</text>
+        <circle cx="548" cy="88" r="26" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.4"/>
+        <text x="548" y="92" text-anchor="middle" font-size="9" fill="#3c4a1d">RRHH</text>
+        <circle cx="404" cy="150" r="26" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.4"/>
+        <text x="404" y="154" text-anchor="middle" font-size="8.5" fill="#3c4a1d">Oper.</text>
+        <circle cx="480" cy="168" r="26" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.4"/>
+        <text x="480" y="172" text-anchor="middle" font-size="8.5" fill="#3c4a1d">Logíst.</text>
+        <circle cx="552" cy="152" r="26" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.4"/>
+        <text x="552" y="156" text-anchor="middle" font-size="9" fill="#3c4a1d">Legal</text>
+      </g>
+      <g stroke="#8ba055" stroke-width="1" opacity="0.85">
+        <path d="M436 80 L454 62"/><path d="M506 62 L522 88"/><path d="M410 106 L404 124"/>
+        <path d="M430 150 L454 168"/><path d="M506 168 L526 152"/><path d="M480 88 L480 142"/>
+        <path d="M436 92 L456 158"/><path d="M524 100 L500 158"/>
+      </g>
+      <g font-size="9.5" fill="#8f3d22">
+        <text x="480" y="212" text-anchor="middle">¿quién puede ver qué?</text>
+        <text x="480" y="228" text-anchor="middle">¿qué significa el mismo término en cada área?</text>
+        <text x="480" y="244" text-anchor="middle">¿qué revela cruzar dos datos inocuos?</text>
+        <text x="480" y="260" text-anchor="middle">¿quién responde por seis cerebros?</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 1.1</b> · El salto. A la izquierda las preguntas son sobre contenido; a la derecha,
+  sobre relaciones entre áreas. Ninguna herramienta resuelve las de la derecha por sí sola.</figcaption>
+  </figure>
+
+  <h3>Las cuatro cosas que cambian</h3>
+
+  <p><strong>1 · El permiso deja de ser binario.</strong> En un cerebro, o tienes acceso a la carpeta o no.
+  En una federación aparece un estado intermedio que hay que diseñar: saber que algo <em>existe</em>, quién
+  lo custodia y cómo pedirlo, sin poder verlo. Ese estado intermedio es lo que hace útil la federación —y
+  también lo que la vuelve delicada, porque un índice que enumera lo que no puedes ver ya te dijo algo.</p>
+
+  <p><strong>2 · Aparece el riesgo por agregación.</strong> Dos datos correctamente clasificados como
+  internos pueden ser confidenciales al juntarse. Es el capítulo 6 completo y es el problema que más
+  proyectos de este tipo detiene en el comité de seguridad, con razón.</p>
+
+  <p><strong>3 · El vocabulario deja de ser local.</strong> Mientras el cerebro es de un área, sus términos
+  son los de esa área y nadie se confunde. En cuanto un reporte cruza dos áreas, «proveedor activo»,
+  «proyecto cerrado» o «personal vigente» tienen que significar una sola cosa, y casi nunca la
+  significan.</p>
+
+  <p><strong>4 · El mantenimiento se vuelve ajeno.</strong> Esta es la más incómoda. En el volumen VIII el
+  riesgo era que <em>tú</em> no mantuvieras tus fichas. Aquí el riesgo es que las mantenga bien todo el
+  mundo menos un área, y que esa área contamine las respuestas de las cinco restantes sin que puedas
+  hacer nada al respecto salvo pedirlo por correo.</p>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Federación de cerebros:</strong> arquitectura en la que cada área mantiene un segundo cerebro
+  autónomo sobre su propio repositorio, publica hacia las demás una capa acotada de conocimiento, y acepta
+  un conjunto mínimo de acuerdos comunes —vocabulario, clasificación y contratos de publicación— sin ceder
+  el control de su contenido.</p></div>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Es la diferencia entre abrir una segunda sucursal y fundar una franquicia. La segunda sucursal la
+  gestionas tú con las mismas reglas. En una franquicia, cada local decide muchas cosas por su cuenta y lo
+  único que sostiene la marca es un puñado de acuerdos innegociables. Federar cerebros es franquiciar: la
+  pregunta importante no es «¿cómo hacemos que todos hagan lo mismo?» sino «¿cuál es el mínimo que
+  <em>tienen</em> que hacer igual?».</p></div>
+
+  <h3>Señales de que aún no estás listo</h3>
+  <p>Federar antes de tiempo produce seis cerebros mediocres en lugar de uno bueno. Estas cinco señales
+  significan esperar:</p>
+  <ul class="plain">
+    <li>El cerebro piloto tiene menos de seis meses de operación real, o su precisión medida aún se mueve
+    mes a mes.</li>
+    <li>Alguna área candidata no tiene una persona con nombre dispuesta a ser dueña. <strong>Área sin dueño,
+    área sin cerebro.</strong> No hay excepción a esta regla en todo el libro.</li>
+    <li>No existe todavía un patrocinador por encima de las áreas. La federación requiere decisiones que
+    ningún jefe de área puede tomar solo, empezando por el vocabulario común.</li>
+    <li>El área piloto todavía responde consultas «a mano» en paralelo porque no confía en su propio
+    cerebro.</li>
+    <li>Nadie ha decidido aún qué se hace con datos personales. Si esto no está resuelto, RRHH y Legal no
+    pueden entrar, y sin decidirlo explícitamente entrarán por accidente.</li>
+  </ul>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Federar cambia el problema de navegación a gobierno. Cuatro cosas nuevas: permiso con estado
+  intermedio, riesgo por agregación, vocabulario compartido y mantenimiento ajeno. Es franquiciar, no
+  abrir sucursales: define el mínimo innegociable y deja el resto a cada área. Y no empieces si alguna
+  candidata no tiene dueño con nombre.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 2 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 2</div>
+  <h2>Autonomía por área: reglas de negocio y subáreas</h2>
+  <p class="epi">Cuanto menos impongas, más probable es que sobreviva. Pero lo poco que impongas, imponlo
+  de verdad.</p>
+
+  <p>La tentación centralizadora es fuerte y siempre viene con buenos argumentos: si todos usan la misma
+  estructura de carpetas, los mismos campos y las mismas plantillas, todo será consistente. En la práctica
+  produce cerebros que nadie siente suyos, que se llenan de campos vacíos porque no aplican, y que se
+  abandonan en el mes cuatro. La estructura interna de un cerebro debe reflejar cómo trabaja esa área
+  realmente.</p>
+
+  <h3>La línea divisoria</h3>
+  <table>
+    <tr><th style="width:45%">Cada área decide sola</th><th>Se acuerda entre todas</th></tr>
+    <tr><td>Sus dominios y cómo se llaman</td><td>Los cuatro niveles de clasificación y qué significan</td></tr>
+    <tr><td>Sus subáreas y cómo se agrupan</td><td>Los seis campos obligatorios del front-matter</td></tr>
+    <tr><td>Los campos específicos de sus fichas</td><td>El nombre y formato del archivo de capa pública</td></tr>
+    <tr><td>Sus reglas de negocio y procedimientos</td><td>Los términos del diccionario compartido (cap. 9)</td></tr>
+    <tr><td>Su cadencia de revisión interna</td><td>El compromiso de revisión de <em>la capa pública</em></td></tr>
+    <tr><td>Con qué herramienta de IA trabaja su gente</td><td>La obligación de citar rutas en cada respuesta</td></tr>
+  </table>
+
+  <p>Seis acuerdos. Ese es el mínimo viable y conviene resistirse a ampliarlo. Cada acuerdo adicional
+  parece razonable de a uno y en conjunto convierten la federación en un proyecto de estandarización, que
+  es una categoría de proyecto con una tasa de fracaso considerablemente peor.</p>
+
+  <h3>Las reglas de negocio son el contenido más valioso</h3>
+  <p>En el volumen VIII, el conocimiento más valioso a capturar eran los alias y las excepciones —el mapa
+  mental del veterano—. En un área no técnica el equivalente son las <strong>reglas de negocio</strong>:
+  los criterios de decisión que la gente aplica sin pensarlos y que no están escritos en ninguna política.
+  Que una factura sobre cierto monto necesita dos firmas. Que un proveedor nuevo no se activa hasta que
+  Legal revisa. Que en cierre de mes no se procesan altas.</p>
+  <p>Estas reglas viven mal en documentos y bien en fichas. Y son, con diferencia, lo que más agradece
+  quien acaba de entrar al área.</p>
+
+  <pre>---
+codigo: RN-LOG-007
+tipo: regla-de-negocio
+area: logistica
+subarea: compras
+estado: vigente
+excepciones: si
+dueno: [jefe de compras]
+clasificacion: interno
+vigencia_revision: 2026-08-01
+---
+
+<span class="k"># Activación de proveedor nuevo (RN-LOG-007)</span>
+
+<span class="k">## Regla</span>
+Un proveedor no puede recibir orden de compra hasta tener ficha completa,
+validación tributaria vigente y revisión de Legal registrada.
+
+<span class="k">## Por qué existe</span>
+[Origen de la regla: auditoría 2023, hallazgo de tres órdenes a proveedores
+sin verificar. Esto importa: una regla sin origen se cuestiona cada año.]
+
+<span class="k">## Excepciones</span>
+- Compra de emergencia operativa: activación provisional por 15 días con
+  visto bueno de gerencia; regulariza [rol].
+
+<span class="k">## Quién decide en caso de duda</span>
+[rol] · Escalamiento: [rol]
+
+<span class="k">## Relacionado</span>
+[[CONTA-RN-012]] validación tributaria · [[LEGAL-RN-003]] revisión contractual</pre>
+
+  <p>Nótese el campo <code>excepciones</code> en el front-matter y la sección que las detalla. Una regla de
+  negocio documentada sin sus excepciones es peor que no documentarla: el agente responderá con la versión
+  rígida y el equipo aprenderá que el cerebro «no entiende cómo trabajamos aquí».</p>
+
+  <h3>Subáreas sin multiplicar niveles</h3>
+  <p>Áreas como Operaciones o Contabilidad tienen subáreas reales —tesorería, cuentas por pagar, costos— y
+  la reacción inmediata es crear un nivel más de carpetas. Recuerda la regla de los tres niveles del
+  volumen VIII: cada nivel extra multiplica los saltos del agente. La solución es tratar la subárea como un
+  <strong>campo</strong>, no como una carpeta.</p>
+
+  <div class="box case"><span class="lab">Caso · Cuatro subáreas, cero carpetas nuevas</span>
+  <p>Un área de contabilidad con cuatro subáreas resolvió esto añadiendo <code>subarea:</code> al
+  front-matter y una columna en el índice de dominio. El agente filtra por campo, que es más flexible que
+  una jerarquía: una ficha puede pertenecer a dos subáreas, cosa que una carpeta no permite. Y cuando la
+  organización se reestructuró al año siguiente, cambiar el valor de un campo en 40 fichas fue un script
+  de cinco líneas en lugar de una reorganización de carpetas con enlaces rotos.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Seis acuerdos comunes y nada más: clasificación, campos obligatorios, formato de capa pública,
+  diccionario compartido, revisión de la capa pública y citación de rutas. Todo lo demás lo decide cada
+  área. En áreas no técnicas, el contenido más valioso son las reglas de negocio con sus excepciones y su
+  origen. Las subáreas se modelan como campo, nunca como carpeta.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 3 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 3</div>
+  <h2>Mapa de la organización</h2>
+  <p class="epi">No federes las áreas que existen en el organigrama. Federa las que ya se piden
+  información entre sí.</p>
+
+  <p>El organigrama es una mala guía para decidir qué federar, porque describe responsabilidades, no
+  flujos. La guía correcta es el tráfico real de preguntas entre áreas: quién le pide qué a quién, con qué
+  frecuencia, y cuánto duele cuando la respuesta tarda. Eso se levanta en una sesión de dos horas y produce
+  una matriz que decide el orden de incorporación mejor que cualquier criterio de importancia.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f" font-size="9.5">
+      <text x="320" y="18" text-anchor="middle" font-size="11.5" font-weight="700" fill="#3c4a1d">
+        Matriz de flujos: quién pide información a quién</text>
+      <g font-size="9" fill="#4a4a42">
+        <text x="150" y="46" text-anchor="middle" font-weight="700">TI</text>
+        <text x="225" y="46" text-anchor="middle" font-weight="700">Conta</text>
+        <text x="300" y="46" text-anchor="middle" font-weight="700">RRHH</text>
+        <text x="375" y="46" text-anchor="middle" font-weight="700">Oper.</text>
+        <text x="450" y="46" text-anchor="middle" font-weight="700">Logíst.</text>
+        <text x="525" y="46" text-anchor="middle" font-weight="700">Legal</text>
+      </g>
+      <g font-size="9" fill="#4a4a42">
+        <text x="105" y="76" text-anchor="end" font-weight="700">TI</text>
+        <text x="105" y="116" text-anchor="end" font-weight="700">Contabilidad</text>
+        <text x="105" y="156" text-anchor="end" font-weight="700">RRHH</text>
+        <text x="105" y="196" text-anchor="end" font-weight="700">Operaciones</text>
+        <text x="105" y="236" text-anchor="end" font-weight="700">Logística</text>
+        <text x="105" y="276" text-anchor="end" font-weight="700">Legal</text>
+      </g>
+
+      <g stroke="#c6c8b4" stroke-width="0.8" fill="none">
+        <path d="M115 55 L560 55 M115 95 L560 95 M115 135 L560 135 M115 175 L560 175
+                 M115 215 L560 215 M115 255 L560 255 M115 295 L560 295"/>
+        <path d="M115 55 L115 295 M188 55 L188 295 M263 55 L263 295 M338 55 L338 295
+                 M413 55 L413 295 M488 55 L488 295 M560 55 L560 295"/>
+      </g>
+
+      <g>
+        <rect x="116" y="56" width="71" height="38" fill="#eeefe4"/>
+        <rect x="189" y="96" width="73" height="38" fill="#eeefe4"/>
+        <rect x="264" y="136" width="73" height="38" fill="#eeefe4"/>
+        <rect x="339" y="176" width="73" height="38" fill="#eeefe4"/>
+        <rect x="414" y="216" width="73" height="38" fill="#eeefe4"/>
+        <rect x="489" y="256" width="70" height="38" fill="#eeefe4"/>
+      </g>
+
+      <g font-size="15" text-anchor="middle" fill="#3c4a1d">
+        <text x="225" y="81">●</text><text x="450" y="81">●</text><text x="525" y="81">○</text>
+        <text x="150" y="121">●</text><text x="450" y="121">●</text><text x="525" y="121">○</text>
+        <text x="150" y="161">○</text><text x="225" y="161">●</text><text x="525" y="161">●</text>
+        <text x="150" y="201">●</text><text x="450" y="201">●</text><text x="300" y="201">○</text>
+        <text x="150" y="241">○</text><text x="225" y="241">●</text><text x="525" y="241">●</text>
+        <text x="225" y="281">○</text><text x="450" y="281">●</text><text x="300" y="281">●</text>
+      </g>
+
+      <g font-size="9.5" fill="#4a4a42">
+        <text x="140" y="318">● flujo frecuente y doloroso cuando falta</text>
+        <text x="400" y="318">○ flujo ocasional</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 3.1</b> · Matriz de flujos de una organización mediana. Los pares con doble punto
+  lleno —TI↔Contabilidad, Logística↔Legal— son los candidatos naturales a federarse primero.</figcaption>
+  </figure>
+
+  <h3>Cómo se levanta la matriz</h3>
+  <p>Misma técnica que el ejercicio de las diez preguntas del volumen VIII, ampliada: cada área anota las
+  diez consultas que <em>hace a otras áreas</em> con más frecuencia, y las diez que <em>recibe</em>. El
+  cruce revela tres cosas útiles de inmediato:</p>
+  <ul class="plain">
+    <li><strong>Los pares calientes:</strong> dos áreas que se consultan mutuamente todas las semanas. Ahí
+    la federación paga de inmediato.</li>
+    <li><strong>Los flujos asimétricos:</strong> un área que pregunta mucho y responde poco. Suele indicar
+    que la segunda tiene información que la primera necesita para operar, y es un candidato de capa pública
+    muy claro.</li>
+    <li><strong>Las preguntas que nadie puede responder:</strong> las que rebotan entre dos áreas porque
+    requieren cruzar. Estas son la lista inicial de reportes de la Parte IV.</li>
+  </ul>
+
+  <h3>Orden de incorporación</h3>
+  <p>Con la matriz en la mano, el orden casi se elige solo, pero hay tres criterios que conviene aplicar
+  por encima del volumen de tráfico:</p>
+  <table>
+    <tr><th style="width:22%">Criterio</th><th>Regla práctica</th></tr>
+    <tr><td><strong>Dueño disponible</strong></td><td>Decisivo. Un área con tráfico alto y sin dueño va
+    después de una con tráfico medio y dueño comprometido.</td></tr>
+    <tr><td><strong>Sensibilidad baja primero</strong></td><td>Logística y Operaciones antes que RRHH y
+    Legal. Aprende federación donde un error no es un incidente de datos personales.</td></tr>
+    <tr><td><strong>Documentación preexistente</strong></td><td>Un área que ya tiene procedimientos
+    escritos llega a resultados en semanas; una que documenta de cero, en meses.</td></tr>
+  </table>
+
+  <div class="box warn"><span class="lab">Error frecuente</span>
+  <p>Empezar por el área que más lo pide. La demanda entusiasta es buena señal de patrocinio y mala señal de
+  preparación: normalmente el área que más lo pide es la que peor documentada está, y por eso sufre. Dale la
+  razón, ponla tercera, y usa su entusiasmo para que empiece a documentar mientras espera.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Federa flujos, no organigramas. Levanta la matriz preguntando a cada área qué consulta y qué le
+  consultan; los pares calientes son los primeros candidatos y las preguntas que rebotan son tu lista
+  inicial de reportes. Ordena por dueño disponible, sensibilidad baja y documentación preexistente, en ese
+  orden de prioridad.</p></div>
+</section>
+<!-- =================== PARTE II =================== -->
+<section class="partpage">
+  <div class="kicker">Parte II</div>
+  <h2>Comunicación y permisos</h2>
+  <div class="line"></div>
+  <p>El corazón técnico del libro. Cómo se hablan los cerebros, qué publica cada uno, y el riesgo que
+  nadie ve venir: el que aparece al cruzar dos datos que por separado eran inocuos.</p>
+</section>
+
+<!-- ============ CAPÍTULO 4 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 4</div>
+  <h2>Federación por índice frente a agente-a-agente</h2>
+  <p class="epi">De los dos modelos posibles, el que suena mejor en una reunión es el que abre un agujero
+  en tu control de acceso.</p>
+
+  <p>Hay exactamente dos formas de que el conocimiento de un área llegue a otra. La diferencia entre ellas
+  no es de sofisticación técnica: es de <em>quién ejerce los permisos</em>. Y esa diferencia lo decide
+  todo.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="fa" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0 0 L7 3.2 L0 6.4 z" fill="#5f7233"/>
+      </marker>
+      <marker id="fr" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0 0 L7 3.2 L0 6.4 z" fill="#b0512f"/>
+      </marker>
+    </defs>
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <!-- MODELO A -->
+      <text x="20" y="20" font-size="11.5" font-weight="700" fill="#3f6b3f">MODELO A · Federación por índice</text>
+      <rect x="20" y="30" width="90" height="46" rx="4" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.5"/>
+      <text x="65" y="50" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Persona</text>
+      <text x="65" y="65" text-anchor="middle" font-size="8.5" fill="#4a4a42">de Logística</text>
+
+      <rect x="150" y="30" width="100" height="46" rx="4" fill="#e7ecd6" stroke="#5f7233" stroke-width="1.5"/>
+      <text x="200" y="50" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Cerebro</text>
+      <text x="200" y="65" text-anchor="middle" font-size="8.5" fill="#4a4a42">de Logística</text>
+
+      <rect x="290" y="30" width="110" height="46" rx="4" fill="#e7ecd6" stroke="#5f7233" stroke-width="1.5"/>
+      <text x="345" y="50" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">_publico.md</text>
+      <text x="345" y="65" text-anchor="middle" font-size="8.5" fill="#4a4a42">de Contabilidad</text>
+
+      <rect x="440" y="30" width="110" height="46" rx="4" fill="#fff" stroke="#5f7233" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="495" y="50" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Archivo destino</text>
+      <text x="495" y="65" text-anchor="middle" font-size="8.5" fill="#4a4a42">en Contabilidad</text>
+
+      <path d="M112 53 L146 53" stroke="#5f7233" stroke-width="1.5" marker-end="url(#fa)"/>
+      <path d="M252 53 L286 53" stroke="#5f7233" stroke-width="1.5" marker-end="url(#fa)"/>
+      <path d="M402 53 L436 53" stroke="#5f7233" stroke-width="1.5" marker-end="url(#fa)"/>
+
+      <rect x="440" y="88" width="180" height="40" rx="4" fill="#f2f6f0" stroke="#3f6b3f" stroke-width="1.4"/>
+      <text x="530" y="104" text-anchor="middle" font-size="9.5" font-weight="700" fill="#3f6b3f">Permiso evaluado aquí</text>
+      <text x="530" y="119" text-anchor="middle" font-size="9" fill="#3f6b3f">con la cuenta de la PERSONA</text>
+      <path d="M495 78 L495 86" stroke="#3f6b3f" stroke-width="1.3"/>
+      <text x="200" y="100" text-anchor="middle" font-size="9" fill="#4a4a42" font-style="italic">la sesión es siempre de la persona</text>
+
+      <path d="M20 150 L620 150" stroke="#c6c8b4" stroke-width="1"/>
+
+      <!-- MODELO B -->
+      <text x="20" y="176" font-size="11.5" font-weight="700" fill="#8f3d22">MODELO B · Agente a agente</text>
+      <rect x="20" y="188" width="90" height="46" rx="4" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.5"/>
+      <text x="65" y="208" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Persona</text>
+      <text x="65" y="223" text-anchor="middle" font-size="8.5" fill="#4a4a42">de Logística</text>
+
+      <rect x="150" y="188" width="100" height="46" rx="4" fill="#e7ecd6" stroke="#5f7233" stroke-width="1.5"/>
+      <text x="200" y="208" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Agente</text>
+      <text x="200" y="223" text-anchor="middle" font-size="8.5" fill="#4a4a42">de Logística</text>
+
+      <rect x="300" y="188" width="110" height="46" rx="4" fill="#fbf1ec" stroke="#b0512f" stroke-width="1.6"/>
+      <text x="355" y="208" text-anchor="middle" font-size="10" font-weight="700" fill="#8f3d22">Agente</text>
+      <text x="355" y="223" text-anchor="middle" font-size="8.5" fill="#4a4a42">de Contabilidad</text>
+
+      <rect x="460" y="188" width="110" height="46" rx="4" fill="#fff" stroke="#5f7233" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="515" y="208" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Archivo destino</text>
+      <text x="515" y="223" text-anchor="middle" font-size="8.5" fill="#4a4a42">en Contabilidad</text>
+
+      <path d="M112 211 L146 211" stroke="#5f7233" stroke-width="1.5" marker-end="url(#fa)"/>
+      <path d="M252 211 L296 211" stroke="#b0512f" stroke-width="1.5" marker-end="url(#fr)"/>
+      <path d="M412 211 L456 211" stroke="#b0512f" stroke-width="1.5" marker-end="url(#fr)"/>
+
+      <rect x="300" y="248" width="290" height="54" rx="4" fill="#fbf1ec" stroke="#b0512f" stroke-width="1.5"/>
+      <text x="445" y="266" text-anchor="middle" font-size="9.5" font-weight="700" fill="#8f3d22">Permiso evaluado con la identidad DEL AGENTE</text>
+      <text x="445" y="281" text-anchor="middle" font-size="9" fill="#8f3d22">que suele tener más acceso que quien preguntó</text>
+      <text x="445" y="296" text-anchor="middle" font-size="9" fill="#8f3d22">→ canal para eludir el control de acceso</text>
+      <path d="M355 236 L355 246" stroke="#b0512f" stroke-width="1.3"/>
+      <text x="320" y="322" font-size="9" fill="#4a4a42" font-style="italic">
+        Requiere identidad delegada real para ser seguro: complejo, y aun así auditable con dificultad.</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 4.1</b> · Los dos modelos. La diferencia decisiva es la línea de quién ejerce el
+  permiso sobre el archivo final.</figcaption>
+  </figure>
+
+  <h3>Modelo A: federación por índice</h3>
+  <p>Cada cerebro publica un archivo de capa pública. El índice maestro de cada área enruta hacia los
+  índices públicos de las demás. Cuando una persona de Logística pregunta algo de Contabilidad, su propio
+  agente —operando con <em>su</em> sesión— lee la capa pública de Contabilidad y, si necesita descender,
+  intenta abrir el archivo destino con las credenciales de esa persona. Si no tiene permiso, se topa con el
+  muro de siempre.</p>
+  <p>Es tan simple que parece que falta algo. No falta: es la aplicación directa del principio de herencia
+  de permisos del volumen VIII, ahora entre áreas. <strong>Cero desarrollo, cero identidad delegada, cero
+  superficie de ataque nueva.</strong> El control de acceso sigue siendo el que la empresa ya audita.</p>
+
+  <h3>Modelo B: agente a agente</h3>
+  <p>El agente de Logística consulta al agente de Contabilidad, que responde. Suena a arquitectura moderna
+  y tiene ventajas reales: el agente de Contabilidad conoce su dominio mejor y puede razonar sobre él antes
+  de responder. Pero introduce un problema estructural: <strong>responde con los permisos del agente de
+  Contabilidad, no con los de quien preguntó</strong>. Acabas de construir un canal por el que cualquiera
+  puede obtener información a la que no tiene acceso, y además difícil de auditar, porque en el registro
+  aparece el agente y no la persona.</p>
+  <p>Esto es resoluble —con identidad delegada real, donde el agente actúa <em>en nombre de</em> la persona
+  y arrastra sus permisos— pero es un proyecto de identidad, no de conocimiento. No lo emprendas para
+  responder «¿qué contratos vencen este mes?».</p>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Identidad delegada:</strong> mecanismo por el cual un agente ejecuta acciones portando la
+  identidad y los permisos efectivos del usuario que lo invocó, en lugar de una identidad propia de
+  servicio. Es el único diseño que hace seguro el modelo agente-a-agente, y su complejidad está en la
+  propagación y la auditoría, no en la autenticación inicial.</p></div>
+
+  <h3>Cuándo sí conviene A2A</h3>
+  <p>Hay dos escenarios donde el modelo B es la respuesta correcta, y ambos comparten un rasgo: el agente
+  destino <em>hace</em> algo, no solo lee.</p>
+  <ul class="plain">
+    <li><strong>Cuando la respuesta requiere cómputo, no lectura.</strong> «Recalcula el costo del proyecto
+    con la tarifa vigente» no es leer un archivo: es ejecutar lógica que solo Contabilidad tiene.</li>
+    <li><strong>Cuando la salida es intencionalmente agregada.</strong> Un agente que responde «hay 14
+    contratos por vencer» sin revelar cuáles, está reduciendo información a propósito. Ahí la mediación
+    agrega seguridad en vez de restarla —pero requiere que ese comportamiento esté especificado y probado,
+    no confiado al criterio del modelo.</li>
+  </ul>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>El modelo A es un directorio de oficinas en el vestíbulo: te dice dónde está cada cosa, y al llegar la
+  puerta se abre o no según tu credencial. El modelo B es un mensajero interno con llave maestra al que le
+  pides que te traiga cosas. El segundo es más cómodo hasta el día que alguien le pide algo que no debía
+  traer, y descubres que en el registro de acceso figura el mensajero.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Dos modelos, y el decisivo es quién ejerce el permiso sobre el archivo final. Federación por índice:
+  la sesión siempre es de la persona, los permisos se heredan, cero desarrollo. Agente a agente: potente,
+  pero responde con permisos del agente y sin identidad delegada es un canal de elusión. Empieza siempre por
+  el modelo A; reserva el B para respuestas que requieren cómputo o agregación deliberada.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 5 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 5</div>
+  <h2>La capa pública de cada cerebro</h2>
+  <p class="epi">Publicar hacia afuera no es abrir el cerebro. Es escribir un segundo cerebro, mucho más
+  pequeño, dirigido a gente que no habla tu idioma.</p>
+
+  <p>La capa pública es el contrato de un área con las demás: lo que se compromete a mantener actualizado y
+  disponible. No es un subconjunto automático del cerebro interno —eso sería un filtro, y los filtros fallan
+  en la dirección peligrosa—. Es un archivo escrito a propósito, con criterio, revisado por el dueño del
+  área.</p>
+
+  <h3>Anatomía del <code>_publico.md</code></h3>
+  <pre>---
+area: contabilidad
+tipo: capa-publica
+dueno: [jefe de contabilidad]
+revision_comprometida: mensual
+vigencia_revision: 2026-08-05
+---
+
+<span class="k"># Contabilidad · Capa pública</span>
+
+<span class="k">## Qué puede resolver esta área para ti</span>
+- Estado de una factura de proveedor
+- Criterios de imputación de costos por centro
+- Calendario de cierre mensual y sus bloqueos
+- Validación tributaria de un proveedor
+
+<span class="k">## Qué NO sale de esta área</span>
+- Remuneraciones individuales · Detalle de cuentas bancarias
+- Márgenes por cliente · Cualquier dato de proceso disciplinario
+Para estos casos: solicitar por [canal] con aprobación de [rol].
+
+<span class="k">## Conceptos que definimos (ver diccionario compartido)</span>
+| Término            | Aquí significa                                   |
+|--------------------|--------------------------------------------------|
+| Proveedor activo   | con documentación tributaria vigente y sin bloqueo|
+| Factura pendiente  | recibida, no pagada, dentro de plazo              |
+| Cierre             | del día 1 al 5 hábil; sin registros retroactivos  |
+
+<span class="k">## Rutas consultables (según tu permiso)</span>
+| Qué                          | Dónde                          | Clasificación |
+|------------------------------|--------------------------------|---------------|
+| Calendario de cierre         | `CONTA/02-PROCESOS/cierre.md`  | interno       |
+| Criterios de imputación      | `CONTA/02-PROCESOS/costos.md`  | interno       |
+| Maestro de proveedores       | `CONTA/03-MAESTROS/prov.md`    | confidencial  |
+
+<span class="k">## A quién preguntar</span>
+| Tema | Rol | Tiempo de respuesta comprometido |
+|------|-----|----------------------------------|</pre>
+
+  <h3>Las cuatro secciones que hacen el trabajo</h3>
+  <p>La sección <strong>«qué puede resolver esta área para ti»</strong> es la más útil y la que más se
+  omite. Está escrita en el vocabulario de quien pregunta, no en el de quien responde: no dice «maestro de
+  proveedores», dice «validación tributaria de un proveedor». Es enrutamiento por intención, ahora entre
+  áreas.</p>
+  <p>La sección <strong>«qué NO sale»</strong> tiene una función que sorprende: reduce el ruido. Sin ella,
+  las áreas vecinas siguen pidiendo lo mismo una y otra vez y recibiendo negativas, con el desgaste que
+  eso genera. Declararlo por escrito, junto con el canal formal para pedirlo, convierte una fricción
+  recurrente en un procedimiento.</p>
+  <p>La sección de <strong>conceptos</strong> es el enganche con el capítulo 9. Cada área declara qué
+  significa cada término <em>para ella</em>; el diccionario compartido resuelve las colisiones.</p>
+  <p>La tabla de <strong>rutas con clasificación</strong> es lo que permite el estado intermedio del
+  capítulo 1: sabes que existe el maestro de proveedores, sabes que es confidencial, sabes a quién
+  pedírselo. No lo abres si no te toca.</p>
+
+  <div class="box warn"><span class="lab">Error frecuente</span>
+  <p>Generar la capa pública automáticamente filtrando por <code>clasificacion: interno</code>. Parece
+  eficiente y falla en la dirección peligrosa: una ficha mal clasificada —y siempre hay unas cuantas—
+  aparece publicada sin que nadie lo decida. La capa pública se escribe a mano y se revisa; es corta
+  justamente para que eso sea posible.</p></div>
+
+  <div class="box case"><span class="lab">Caso · El compromiso de revisión como moneda</span>
+  <p>Un aspecto que parece burocrático y resultó decisivo: el campo <code>revision_comprometida</code>. Una
+  federación funciona sobre confianza, y la confianza aquí es concreta —«si esto dice que se revisa
+  mensualmente y la última revisión es de hace cinco meses, no me fío de la respuesta»—.</p>
+  <p>En una implementación real, el script semanal de detección de obsolescencia del volumen VIII se amplió
+  para revisar <em>todas</em> las capas públicas de la federación y publicar un solo indicador por área.
+  Nadie quería aparecer en rojo delante de las demás áreas. Ese indicador hizo más por el mantenimiento
+  que cualquier política escrita.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>La capa pública es un contrato escrito a mano, no un filtro automático. Cuatro secciones: qué resuelve
+  el área (en vocabulario del que pregunta), qué no sale y por qué canal pedirlo, qué significan sus
+  términos, y las rutas con su clasificación. El compromiso de revisión visible entre áreas es el mejor
+  mecanismo de mantenimiento que vas a tener.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 6 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 6</div>
+  <h2>Permisos por agregación</h2>
+  <p class="epi">Ningún dato de este capítulo es confidencial. El problema es lo que se puede deducir
+  poniéndolos uno al lado del otro.</p>
+
+  <p>Este es el capítulo que justifica el libro. Todo lo anterior es arquitectura; esto es el riesgo real,
+  y es el que menos gente ve venir porque contradice la intuición: hemos clasificado bien cada dato, luego
+  el sistema es seguro. No lo es. La sensibilidad no siempre está <em>en</em> el dato: a veces aparece en la
+  combinación.</p>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Riesgo por agregación:</strong> exposición de información sensible resultante de combinar dos o
+  más fuentes que, evaluadas de forma independiente, fueron correctamente clasificadas como no sensibles.
+  El control por clasificación de archivos no lo detecta, porque ninguna de las piezas viola su
+  clasificación.</p></div>
+
+  <figure>
+  <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <rect x="40" y="40" width="180" height="80" rx="5" fill="#f2f6f0" stroke="#3f6b3f" stroke-width="1.5"/>
+      <text x="130" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#3f6b3f">Fuente A · interno</text>
+      <text x="130" y="80" text-anchor="middle" font-size="9.5" fill="#4a4a42">Costo total de planilla</text>
+      <text x="130" y="95" text-anchor="middle" font-size="9.5" fill="#4a4a42">por centro de costo</text>
+      <text x="130" y="112" text-anchor="middle" font-size="9" fill="#3f6b3f">✓ correctamente clasificado</text>
+
+      <rect x="420" y="40" width="180" height="80" rx="5" fill="#f2f6f0" stroke="#3f6b3f" stroke-width="1.5"/>
+      <text x="510" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#3f6b3f">Fuente B · interno</text>
+      <text x="510" y="80" text-anchor="middle" font-size="9.5" fill="#4a4a42">Personal asignado</text>
+      <text x="510" y="95" text-anchor="middle" font-size="9.5" fill="#4a4a42">a cada centro de costo</text>
+      <text x="510" y="112" text-anchor="middle" font-size="9" fill="#3f6b3f">✓ correctamente clasificado</text>
+
+      <path d="M180 122 L300 160" stroke="#5f7233" stroke-width="1.6"/>
+      <path d="M460 122 L340 160" stroke="#5f7233" stroke-width="1.6"/>
+
+      <rect x="190" y="168" width="260" height="76" rx="5" fill="#fbf1ec" stroke="#b0512f" stroke-width="2"/>
+      <text x="320" y="190" text-anchor="middle" font-size="11.5" font-weight="700" fill="#8f3d22">Resultado del cruce</text>
+      <text x="320" y="209" text-anchor="middle" font-size="9.5" fill="#4a4a42">Centro con 1 o 2 personas →</text>
+      <text x="320" y="224" text-anchor="middle" font-size="9.5" fill="#4a4a42">remuneración individual deducible</text>
+      <text x="320" y="240" text-anchor="middle" font-size="9.5" font-weight="700" fill="#8f3d22">dato personal, no declarado en ninguna fuente</text>
+
+      <text x="320" y="268" text-anchor="middle" font-size="9.5" fill="#77736a" font-style="italic">
+        Ningún archivo fue mal clasificado. El control por archivo no puede ver esto.</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 6.1</b> · El mecanismo. Dos fuentes internas y correctas producen un dato personal
+  que ninguna de las dos contenía.</figcaption>
+  </figure>
+
+  <h3>Los tres patrones habituales</h3>
+  <p><strong>Reidentificación por grupo pequeño.</strong> Es el de la figura y el más común. Cualquier
+  agregado deja de ser agregado cuando el grupo es diminuto: un promedio de dos personas revela dos
+  sueldos con una resta. La regla de mitigación es conocida y barata: <strong>umbral mínimo de
+  agrupación</strong>. Si un corte devuelve menos de <em>n</em> individuos, se suprime en lugar de
+  mostrarse. Cinco es un umbral habitual y razonable.</p>
+  <p><strong>Inferencia por cruce temporal.</strong> Dos hechos inocuos con fechas: una baja de personal y
+  un proceso legal abierto en la misma semana, en la misma área. Ninguno dice nada; juntos sugieren una
+  causa. La mitigación aquí no es técnica sino de diseño: los cerebros de RRHH y Legal no publican fechas
+  granulares hacia afuera, publican periodos.</p>
+  <p><strong>Composición de fragmentos técnicos.</strong> El inventario de servidores es interno. El
+  registro de versiones sin parchear es interno. Juntos son un mapa de ataque. Este patrón afecta sobre
+  todo a TI y es la razón por la que el cerebro de TI, pese a ser el primero y el más maduro, no debe
+  publicar su dominio de infraestructura completo hacia la federación.</p>
+
+  <h3>La matriz de cruces permitidos</h3>
+  <p>El control que funciona no se aplica a archivos, sino a <em>combinaciones</em>. Se declara una sola
+  vez, vive en el cerebro gerencial y es corta:</p>
+
+  <table>
+    <tr><th style="width:32%">Cruce</th><th style="width:16%">Estado</th><th>Condición</th></tr>
+    <tr><td>Costos × Centros de costo</td><td><strong>Permitido</strong></td><td>Umbral mínimo de 5
+    personas por centro; por debajo se suprime.</td></tr>
+    <tr><td>Personal × Remuneración</td><td><strong>Prohibido</strong></td><td>En cualquier forma, incluida
+    agregada. No hay condición que lo habilite.</td></tr>
+    <tr><td>Proveedores × Contratos × Pagos</td><td><strong>Permitido</strong></td><td>Solo para roles de
+    Compras y Contabilidad; el resultado es confidencial.</td></tr>
+    <tr><td>Bajas de personal × Casos legales</td><td><strong>Prohibido</strong></td><td>Ni por periodo ni
+    por área.</td></tr>
+    <tr><td>Inventario TI × Estado de parches</td><td><strong>Restringido</strong></td><td>Solo dentro del
+    cerebro de TI; nunca en la capa pública ni en reportes gerenciales.</td></tr>
+  </table>
+
+  <p>Dos propiedades hacen que esto funcione. Primera: es una <strong>lista blanca</strong> —lo que no está
+  declarado como permitido, requiere aprobación—. Segunda: se evalúa cuando se define un reporte
+  (capítulo 11), no en tiempo de ejecución. Un agente no debe decidir sobre la marcha si un cruce es
+  aceptable; eso lo decide una persona al escribir la especificación, y queda registrado.</p>
+
+  <div class="box warn"><span class="lab">Riesgo</span>
+  <p>Confiar la evaluación del riesgo de agregación al criterio del modelo en tiempo de ejecución. Un
+  agente razonablemente alineado rechazará los casos evidentes, pero el riesgo de agregación es
+  precisamente el que <em>no</em> es evidente: depende del tamaño real de los grupos, de qué más existe en
+  la organización y de quién pregunta. Es una decisión de gobierno con contexto que el modelo no tiene, y
+  debe estar declarada por adelantado.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>La sensibilidad puede nacer del cruce, no del dato. Tres patrones: reidentificación por grupo pequeño
+  (mitigación: umbral mínimo de agrupación), inferencia por cruce temporal (mitigación: publicar periodos,
+  no fechas) y composición de fragmentos técnicos (mitigación: infraestructura no sale de TI). El control
+  se aplica a combinaciones mediante una lista blanca declarada por personas al definir el reporte, nunca
+  por el modelo en ejecución.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 7 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 7</div>
+  <h2>Datos personales y regímenes especiales</h2>
+  <p class="epi">Recursos Humanos y Legal no son dos áreas más de la federación. Son dos áreas que juegan
+  con otras reglas, y confundirlo es el error más caro posible.</p>
+
+  <p>Hasta aquí hemos hablado de clasificación —público, interno, confidencial, restringido— que es un
+  criterio de la organización y la organización puede cambiarlo. Los datos personales no funcionan así:
+  están sujetos a normas externas que la empresa no decide. En Perú, la Ley 29733 de Protección de Datos
+  Personales y su reglamento; equivalentes existen en prácticamente toda la región. No soy abogado y este
+  capítulo no es asesoría legal: es una lista de las cuestiones que hay que llevarle a quien sí lo es,
+  antes de federar RRHH o Legal.</p>
+
+  <h3>Los cuatro principios que afectan al diseño</h3>
+  <table>
+    <tr><th style="width:24%">Principio</th><th>Qué implica para la federación</th></tr>
+    <tr><td><strong>Finalidad</strong></td>
+        <td>Los datos se recogieron para un propósito declarado. Usarlos en un reporte gerencial distinto
+        puede exceder esa finalidad, aunque técnicamente tengas acceso. Esta es la pregunta que más veces
+        se omite.</td></tr>
+    <tr><td><strong>Minimización</strong></td>
+        <td>Solo los datos necesarios para el propósito. Un reporte de dotación necesita conteos, no
+        nombres. Diseña el reporte pidiendo lo mínimo, no lo disponible.</td></tr>
+    <tr><td><strong>Proporcionalidad</strong></td>
+        <td>El tratamiento debe ser adecuado al fin perseguido. «Sería interesante tenerlo» no es un fin.</td></tr>
+    <tr><td><strong>Seguridad</strong></td>
+        <td>Medidas acordes a la sensibilidad. Una federación amplía el número de puntos por donde el dato
+        puede circular, y eso cuenta.</td></tr>
+  </table>
+
+  <h3>La regla práctica: agregado sale, individual no</h3>
+  <p>Traducido a arquitectura, casi todo se resuelve con una sola línea de diseño: <strong>de los cerebros
+  de RRHH y Legal sale información agregada y despersonalizada; el dato individual no cruza el borde del
+  área</strong>. Dotación por área, sí. Rotación trimestral, sí. Estado de un caso legal por tipo y
+  antigüedad, sí. Quién, no.</p>
+  <p>Y sobre lo agregado se aplica el umbral del capítulo anterior, porque un agregado de tres personas no
+  es un agregado.</p>
+
+  <div class="box warn"><span class="lab">Lo que nunca se federa</span>
+  <p>Con independencia de permisos y aprobaciones: expedientes disciplinarios, evaluaciones de desempeño
+  individuales, remuneraciones individuales, datos de salud, información de procesos legales que involucren
+  a personas identificables, y cualquier dato personal sensible en el sentido de la norma. Estos no entran
+  ni en la capa pública, ni en el cerebro gerencial, ni en reportes. Ni siquiera como «existe y lo custodia
+  X»: en este caso, la existencia también informa.</p></div>
+
+  <h3>Entonces, ¿tiene sentido un cerebro de RRHH?</h3>
+  <p>Muchísimo, pero <em>hacia adentro</em>. El área de RRHH se beneficia enormemente de un segundo cerebro
+  propio —procedimientos, reglas de negocio, plazos, criterios— y ese cerebro puede ser el más útil de
+  todos para sus integrantes. Lo que cambia es su participación en la federación: publica una capa pública
+  deliberadamente delgada, orientada a procesos y no a personas.</p>
+
+  <pre><span class="c"># RRHH · Capa pública (extracto) — orientada a proceso, no a persona</span>
+
+<span class="k">## Qué puede resolver esta área para ti</span>
+- Qué pasos sigue una contratación y cuánto demora cada uno
+- Qué documentos se requieren para un ingreso o una salida
+- Calendario de procesos: evaluaciones, vacaciones, planilla
+- Políticas vigentes y dónde están firmadas
+
+<span class="k">## Qué NO sale de esta área, en ninguna forma</span>
+Datos individuales de cualquier tipo. Sin excepciones, sin aprobación posible
+por esta vía. Requerimientos formales: [canal legal establecido].
+
+<span class="k">## Indicadores agregados disponibles</span>
+| Indicador            | Granularidad mínima | Condición                  |
+|----------------------|---------------------|----------------------------|
+| Dotación por área    | área                | mínimo 5 personas          |
+| Rotación             | trimestral, por área| mínimo 5 personas          |
+| Tiempo de cobertura  | trimestral, global  | sin desglose por posición  |</pre>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Es como un hospital dentro de una empresa. Puede publicar sus horarios, sus procedimientos de admisión
+  y sus estadísticas agregadas, y eso es enormemente útil. Lo que no hace, por mucho que otras áreas lo
+  pidan con buenos motivos, es responder qué le pasa a un paciente concreto. El régimen es distinto, y no
+  porque el hospital sea desconfiado.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Datos personales no son una clasificación interna: son un régimen externo. Cuatro principios afectan
+  al diseño —finalidad, minimización, proporcionalidad y seguridad— y el primero es el que más se omite:
+  tener acceso no autoriza cualquier uso. Regla práctica: de RRHH y Legal sale lo agregado con umbral, el
+  dato individual no cruza el borde. Estas áreas se benefician mucho de un cerebro propio y participan poco
+  en la federación. Consulta a quien corresponda antes de conectarlas.</p></div>
+</section>
+<!-- =================== PARTE III =================== -->
+<section class="partpage">
+  <div class="kicker">Parte III</div>
+  <h2>El cerebro gerencial</h2>
+  <div class="line"></div>
+  <p>La pieza que todos imaginan como un superconjunto de las demás y que funciona justamente porque no lo
+  es. Tres capítulos: qué contiene, cómo resuelve el vocabulario y cómo responde preguntas que cruzan
+  áreas.</p>
+</section>
+
+<!-- ============ CAPÍTULO 8 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 8</div>
+  <h2>Índice de índices, no superconjunto</h2>
+  <p class="epi">El cerebro gerencial no sabe más que los demás. Sabe <em>dónde</em> saben los demás, y qué
+  significan las palabras que usan.</p>
+
+  <p>La imagen mental por defecto es una pirámide: cada área alimenta hacia arriba y la gerencia lo ve
+  todo. Es la arquitectura equivocada y falla por tres motivos independientes, cualquiera de los cuales
+  basta para hundirla.</p>
+
+  <p><strong>Se desincroniza.</strong> Un cerebro gerencial que copia información de las áreas repite el
+  error del volumen VIII a escala: copias que se desactualizan mientras el original avanza, con el agravante
+  de que ahora quien recibe la respuesta obsoleta es quien toma decisiones.</p>
+  <p><strong>Concentra el riesgo.</strong> Reunir en un solo lugar lo mejor de seis áreas produce
+  exactamente el escenario del capítulo 6: la máquina de agregación perfecta, con datos de todas las
+  fuentes disponibles para cruzar sin control.</p>
+  <p><strong>Reproduce el problema original.</strong> Un repositorio que acumula todo lo importante de la
+  organización es, otra vez, el almacén inmanejable del que huimos: demasiado grande para navegar, con
+  vigencias heterogéneas.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <text x="155" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#8f3d22">✗ Superconjunto</text>
+      <path d="M155 38 L245 118 L65 118 Z" fill="#fbf1ec" stroke="#b0512f" stroke-width="1.6"/>
+      <text x="155" y="95" text-anchor="middle" font-size="9.5" fill="#8f3d22">copia de todo</text>
+      <g fill="#f6f6ee" stroke="#5f7233" stroke-width="1.2">
+        <rect x="55" y="130" width="55" height="26" rx="3"/>
+        <rect x="118" y="130" width="55" height="26" rx="3"/>
+        <rect x="181" y="130" width="55" height="26" rx="3"/>
+      </g>
+      <g stroke="#b0512f" stroke-width="1.2">
+        <path d="M82 130 L130 120"/><path d="M145 130 L152 120"/><path d="M208 130 L180 120"/>
+      </g>
+      <g font-size="9" fill="#8f3d22">
+        <text x="155" y="180" text-anchor="middle">se desincroniza</text>
+        <text x="155" y="196" text-anchor="middle">concentra el riesgo de agregación</text>
+        <text x="155" y="212" text-anchor="middle">vuelve a ser inmanejable</text>
+      </g>
+
+      <path d="M320 25 L320 275" stroke="#c6c8b4" stroke-width="1"/>
+
+      <text x="480" y="20" text-anchor="middle" font-size="11.5" font-weight="700" fill="#3f6b3f">✓ Índice de índices</text>
+      <rect x="400" y="38" width="160" height="54" rx="5" fill="#e7ecd6" stroke="#3c4a1d" stroke-width="1.8"/>
+      <text x="480" y="58" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Cerebro gerencial</text>
+      <text x="480" y="74" text-anchor="middle" font-size="8.5" fill="#4a4a42">rutas · diccionario · reportes</text>
+      <text x="480" y="87" text-anchor="middle" font-size="8.5" fill="#3f6b3f">cero datos de área</text>
+
+      <g fill="#f6f6ee" stroke="#5f7233" stroke-width="1.2">
+        <rect x="380" y="130" width="55" height="26" rx="3"/>
+        <rect x="443" y="130" width="55" height="26" rx="3"/>
+        <rect x="506" y="130" width="55" height="26" rx="3"/>
+      </g>
+      <g font-size="8" fill="#3c4a1d" text-anchor="middle">
+        <text x="407" y="147">_publico</text><text x="470" y="147">_publico</text><text x="533" y="147">_publico</text>
+      </g>
+      <g stroke="#3f6b3f" stroke-width="1.2" stroke-dasharray="3 3">
+        <path d="M420 128 L455 94"/><path d="M470 128 L474 94"/><path d="M520 128 L500 94"/>
+      </g>
+      <g font-size="9" fill="#3f6b3f">
+        <text x="480" y="180" text-anchor="middle">siempre vigente (no copia)</text>
+        <text x="480" y="196" text-anchor="middle">cruces declarados y controlados</text>
+        <text x="480" y="212" text-anchor="middle">pequeño y navegable</text>
+      </g>
+      <text x="480" y="244" text-anchor="middle" font-size="9" fill="#4a4a42" font-style="italic">
+        la persona consulta con su propia cuenta;</text>
+      <text x="480" y="258" text-anchor="middle" font-size="9" fill="#4a4a42" font-style="italic">
+        el gerencial le dice a dónde ir y qué significa</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 8.1</b> · Las dos arquitecturas posibles. La de la derecha es más pequeña, más
+  barata y más segura, y responde las mismas preguntas.</figcaption>
+  </figure>
+
+  <h3>Los tres contenidos legítimos</h3>
+  <p>El cerebro gerencial contiene tres cosas y solo tres. Cualquier cuarta cosa es un dato de área
+  disfrazado.</p>
+  <ul class="plain">
+    <li><strong>El índice de índices.</strong> Qué áreas existen, qué resuelve cada una, dónde está su capa
+    pública, quién es su dueño y cuándo se revisó. Es el archivo maestro del volumen VIII, un nivel más
+    arriba.</li>
+    <li><strong>El diccionario semántico compartido</strong> (capítulo 9). El único contenido que la
+    gerencia posee de verdad, porque es el único que ninguna área puede decidir sola.</li>
+    <li><strong>Las especificaciones de reporte</strong> (capítulo 11), incluida la matriz de cruces
+    permitidos del capítulo 6. Qué reportes existen, qué cruzan, con qué reglas y con qué autorización.</li>
+  </ul>
+
+  <h3>Enrutamiento transversal</h3>
+  <p>El índice de índices se parece al del volumen VIII, con una diferencia de énfasis: la tabla de
+  enrutamiento no mapea intención a dominio, sino intención a <em>área o combinación de áreas</em>.</p>
+
+  <pre><span class="k">## Enrutamiento transversal</span>
+| Si la pregunta es sobre...                | Consulta                             |
+|-------------------------------------------|--------------------------------------|
+| Costo de sostener un sistema              | TI + Contabilidad (cruce autorizado) |
+| Estado de un proveedor                    | Logística → si es tributario, Conta  |
+| Cumplimiento de un contrato               | Legal + el área usuaria              |
+| Dotación o rotación                       | RRHH, solo agregado (ver cap. 7)     |
+| Cualquier cosa que cruce datos personales | NO se responde aquí. Ver protocolo.  |
+
+<span class="k">## Reglas del cerebro gerencial</span>
+1. No contengo datos de las áreas. Te digo dónde están y qué significan.
+2. Antes de cruzar información de dos áreas, verifica la matriz de cruces.
+3. Si un cruce no está declarado como permitido, no lo hagas: indícalo y
+   señala a quién solicitar la autorización.
+4. Al responder con datos de un área, cita su capa pública y su fecha de revisión.
+5. Si dos áreas usan el mismo término, aplica la definición del diccionario
+   compartido y advierte de la diferencia.</pre>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Un buen director general no memoriza los números de las seis gerencias. Sabe a quién preguntar, sabe
+  cuándo dos áreas están usando la misma palabra para cosas distintas, y sabe qué preguntas no debe hacer
+  por escrito. El cerebro gerencial es exactamente ese perfil, no un almacén de tableros.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>El cerebro gerencial no contiene información de las áreas: se desincronizaría, concentraría el riesgo
+  de agregación y volvería a ser inmanejable. Contiene tres cosas: índice de índices, diccionario semántico
+  y especificaciones de reporte con la matriz de cruces. Su enrutamiento mapea intención a áreas o
+  combinaciones, y su primera regla es declarar que no sabe, sino que sabe dónde se sabe.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 9 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 9</div>
+  <h2>El diccionario semántico compartido</h2>
+  <p class="epi">El reporte no va a fallar con un error visible. Va a fallar sumando dos cosas que se
+  llaman igual, y el total va a parecer perfectamente razonable.</p>
+
+  <p>De todos los modos de fallar de una federación, este es el más silencioso y el más difícil de detectar
+  a posteriori. Un permiso mal puesto se nota. Una ficha vencida se nota. Un reporte que suma «proveedores
+  activos» de Logística con «proveedores activos» de Contabilidad —donde el término significa cosas
+  distintas— produce un número plausible, se presenta en directorio y nadie lo cuestiona hasta que alguien
+  intenta reconciliarlo con otra fuente meses después.</p>
+
+  <h3>De dónde viene la divergencia</h3>
+  <p>No es descuido. Cada área definió sus términos correctamente <em>para su propósito</em>. Logística
+  llama activo al proveedor con el que puede emitir una orden; Contabilidad, al que tiene documentación
+  tributaria vigente; Legal, al que tiene contrato firmado sin vencer. Las tres definiciones son correctas
+  y necesarias. El problema aparece solo al cruzarlas.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <text x="320" y="22" text-anchor="middle" font-size="11.5" font-weight="700" fill="#3c4a1d">
+        «Proveedor activo» según cada área</text>
+      <circle cx="240" cy="125" r="72" fill="#5f7233" opacity="0.22" stroke="#5f7233" stroke-width="1.3"/>
+      <circle cx="330" cy="125" r="72" fill="#3f6480" opacity="0.20" stroke="#3f6480" stroke-width="1.3"/>
+      <circle cx="285" cy="165" r="72" fill="#3f6b3f" opacity="0.18" stroke="#3f6b3f" stroke-width="1.3"/>
+
+      <text x="185" y="90" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Logística</text>
+      <text x="185" y="104" text-anchor="middle" font-size="8.5" fill="#4a4a42">puede recibir OC</text>
+      <text x="390" y="90" text-anchor="middle" font-size="10" font-weight="700" fill="#2f4f66">Contabilidad</text>
+      <text x="390" y="104" text-anchor="middle" font-size="8.5" fill="#4a4a42">tributariamente vigente</text>
+      <text x="285" y="222" text-anchor="middle" font-size="10" font-weight="700" fill="#3f6b3f">Legal</text>
+      <text x="285" y="236" text-anchor="middle" font-size="8.5" fill="#4a4a42">contrato firmado sin vencer</text>
+
+      <circle cx="285" cy="140" r="4" fill="#23231f"/>
+      <text x="470" y="140" font-size="9.5" fill="#4a4a42">← el único punto donde</text>
+      <text x="470" y="154" font-size="9.5" fill="#4a4a42">las tres coinciden</text>
+      <path d="M292 140 L465 137" stroke="#23231f" stroke-width="0.9" stroke-dasharray="3 3"/>
+
+      <text x="60" y="196" font-size="9.5" fill="#8f3d22" font-weight="700">Sumar las tres listas</text>
+      <text x="60" y="210" font-size="9.5" fill="#8f3d22">no da «proveedores activos»:</text>
+      <text x="60" y="224" font-size="9.5" fill="#8f3d22">da un número sin significado.</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 9.1</b> · Tres definiciones correctas que no coinciden. El diccionario no elige una
+  ganadora: nombra las tres y define la canónica para reportes transversales.</figcaption>
+  </figure>
+
+  <h3>Anatomía de una definición canónica</h3>
+  <p>La solución no es imponer una definición y borrar las demás —eso rompe el trabajo de las áreas—. Es
+  reconocer las variantes, nombrarlas de forma distinguible y declarar cuál se usa cuando el término cruza
+  fronteras.</p>
+
+  <pre>---
+termino: proveedor-activo
+tipo: definicion-canonica
+arbitro: [gerencia de administración]
+vigencia_revision: 2026-08-01
+---
+
+<span class="k"># Proveedor activo</span>
+
+<span class="k">## Definición canónica (uso en reportes transversales)</span>
+Proveedor con contrato vigente, documentación tributaria vigente y sin bloqueo
+operativo. Debe cumplir las TRES condiciones simultáneamente.
+
+<span class="k">## Variantes por área (todas válidas en su ámbito)</span>
+| Área         | Su definición                        | Nombre distinguible        |
+|--------------|--------------------------------------|----------------------------|
+| Logística    | puede recibir orden de compra        | proveedor-operativo        |
+| Contabilidad | documentación tributaria vigente     | proveedor-tributario-vigente|
+| Legal        | contrato firmado y no vencido        | proveedor-contractual      |
+
+<span class="k">## Regla de uso</span>
+- Dentro de un área: usa tu variante, es la correcta para tu trabajo.
+- En reportes que cruzan áreas: usa SIEMPRE la canónica y dilo en el reporte.
+- Nunca sumes listas de variantes distintas. Si necesitas el total de una
+  variante, pídelo a esa área.
+
+<span class="k">## Casos límite resueltos</span>
+- Proveedor con contrato vencido en renovación: NO es activo canónico.
+- Proveedor de compra de emergencia (RN-LOG-007): operativo, no canónico.
+
+<span class="k">## Términos relacionados</span>
+[[proveedor-bloqueado]] · [[orden-de-compra]] · [[contrato-vigente]]</pre>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Definición canónica:</strong> significado acordado de un término cuando se usa en contextos
+  que cruzan áreas, coexistiendo con las variantes locales en lugar de reemplazarlas. La sección de casos
+  límite es la parte que evita las discusiones que se repiten cada trimestre.</p></div>
+
+  <h3>Quién arbitra</h3>
+  <p>Necesitas una figura que resuelva los desacuerdos, y no puede ser un área participante: sería juez y
+  parte. Suele funcionar que arbitre quien tenga responsabilidad transversal —administración, control de
+  gestión, planeamiento— con una regla que ahorra meses: <strong>el árbitro no inventa definiciones, elige
+  entre las existentes y documenta los casos límite</strong>. Su producto no es una taxonomía perfecta:
+  son quince o veinte términos resueltos, que son los únicos que de verdad cruzan.</p>
+
+  <div class="box case"><span class="lab">Caso · Veinte términos, no doscientos</span>
+  <p>El impulso natural al arrancar un diccionario es querer definirlo todo. Un ejercicio útil para acotarlo:
+  revisa los reportes transversales que ya existen —los que alguien arma a mano cada mes— y extrae solo los
+  términos que aparecen en más de uno. En una organización mediana suelen ser entre quince y veinticinco.
+  El resto de los términos nunca cruzan y no necesitan acuerdo: definirlos es trabajo que nadie va a
+  mantener.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>El fallo semántico es silencioso: produce números plausibles. La divergencia no es descuido, es que
+  cada área definió bien para su propósito. El diccionario no elimina variantes: las nombra de forma
+  distinguible y declara la canónica para uso transversal, con casos límite resueltos. Arbitra alguien
+  transversal, y solo se definen los quince o veinte términos que aparecen en más de un reporte.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 10 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 10</div>
+  <h2>Preguntas transversales y comparativas</h2>
+  <p class="epi">«¿Cuánto nos cuesta el portal?» parece una pregunta. Son cuatro, en tres áreas, y una de
+  ellas requiere autorización.</p>
+
+  <p>Las preguntas que motivan una federación casi nunca son atómicas. Se ven simples porque quien las hace
+  las piensa desde el resultado, no desde las fuentes. El trabajo del cerebro gerencial es
+  <strong>descomponerlas</strong>, y hacerlo de forma visible para que el resultado sea verificable.</p>
+
+  <h3>Tipología</h3>
+  <table>
+    <tr><th style="width:22%">Tipo</th><th style="width:34%">Ejemplo</th><th>Qué exige</th></tr>
+    <tr><td><strong>Compuesta</strong></td><td>«¿Cuánto cuesta sostener el portal?»</td>
+        <td>Sumar piezas de varias áreas bajo una definición canónica de costo.</td></tr>
+    <tr><td><strong>Comparativa</strong></td><td>«¿Qué área tiene más contratos por vencer?»</td>
+        <td>Mismo término, misma ventana temporal, mismo criterio de conteo en todas.</td></tr>
+    <tr><td><strong>De consistencia</strong></td><td>«¿Coincide el maestro de proveedores de Logística con
+        el de Contabilidad?»</td>
+        <td>Comparar dos fuentes y reportar diferencias, no elegir una.</td></tr>
+    <tr><td><strong>De trazabilidad</strong></td><td>«¿Qué contrato respalda este gasto?»</td>
+        <td>Recorrer el grafo entre áreas hasta el documento origen.</td></tr>
+    <tr><td><strong>Prohibida</strong></td><td>«¿Cuánto gana el equipo del proyecto?»</td>
+        <td>Reconocerla y no responderla, ni siquiera de forma aproximada.</td></tr>
+  </table>
+
+  <h3>Descomposición visible</h3>
+  <p>El comportamiento correcto no es responder directo: es mostrar el plan, ejecutarlo y citar. Un agente
+  bien instruido produce algo así:</p>
+
+  <pre>Pregunta: ¿cuánto nos cuesta sostener el portal de proveedores?
+
+Plan (4 subconsultas, 3 áreas):
+ 1. TI · infraestructura que lo sostiene ......... INF-002 (servidor APP-02)
+ 2. Logística · contratos de servicio asociados .. capa pública, 2 contratos
+ 3. Contabilidad · costo imputado al centro ...... requiere cruce autorizado ✔
+ 4. TI · licencias asociadas al sistema .......... 1 licencia anual
+
+Cruce 2×3 verificado contra la matriz: PERMITIDO (resultado confidencial).
+Definición de "costo de sostenimiento": canónica, incluye infraestructura,
+licencias y contratos de soporte; NO incluye horas de personal interno.
+
+Resultado: [...]
+Fuentes: CONTA/_publico.md (rev. 2026-08-05) · LOG/_publico.md (rev. 2026-07-28)
+          TI/02-INFRA/INF-002.md (rev. 2026-08-10)
+Advertencia: la capa pública de Logística tiene 23 días sin revisión.</pre>
+
+  <p>Tres detalles de ese formato son deliberados. La <strong>verificación del cruce contra la matriz</strong>,
+  visible, convierte el control del capítulo 6 en algo comprobable. La <strong>declaración de la definición
+  usada</strong>, con su exclusión explícita, previene el fallo semántico del capítulo 9 —incluido el clásico
+  «esto no incluye horas de personal interno», que es donde suelen discrepar las cifras—. Y la
+  <strong>advertencia de vigencia por fuente</strong> traslada a quien lee la información que necesita para
+  calibrar su confianza.</p>
+
+  <div class="box warn"><span class="lab">Error frecuente</span>
+  <p>Permitir que el agente responda una pregunta transversal cuando una de las fuentes no está disponible o
+  no tiene permiso, completando el hueco con una estimación. Una respuesta parcial marcada como parcial es
+  útil; una respuesta completa con un componente inventado es indistinguible de una buena y se propaga a una
+  decisión. La instrucción debe ser explícita: <strong>falta una fuente, se dice cuál falta.</strong></p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Las preguntas transversales se descomponen: compuestas, comparativas, de consistencia, de trazabilidad
+  y prohibidas. El agente debe mostrar el plan, verificar el cruce contra la matriz, declarar qué definición
+  canónica usó y qué excluye, citar cada fuente con su fecha de revisión y advertir de las vencidas. Si
+  falta una fuente, se nombra: nunca se estima el hueco.</p></div>
+</section>
+<!-- =================== PARTE IV =================== -->
+<section class="partpage">
+  <div class="kicker">Parte IV</div>
+  <h2>Reportes agénticos</h2>
+  <div class="line"></div>
+  <p>El caso que motivó todo: que un reporte recurrente se arme solo. Cuatro capítulos con una regla de
+  fondo — el cerebro especifica, el agente ejecuta, el código calcula y el modelo interpreta.</p>
+</section>
+
+<!-- ============ CAPÍTULO 11 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 11</div>
+  <h2>La especificación de reporte como contrato</h2>
+  <p class="epi">Un reporte automatizado sin especificación escrita no es automatización: es una caja negra
+  que produce cifras con formato.</p>
+
+  <p>Aquí llegamos al caso que casi siempre dispara este proyecto: un gerente necesita, todos los viernes,
+  el cruce de dos archivos que las áreas van completando durante la semana. Hoy alguien dedica tres horas a
+  descargar, pegar, limpiar y dar formato. Es repetitivo, mecánico y perfectamente automatizable.</p>
+  <p>La pieza que falta —y que casi todo el mundo se salta— es la <strong>especificación</strong>. No el
+  script: el documento que dice qué se cruza, con qué llave, bajo qué reglas y qué se hace cuando los datos
+  no vienen como deberían. Vive en el cerebro gerencial, es legible por humanos y por agentes, y es lo que
+  convierte un automatismo frágil en algo auditable.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ra" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0 0 L7 3.2 L0 6.4 z" fill="#5f7233"/>
+      </marker>
+    </defs>
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <rect x="20" y="70" width="112" height="60" rx="5" fill="#e7ecd6" stroke="#3c4a1d" stroke-width="1.8"/>
+      <text x="76" y="92" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3c4a1d">Especificación</text>
+      <text x="76" y="107" text-anchor="middle" font-size="8.5" fill="#4a4a42">en el cerebro</text>
+      <text x="76" y="120" text-anchor="middle" font-size="8.5" fill="#4a4a42">gerencial</text>
+
+      <rect x="158" y="70" width="105" height="60" rx="5" fill="#f6f6ee" stroke="#5f7233" stroke-width="1.5"/>
+      <text x="210" y="92" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3c4a1d">Agente</text>
+      <text x="210" y="107" text-anchor="middle" font-size="8.5" fill="#4a4a42">orquesta y</text>
+      <text x="210" y="120" text-anchor="middle" font-size="8.5" fill="#4a4a42">verifica</text>
+
+      <rect x="289" y="70" width="105" height="60" rx="5" fill="#eef3f7" stroke="#3f6480" stroke-width="1.5"/>
+      <text x="341" y="92" text-anchor="middle" font-size="10.5" font-weight="700" fill="#2f4f66">Código</text>
+      <text x="341" y="107" text-anchor="middle" font-size="8.5" fill="#4a4a42">descarga, cruza,</text>
+      <text x="341" y="120" text-anchor="middle" font-size="8.5" fill="#4a4a42">limpia, calcula</text>
+
+      <rect x="420" y="70" width="105" height="60" rx="5" fill="#f2f6f0" stroke="#3f6b3f" stroke-width="1.5"/>
+      <text x="472" y="92" text-anchor="middle" font-size="10.5" font-weight="700" fill="#3f6b3f">Modelo</text>
+      <text x="472" y="107" text-anchor="middle" font-size="8.5" fill="#4a4a42">interpreta y</text>
+      <text x="472" y="120" text-anchor="middle" font-size="8.5" fill="#4a4a42">redacta</text>
+
+      <rect x="551" y="70" width="70" height="60" rx="5" fill="#fff" stroke="#5f7233" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="586" y="96" text-anchor="middle" font-size="10" font-weight="700" fill="#3c4a1d">Entrega</text>
+      <text x="586" y="112" text-anchor="middle" font-size="8.5" fill="#4a4a42">al gerente</text>
+
+      <path d="M134 100 L154 100" stroke="#5f7233" stroke-width="1.5" marker-end="url(#ra)"/>
+      <path d="M265 100 L285 100" stroke="#5f7233" stroke-width="1.5" marker-end="url(#ra)"/>
+      <path d="M396 100 L416 100" stroke="#5f7233" stroke-width="1.5" marker-end="url(#ra)"/>
+      <path d="M527 100 L547 100" stroke="#5f7233" stroke-width="1.5" marker-end="url(#ra)"/>
+
+      <text x="341" y="52" text-anchor="middle" font-size="9.5" fill="#2f4f66" font-weight="700">determinístico y auditable</text>
+      <text x="472" y="52" text-anchor="middle" font-size="9.5" fill="#3f6b3f" font-weight="700">variable por diseño</text>
+      <path d="M289 58 L394 58" stroke="#3f6480" stroke-width="1.2"/>
+      <path d="M420 58 L525 58" stroke="#3f6b3f" stroke-width="1.2"/>
+
+      <path d="M210 132 L210 170 L586 170 L586 134" stroke="#5f7233" stroke-width="1.2"
+            stroke-dasharray="4 3" fill="none" marker-end="url(#ra)"/>
+      <text x="398" y="188" text-anchor="middle" font-size="9" fill="#4a4a42" font-style="italic">
+        el agente adjunta siempre el semáforo de calidad de datos (cap. 13)</text>
+      <text x="320" y="216" text-anchor="middle" font-size="9.5" fill="#8f3d22">
+        Si la especificación no existe, el reporte no es reproducible ni auditable.</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 11.1</b> · La cadena completa. La línea azul es reproducible bit a bit; la verde no,
+  y por eso nunca debe contener cálculo.</figcaption>
+  </figure>
+
+  <h3>Anatomía completa</h3>
+  <pre>---
+codigo: REP-003
+nombre: Cruce semanal de avance de obra y facturación
+tipo: especificacion-reporte
+solicitante: [gerencia de operaciones]
+frecuencia: viernes 16:00
+areas_involucradas: [operaciones, contabilidad]
+cruce_autorizado: si   <span class="c"># verificado contra la matriz del cap. 6</span>
+clasificacion_salida: confidencial
+version: 3
+vigencia_revision: 2026-08-01
+---
+
+<span class="k"># REP-003 · Cruce semanal de avance y facturación</span>
+
+<span class="k">## Para qué existe</span>
+Detectar frentes con avance físico sin facturación asociada, o al revés.
+Decisión que habilita: liberación de pagos y alerta de desvío.
+
+<span class="k">## Fuentes</span>
+| # | Fuente                    | Ubicación                    | Dueño        | Se completa   |
+|---|---------------------------|------------------------------|--------------|---------------|
+| 1 | Avance semanal de obra    | `OPER/.../avance.xlsx`       | Jefe de obra | lun-vie       |
+| 2 | Facturación por frente    | `CONTA/.../fact.xlsx`        | Cta. x pagar | mar y jue     |
+
+<span class="k">## Llave de cruce</span>
+`codigo_frente` (formato FR-000). En fuente 2 viene como `centro_costo`:
+mapear con la tabla `CONTA/maestros/frente-centro.md`.
+
+<span class="k">## Reglas de negocio aplicadas</span>
+1. Avance se toma al corte del viernes 12:00; posteriores van a la semana siguiente.
+2. Facturación incluye emitidas y en trámite; excluye anuladas.
+3. "Desvío" = diferencia mayor a 10 puntos porcentuales entre avance y facturado.
+4. Definición de frente: canónica (ver diccionario), NO la variante de Operaciones.
+
+<span class="k">## Limpieza</span>
+- Normalizar códigos de frente a mayúsculas, sin espacios.
+- Descartar filas sin código de frente; contarlas y reportarlas.
+- Montos a dos decimales; sin conversión de moneda (todo en moneda local).
+
+<span class="k">## Precondiciones (ver cap. 13)</span>
+- Fuente 1 debe tener filas para al menos el 90 % de los frentes activos.
+- Fuente 2 debe tener fecha de actualización posterior al martes de la semana.
+- Si no se cumplen: emitir MARCADO como incompleto, nunca omitir el reporte.
+
+<span class="k">## Salida</span>
+Presentación de 4 láminas: resumen, tabla de desvíos, top 5 críticos,
+comentario narrativo. Plantilla: `GER/plantillas/rep-003.pptx`.
+
+<span class="k">## Historial de cambios</span>
+| v | Fecha      | Cambio                                        | Quién |
+|---|------------|-----------------------------------------------|-------|
+| 3 | 2026-08-01 | Umbral de desvío de 15 a 10 puntos            | [ ]   |
+| 2 | 2026-05-12 | Se excluyen facturas anuladas                 | [ ]   |</pre>
+
+  <div class="box warn"><span class="lab">Lo que hace fallar estos reportes</span>
+  <p>Casi nunca falla el cruce. Falla la <strong>llave</strong>: dos áreas identifican lo mismo con códigos
+  distintos, alguien escribe «FR-12» en vez de «FR-012», o el mapeo entre código y centro de costo se quedó
+  sin actualizar tras una reestructuración. Por eso la sección de llave de cruce merece más detalle que
+  ninguna otra, incluyendo dónde vive la tabla de mapeo y quién la mantiene.</p></div>
+
+  <h3>Versionado y por qué importa</h3>
+  <p>El campo <code>version</code> y el historial no son formalismo. Cuando un gerente pregunta por qué el
+  número de esta semana no es comparable con el de marzo, la respuesta debe ser un renglón —«en la versión 3
+  cambió el umbral de desvío»— y no una investigación. Un reporte automatizado sin historial de cambios
+  genera desconfianza en cuanto una cifra se mueve por una razón metodológica.</p>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>La especificación es el contrato y vive en el cerebro gerencial: para qué existe, fuentes con dueño y
+  cadencia, llave de cruce con su mapeo, reglas de negocio, limpieza, precondiciones, formato de salida e
+  historial de versiones. Sin ella el reporte no es reproducible ni auditable. El punto de fallo habitual
+  es la llave, no el cálculo.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 12 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 12</div>
+  <h2>Qué es código y qué es modelo</h2>
+  <p class="epi">Si el mismo insumo puede producir dos resultados distintos, eso no debería haber sido un
+  cálculo.</p>
+
+  <p>La forma más rápida de arruinar un reporte agéntico es pedirle al modelo que haga todo el trabajo:
+  «lee estos dos archivos, crúzalos y arma la presentación». Funciona en la demostración y falla en
+  producción, por un motivo estructural: <strong>un modelo es variable por diseño</strong>. Esa variabilidad
+  es exactamente lo que quieres al redactar un comentario y exactamente lo que no quieres al sumar una
+  columna.</p>
+
+  <h3>La línea divisoria</h3>
+  <table>
+    <tr><th style="width:48%">Código determinístico</th><th>Modelo</th></tr>
+    <tr><td>Descargar los archivos de sus ubicaciones</td><td>Interpretar qué significa el resultado</td></tr>
+    <tr><td>Normalizar y limpiar según reglas escritas</td><td>Redactar el comentario ejecutivo</td></tr>
+    <tr><td>Cruzar por la llave</td><td>Señalar qué merece atención y por qué</td></tr>
+    <tr><td>Calcular diferencias, totales y umbrales</td><td>Sugerir preguntas de seguimiento</td></tr>
+    <tr><td>Verificar precondiciones</td><td>Adaptar el tono al destinatario</td></tr>
+    <tr><td>Aplicar formato a la plantilla</td><td>Explicar una anomalía consultando el cerebro</td></tr>
+  </table>
+
+  <p>La regla mnemotécnica: <strong>si el resultado debe ser idéntico ejecutándolo dos veces, es
+  código</strong>. Todo lo que aparece en la columna izquierda cumple esa condición.</p>
+
+  <h3>Entonces, ¿qué aporta el agente?</h3>
+  <p>Si el cálculo es código, cabe preguntarse para qué sirve el agente. Aporta cuatro cosas que un script
+  solo no da:</p>
+  <ul class="plain">
+    <li><strong>Orquestación tolerante.</strong> Cuando una fuente cambió de nombre o una columna se movió,
+    el agente lo detecta, lo reporta y —si la especificación lo permite— adapta el mapeo en lugar de fallar
+    con un error de índice.</li>
+    <li><strong>Verificación contra el cerebro.</strong> Antes de cruzar, consulta la matriz de cruces, la
+    definición canónica y la vigencia de las fuentes. Un script no sabe qué es un cruce autorizado.</li>
+    <li><strong>Interpretación.</strong> «Tres frentes con desvío superior al 20 %, los tres del mismo
+    contratista» es una observación que ningún cálculo produce.</li>
+    <li><strong>Narrativa y formato final.</strong> La última milla: convertir una tabla correcta en cuatro
+    láminas que un gerente lee en dos minutos.</li>
+  </ul>
+
+  <div class="box case"><span class="lab">Caso · El número que cambiaba solo</span>
+  <p>Un equipo automatizó un reporte pidiéndole al modelo que hiciera el cruce directamente sobre dos
+  archivos adjuntos. Durante seis semanas funcionó. En la séptima, el total no cuadró con contabilidad por
+  una diferencia pequeña, y al reejecutarlo salió un número ligeramente distinto otra vez. La causa: un
+  puñado de filas con el código de frente escrito de forma irregular, que el modelo resolvía por
+  aproximación —razonablemente, pero no idénticamente— en cada ejecución.</p>
+  <p>La corrección fue mover el cruce a código con una regla explícita de normalización y una lista de
+  descartes reportada. Curiosamente el reporte pasó a ser <em>menos</em> completo —esas filas ahora aparecen
+  como excluidas— y mucho más confiable. <strong>Un reporte que declara lo que no pudo procesar vale más
+  que uno que lo resuelve en silencio.</strong></p></div>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Es la división del trabajo entre una calculadora y un analista. Nadie le pide al analista que sume la
+  columna de memoria, y nadie le pide a la calculadora que explique por qué el margen cayó. El error de
+  diseño no es usar el modelo: es usarlo para el trabajo de la calculadora.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Si el resultado debe ser idéntico en dos ejecuciones, es código: descargar, normalizar, cruzar,
+  calcular, verificar precondiciones, aplicar plantilla. El modelo aporta orquestación tolerante,
+  verificación contra el cerebro, interpretación y narrativa. Un reporte que declara lo que excluyó es más
+  confiable que uno que lo resolvió por aproximación.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 13 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 13</div>
+  <h2>Precondiciones y fallo honesto</h2>
+  <p class="epi">El viernes a las cuatro, el archivo está a medio llenar. El reporte va a salir igual. La
+  única pregunta es si va a decirlo.</p>
+
+  <p>Este capítulo trata el riesgo más subestimado de todo el libro, y es específico del caso que nos
+  ocupa: los reportes se construyen sobre <strong>archivos que se van completando</strong>. No son bases de
+  datos consistentes; son planillas que varias personas llenan a lo largo de la semana, con retrasos,
+  huecos y correcciones tardías.</p>
+  <p>Un automatismo ingenuo procesa lo que hay y produce un documento impecable. El formato es idéntico al
+  de una semana completa. Los totales son menores, pero plausibles. Y sobre esa base se toma una decisión.
+  <strong>El problema no es el dato faltante: es la ausencia de señal de que faltaba.</strong></p>
+
+  <h3>El semáforo de calidad de datos</h3>
+  <p>La solución es una sección obligatoria en cada reporte, generada por código, que precede al
+  contenido:</p>
+
+  <figure>
+  <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <rect x="60" y="20" width="520" height="170" rx="5" fill="#f9f9f2" stroke="#c6c8b4" stroke-width="1.3"/>
+      <text x="80" y="44" font-size="11.5" font-weight="700" fill="#3c4a1d">Calidad de datos de este reporte</text>
+
+      <circle cx="92" cy="70" r="7" fill="#3f6b3f"/>
+      <text x="110" y="74" font-size="10" fill="#23231f">Avance de obra · 47 de 48 frentes (98 %) · actualizado vie 11:40</text>
+
+      <circle cx="92" cy="100" r="7" fill="#c9a227"/>
+      <text x="110" y="104" font-size="10" fill="#23231f">Facturación · 39 de 48 frentes (81 %) · actualizado jue 18:20</text>
+      <text x="110" y="118" font-size="9" fill="#8f3d22">↳ por debajo del 90 % exigido: los totales están subestimados</text>
+
+      <circle cx="92" cy="142" r="7" fill="#b0512f"/>
+      <text x="110" y="146" font-size="10" fill="#23231f">Filas descartadas · 6 sin código de frente válido</text>
+      <text x="110" y="160" font-size="9" fill="#8f3d22">↳ listado en anexo; corresponden a 2 contratistas</text>
+
+      <rect x="80" y="170" width="480" height="1" fill="#c6c8b4"/>
+      <text x="320" y="184" text-anchor="middle" font-size="10" font-weight="700" fill="#8f3d22">
+        REPORTE EMITIDO COMO INCOMPLETO · no usar para liberación de pagos</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 13.1</b> · El semáforo. Va en la primera lámina, no en un anexo, y lo genera el
+  código a partir de las precondiciones de la especificación.</figcaption>
+  </figure>
+
+  <h3>Las tres reglas del fallo honesto</h3>
+  <p><strong>1 · Emitir marcado, nunca omitir.</strong> La tentación es no enviar el reporte si los datos
+  están incompletos. Es peor: quien lo espera se queda sin nada y sin explicación, y termina pidiéndolo a
+  mano. Emítelo con el semáforo y con la restricción de uso explícita.</p>
+  <p><strong>2 · Cuantificar, no adjetivar.</strong> «Datos parcialmente completos» no sirve. «39 de 48
+  frentes, 81 %» permite decidir. La diferencia entre las dos formulaciones es la diferencia entre un
+  reporte que se usa con criterio y uno que se ignora.</p>
+  <p><strong>3 · Declarar la restricción de uso.</strong> El semáforo debe decir para qué <em>no</em> sirve
+  esta emisión concreta. Es la línea que evita que un documento marcado como incompleto acabe sustentando
+  la decisión que no debía sustentar.</p>
+
+  <pre><span class="c"># Verificación de precondiciones — se ejecuta ANTES de generar nada</span>
+<span class="k">def</span> verificar(fuentes, spec):
+    estado = []
+    <span class="k">for</span> f <span class="k">in</span> fuentes:
+        cobertura = f.filas_validas / spec.universo_esperado
+        frescura  = (ahora() - f.ultima_modificacion).days
+        nivel = (<span style="color:#3f6b3f">"verde"</span>  <span class="k">if</span> cobertura &gt;= spec.minimo <span class="k">and</span> frescura &lt;= spec.max_dias
+                 <span class="k">else</span> <span style="color:#3f6b3f">"ambar"</span> <span class="k">if</span> cobertura &gt;= spec.minimo * 0.8
+                 <span class="k">else</span> <span style="color:#3f6b3f">"rojo"</span>)
+        estado.append({<span style="color:#3f6b3f">"fuente"</span>: f.nombre, <span style="color:#3f6b3f">"nivel"</span>: nivel,
+                       <span style="color:#3f6b3f">"cobertura"</span>: cobertura, <span style="color:#3f6b3f">"frescura_dias"</span>: frescura})
+
+    <span class="c"># El reporte SIEMPRE se emite. Lo que cambia es cómo se marca.</span>
+    <span class="k">if</span> any(e[<span style="color:#3f6b3f">"nivel"</span>] == <span style="color:#3f6b3f">"rojo"</span> <span class="k">for</span> e <span class="k">in</span> estado):
+        <span class="k">return</span> estado, <span style="color:#3f6b3f">"INCOMPLETO"</span>, spec.restriccion_uso
+    <span class="k">if</span> any(e[<span style="color:#3f6b3f">"nivel"</span>] == <span style="color:#3f6b3f">"ambar"</span> <span class="k">for</span> e <span class="k">in</span> estado):
+        <span class="k">return</span> estado, <span style="color:#3f6b3f">"PARCIAL"</span>, spec.restriccion_uso
+    <span class="k">return</span> estado, <span style="color:#3f6b3f">"COMPLETO"</span>, <span class="k">None</span></pre>
+
+  <div class="box case"><span class="lab">Efecto secundario inesperado</span>
+  <p>Publicar el semáforo tiene una consecuencia que ningún proyecto anticipa y que suele ser el mayor
+  beneficio del reporte: las áreas empiezan a completar sus archivos a tiempo. Cuando la lámina uno dice
+  «Facturación: 81 %», con nombre del área, el incentivo cambia. En varios casos el efecto sobre la
+  disciplina de datos superó al ahorro de las tres horas de armado manual.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Los reportes se construyen sobre archivos a medio llenar, y el peligro no es el hueco sino la ausencia
+  de señal. Semáforo de calidad en la primera lámina, generado por código desde las precondiciones. Tres
+  reglas: emitir marcado en lugar de omitir, cuantificar en lugar de adjetivar, y declarar para qué no
+  sirve esa emisión. El semáforo, además, disciplina a quienes llenan las fuentes.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 14 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 14</div>
+  <h2>Gobierno multi-área y hoja de ruta</h2>
+  <p class="epi">Un cerebro lo sostiene una persona con disciplina. Una federación necesita, además, alguien
+  que pueda decidir cuando dos áreas no se ponen de acuerdo.</p>
+
+  <p>El volumen VIII terminaba con noventa días. Este termina con doce meses, y la diferencia no es de
+  esfuerzo técnico sino de coordinación: casi todo el tiempo adicional se va en acuerdos, no en archivos.</p>
+
+  <h3>El comité mínimo</h3>
+  <p>Tres roles bastan. Más que eso convierte la federación en un programa corporativo y le añade una capa
+  de proceso que la mata.</p>
+  <table>
+    <tr><th style="width:24%">Rol</th><th style="width:32%">Quién</th><th>Decide</th></tr>
+    <tr><td><strong>Dueño de área</strong></td><td>Uno por cerebro, con nombre</td>
+        <td>Todo lo interno de su cerebro y el contenido de su capa pública.</td></tr>
+    <tr><td><strong>Árbitro semántico</strong></td><td>Rol transversal, no de área</td>
+        <td>Definiciones canónicas y casos límite cuando dos áreas discrepan.</td></tr>
+    <tr><td><strong>Custodio de cruces</strong></td><td>Seguridad, cumplimiento o quien haga esa función</td>
+        <td>La matriz de cruces permitidos y las excepciones autorizadas.</td></tr>
+  </table>
+  <p>Se reúnen poco: una vez al mes al inicio, una vez por trimestre en régimen. Lo importante no es la
+  frecuencia sino que las tres decisiones tengan un dueño claro, porque son exactamente las que un jefe de
+  área no puede tomar solo y las que, sin dueño, se quedan bloqueadas durante meses.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <g font-size="9.5" fill="#77736a">
+        <text x="70" y="24">Mes 1</text><text x="205" y="24">4</text>
+        <text x="340" y="24">7</text><text x="475" y="24">10</text><text x="580" y="24">12</text>
+      </g>
+      <path d="M60 32 L600 32" stroke="#c6c8b4"/>
+
+      <rect x="60" y="45" width="150" height="42" rx="4" fill="#3c4a1d"/>
+      <text x="74" y="64" font-size="10.5" font-weight="700" fill="#fff">FASE 1 · Segunda área</text>
+      <text x="74" y="79" font-size="9" fill="#e7ecd6">federación de dos, modelo A</text>
+
+      <rect x="220" y="95" width="150" height="42" rx="4" fill="#5f7233"/>
+      <text x="234" y="114" font-size="10.5" font-weight="700" fill="#fff">FASE 2 · Diccionario</text>
+      <text x="234" y="129" font-size="9" fill="#e7ecd6">+ tercera y cuarta área</text>
+
+      <rect x="380" y="145" width="150" height="42" rx="4" fill="#8ba055"/>
+      <text x="394" y="164" font-size="10.5" font-weight="700" fill="#fff">FASE 3 · Gerencial</text>
+      <text x="394" y="179" font-size="9" fill="#fff">índice de índices + cruces</text>
+
+      <rect x="470" y="195" width="150" height="42" rx="4" fill="#e7ecd6" stroke="#3c4a1d" stroke-width="1.5"/>
+      <text x="484" y="214" font-size="10.5" font-weight="700" fill="#3c4a1d">FASE 4 · Reportes</text>
+      <text x="484" y="229" font-size="9" fill="#4a4a42">1 reporte, luego los demás</text>
+
+      <g stroke="#5f7233" stroke-width="1.3" fill="none">
+        <path d="M210 66 L220 66 L220 95"/>
+        <path d="M370 116 L380 116 L380 145"/>
+        <path d="M530 166 L540 166 L540 195"/>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 14.1</b> · Doce meses en cuatro fases solapadas. Los reportes van al final porque
+  dependen del diccionario y de la matriz de cruces.</figcaption>
+  </figure>
+
+  <h3>Las cuatro fases</h3>
+  <p><strong>Fase 1 · Meses 1 a 4: la segunda área.</strong> Elige un par caliente de la matriz del
+  capítulo 3, con dueño comprometido y baja sensibilidad. Monta su cerebro con el volumen VIII, escribe las
+  dos capas públicas y conéctalas por el modelo A. <em>Criterio de salida:</em> personas de un área
+  resolviendo consultas del otro sin escribir un correo, durante un mes.</p>
+  <p><strong>Fase 2 · Meses 4 a 7: diccionario y expansión.</strong> Con dos áreas ya aparecen las primeras
+  colisiones de vocabulario: es el momento de nombrar al árbitro y resolver los primeros diez términos.
+  En paralelo, tercera y cuarta área. <em>Criterio de salida:</em> quince términos canónicos publicados y
+  cuatro capas públicas con revisión al día.</p>
+  <p><strong>Fase 3 · Meses 7 a 10: el cerebro gerencial.</strong> Índice de índices, enrutamiento
+  transversal y —lo importante— la matriz de cruces con su custodio. <em>Criterio de salida:</em> una
+  pregunta transversal real respondida con plan visible, cruce verificado y fuentes citadas.</p>
+  <p><strong>Fase 4 · Meses 10 a 12: el primer reporte.</strong> Uno solo, el más doloroso de armar a mano.
+  Especificación completa, código para el cálculo, semáforo de calidad. <em>Criterio de salida:</em> cuatro
+  emisiones consecutivas sin intervención manual y con el semáforo entendido por quien lo recibe.</p>
+
+  <div class="box warn"><span class="lab">Los cinco errores que arruinan una federación</span>
+  <p>(1) Empezar por RRHH o Legal porque son las que más datos tienen. (2) Elegir el modelo agente-a-agente
+  por elegancia. (3) Construir el cerebro gerencial como superconjunto. (4) Automatizar reportes antes de
+  tener diccionario, con lo que se automatiza el error semántico. (5) No nombrar árbitro, dejando que cada
+  discrepancia de vocabulario se resuelva en la reunión donde aparezca —o no se resuelva.</p></div>
+
+  <h3>Cómo se ve el éxito</h3>
+  <p>Un jefe de logística responde una duda contable sin llamar a nadie. El viernes a las cuatro llega un
+  reporte que nadie armó, con una lámina que dice honestamente qué le faltaba. Dos áreas discuten un número
+  y lo resuelven en cinco minutos citando la definición canónica en lugar de defender cada una la suya. Y
+  el conocimiento de la organización deja de estar repartido entre seis cabezas que tienen que coincidir en
+  la misma reunión para producir una respuesta.</p>
+  <p>Ese es el sentido de la portada. Ningún centinela ve todo el terreno. El grupo, sí.</p>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Tres roles: dueño por área, árbitro semántico y custodio de cruces. Cuatro fases en doce meses:
+  segunda área y modelo A, diccionario y expansión, cerebro gerencial con matriz de cruces, y por último el
+  primer reporte. Los reportes van al final porque automatizar antes del diccionario es automatizar el
+  error semántico.</p></div>
+</section>
+
+<!-- =================== APÉNDICE A =================== -->
+<section class="chapter">
+  <div class="chapnum">Apéndice A</div>
+  <h2>Plantillas de federación</h2>
+  <p>Tres archivos que complementan las plantillas del volumen VIII. Sustituye lo que está entre corchetes
+  y borra lo que no aplique.</p>
+
+  <h3>A.1 · Índice de índices · <code>GERENCIAL/00-INDICE.md</code></h3>
+  <pre>---
+tipo: cerebro-gerencial
+custodio_cruces: [rol]
+arbitro_semantico: [rol]
+vigencia_revision: [AAAA-MM-DD]
+---
+
+<span class="k"># Cerebro gerencial · Índice de índices</span>
+
+<span class="k">## Qué soy y qué no soy</span>
+No contengo información de las áreas. Contengo dónde está, qué significa
+y qué cruces están autorizados.
+
+<span class="k">## Áreas de la federación</span>
+| Área | Resuelve | Capa pública | Dueño | Revisión | Estado |
+|------|----------|--------------|-------|----------|--------|
+
+<span class="k">## Enrutamiento transversal</span>
+| Si la pregunta es sobre... | Consulta |
+|----------------------------|----------|
+
+<span class="k">## Reglas</span>
+1. Antes de cruzar dos áreas, verifica la matriz de cruces.
+2. Cruce no declarado = no se hace; indica a quién solicitarlo.
+3. Cita cada capa pública con su fecha de revisión; advierte las vencidas.
+4. Ante términos ambiguos, aplica el diccionario y señala la diferencia.
+5. Si falta una fuente, dilo. Nunca estimes el hueco.
+
+<span class="k">## Enlaces</span>
+Diccionario: `GERENCIAL/diccionario/` · Reportes: `GERENCIAL/reportes/`
+Matriz de cruces: `GERENCIAL/matriz-cruces.md`</pre>
+
+  <h3>A.2 · Matriz de cruces · <code>GERENCIAL/matriz-cruces.md</code></h3>
+  <pre>---
+tipo: matriz-cruces
+custodio: [rol]
+regla: lista-blanca
+vigencia_revision: [AAAA-MM-DD]
+---
+
+<span class="k"># Matriz de cruces permitidos</span>
+
+Lo que no aparece aquí como permitido, REQUIERE autorización de [rol].
+
+| Cruce | Estado | Condición | Clasificación del resultado |
+|-------|--------|-----------|------------------------------|
+| [A × B] | permitido / prohibido / restringido | [umbral, roles, ventana] | [ ] |
+
+<span class="k">## Umbrales generales</span>
+- Agrupación mínima para cualquier agregado sobre personas: [n] individuos.
+- Granularidad temporal mínima para RRHH y Legal: [periodo], nunca fecha exacta.
+
+<span class="k">## Prohibiciones absolutas</span>
+[Lista breve. No admiten excepción ni autorización por esta vía.]</pre>
+
+  <h3>A.3 · Capa pública · <code>[AREA]/_publico.md</code></h3>
+  <pre>---
+area: [nombre]
+tipo: capa-publica
+dueno: [nombre o rol]
+revision_comprometida: [mensual | trimestral]
+vigencia_revision: [AAAA-MM-DD]
+---
+
+<span class="k"># [Área] · Capa pública</span>
+
+<span class="k">## Qué puede resolver esta área para ti</span>
+[En vocabulario de quien pregunta, no en el tuyo. 4–8 viñetas.]
+
+<span class="k">## Qué NO sale de esta área</span>
+[Lista + canal formal para solicitarlo.]
+
+<span class="k">## Conceptos que definimos</span>
+| Término | Aquí significa | Canónico en diccionario |
+
+<span class="k">## Rutas consultables (según tu permiso)</span>
+| Qué | Dónde | Clasificación |
+
+<span class="k">## A quién preguntar</span>
+| Tema | Rol | Tiempo de respuesta comprometido |</pre>
+</section>
+
+<!-- =================== APÉNDICE B =================== -->
+<section class="chapter">
+  <div class="chapnum">Apéndice B</div>
+  <h2>Glosario de terminología</h2>
+  <p style="font-size:9.6pt;color:#4a4a42;">Los términos del volumen VIII —ficha, front-matter, carga
+  progresiva, puntero, índice maestro— siguen vigentes y no se repiten aquí.</p>
+
+  <dl class="gloss">
+    <dt>Árbitro semántico</dt>
+    <dd>Rol transversal que resuelve las discrepancias de vocabulario entre áreas. No inventa definiciones:
+    elige entre las existentes y documenta los casos límite.</dd>
+
+    <dt>Capa pública</dt>
+    <dd>Archivo escrito a mano por cada área con lo que se compromete a mantener disponible para las demás:
+    qué resuelve, qué no sale, sus términos y sus rutas con clasificación.</dd>
+
+    <dt>Cerebro gerencial</dt>
+    <dd>Cerebro que no contiene datos de las áreas, solo tres cosas: índice de índices, diccionario
+    semántico compartido y especificaciones de reporte con la matriz de cruces.</dd>
+
+    <dt>Custodio de cruces</dt>
+    <dd>Rol que mantiene la matriz de cruces permitidos y autoriza las excepciones. Normalmente en
+    seguridad o cumplimiento, nunca en un área participante.</dd>
+
+    <dt>Definición canónica</dt>
+    <dd>Significado acordado de un término cuando se usa en contextos que cruzan áreas, coexistiendo con
+    las variantes locales en lugar de reemplazarlas.</dd>
+
+    <dt>Especificación de reporte</dt>
+    <dd>Documento que define un reporte recurrente: propósito, fuentes, llave de cruce, reglas de negocio,
+    limpieza, precondiciones, formato de salida e historial de versiones. Vive en el cerebro gerencial.</dd>
+
+    <dt>Estado intermedio de permiso</dt>
+    <dd>Situación en la que alguien sabe que un contenido existe, quién lo custodia y cómo solicitarlo, sin
+    poder verlo. Es lo que hace útil una federación y lo que exige cuidado al redactar índices.</dd>
+
+    <dt>Federación de cerebros</dt>
+    <dd>Arquitectura en la que cada área mantiene un cerebro autónomo, publica una capa acotada hacia las
+    demás y acepta un mínimo de acuerdos comunes sin ceder el control de su contenido.</dd>
+
+    <dt>Federación por índice (modelo A)</dt>
+    <dd>Modelo de comunicación en el que la persona consulta con su propia sesión y los permisos del
+    repositorio siguen gobernando. Requiere cero desarrollo y es el punto de partida recomendado.</dd>
+
+    <dt>Fallo honesto</dt>
+    <dd>Práctica de emitir un reporte marcado como incompleto, cuantificando qué falta y declarando para
+    qué no sirve esa emisión, en lugar de omitirlo o completarlo con estimaciones.</dd>
+
+    <dt>Identidad delegada</dt>
+    <dd>Mecanismo por el cual un agente ejecuta acciones portando los permisos efectivos del usuario que lo
+    invocó. Es lo que haría seguro el modelo agente-a-agente.</dd>
+
+    <dt>Llave de cruce</dt>
+    <dd>Campo que permite unir dos fuentes de áreas distintas, con su tabla de mapeo cuando cada área lo
+    identifica de forma diferente. Es el punto de fallo más común de un reporte agéntico.</dd>
+
+    <dt>Matriz de cruces permitidos</dt>
+    <dd>Lista blanca de combinaciones de fuentes autorizadas, con sus condiciones. Se evalúa al definir un
+    reporte, por una persona, no en tiempo de ejecución por el modelo.</dd>
+
+    <dt>Modelo agente-a-agente (modelo B)</dt>
+    <dd>Modelo en el que el agente de un área consulta al de otra. Sin identidad delegada responde con los
+    permisos del agente, no de quien preguntó, y se convierte en un canal de elusión.</dd>
+
+    <dt>Reidentificación</dt>
+    <dd>Deducción de un dato individual a partir de agregados sobre grupos pequeños. Se mitiga con un
+    umbral mínimo de agrupación.</dd>
+
+    <dt>Riesgo por agregación</dt>
+    <dd>Exposición de información sensible al combinar fuentes que, evaluadas por separado, estaban
+    correctamente clasificadas como no sensibles.</dd>
+
+    <dt>Semáforo de calidad de datos</dt>
+    <dd>Sección obligatoria en la primera lámina de un reporte, generada por código a partir de las
+    precondiciones, que declara cobertura, frescura y descartes por fuente.</dd>
+
+    <dt>Umbral mínimo de agrupación</dt>
+    <dd>Número mínimo de individuos que debe tener un grupo para que un agregado se publique. Por debajo, se
+    suprime en lugar de mostrarse.</dd>
+  </dl>
+</section>
+
+<!-- =================== COLOFÓN =================== -->
+<section class="chapter">
+  <div class="chapnum">Colofón</div>
+  <h2>Sobre esta colección</h2>
+  <p>Noveno volumen de una biblioteca sobre agentes de IA escrita e ilustrada íntegramente desde cero:
+  texto original, diagramas propios y una portada con un animal elegido como metáfora del tema.</p>
+
+  <table>
+    <tr><th style="width:8%">#</th><th style="width:40%">Título</th><th style="width:18%">Animal</th><th>Ángulo</th></tr>
+    <tr><td>I</td><td>De la idea a producción</td><td>Pulpo</td><td>Inteligencia distribuida</td></tr>
+    <tr><td>II</td><td>Construyendo multiagente</td><td>Hormiga</td><td>Enjambre emergente</td></tr>
+    <tr><td>III</td><td>Guía ilustrada</td><td>Cuervo</td><td>Uso de herramientas</td></tr>
+    <tr><td>IV</td><td>Patrones arquitectónicos</td><td>Abeja</td><td>Patrones probados</td></tr>
+    <tr><td>V</td><td>Agentes con MCP</td><td>Delfín</td><td>Comunicación y protocolo</td></tr>
+    <tr><td>VI</td><td>En acción</td><td>Zorro</td><td>Acción inteligente</td></tr>
+    <tr><td>VII</td><td>En la práctica</td><td>Castor</td><td>Ingeniería para producción</td></tr>
+    <tr><td>VIII</td><td>El segundo cerebro corporativo</td><td>Ardilla</td><td>Conocimiento recuperable</td></tr>
+    <tr><td><strong>IX</strong></td><td><strong>La federación de cerebros</strong></td>
+        <td><strong>Suricata</strong></td><td><strong>Vigilancia distribuida</strong></td></tr>
+  </table>
+
+  <p style="margin-top:8mm;">Escrito e ilustrado por Claude · Anthropic<br>
+  Edición de autor · Primera edición · 2026</p>
+</section>
+
+</body>
+</html>

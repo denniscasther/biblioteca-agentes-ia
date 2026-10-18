@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Agentes de IA en Acción</title>
+<style>
+  :root{
+    --ink:#283328; --ink-soft:#4e594b;
+    --paper:#f2efe3; --paper-deep:#e7e2d0;
+    --accent:#bd5b34; --accent-2:#5d7350;
+    --rule:#cdc3a8; --code-bg:#22291f; --code-fg:#e8e3d2;
+  }
+  @page{ size:15.6cm 23.4cm; margin:20mm 18mm 18mm 18mm;
+    @bottom-center{ content:counter(page); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:8.5pt; color:#94917a; }
+    @top-center{ content:string(chaptertitle); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:7.5pt; letter-spacing:.12em; text-transform:uppercase; color:#a89f86; } }
+  @page cover{ margin:0; @bottom-center{content:none;} @top-center{content:none;} }
+  @page plain{ @top-center{content:none;} }
+
+  html{ font-family:"Bitstream Charter","GFS Baskerville",serif; color:var(--ink); }
+  body{ margin:0; line-height:1.5; font-size:10.5pt; text-align:justify; hyphens:auto; }
+  h1,h2,h3,.display{ font-family:"GFS Baskerville","Bitstream Charter",serif; }
+
+  .cover{ page:cover; position:relative; height:23.4cm; width:15.6cm;
+    background:radial-gradient(125% 85% at 50% 10%, #345038 0%, #243a28 52%, #16241a 100%), #1d2e20;
+    color:var(--paper); overflow:hidden; display:flex; flex-direction:column; align-items:center; page-break-after:always; }
+  .cover .frame{ position:absolute; inset:8mm; border:1.2pt solid rgba(242,239,227,.42); }
+  .cover .frame::after{ content:""; position:absolute; inset:2.2mm; border:.5pt solid rgba(242,239,227,.28); }
+  .cover .kicker{ margin-top:15mm; font-family:"Carlito",sans-serif; font-size:8pt; letter-spacing:.32em; text-transform:uppercase; color:#e6a07f; z-index:2; }
+  .cover h1{ z-index:2; text-align:center; font-size:27pt; line-height:1.05; margin:5mm 12mm 0; font-weight:700; }
+  .cover .sub{ z-index:2; text-align:center; font-family:"Carlito",sans-serif; font-size:9.5pt; color:#d7ddca; margin:3.5mm 16mm 0; letter-spacing:.03em; }
+  .fox{ z-index:2; margin-top:6mm; width:84mm; height:84mm; }
+  .cover .author{ z-index:2; margin-top:auto; margin-bottom:16mm; text-align:center; font-family:"Carlito",sans-serif; }
+  .cover .author .by{ font-size:8pt; letter-spacing:.3em; text-transform:uppercase; color:#e6a07f; }
+  .cover .author .name{ font-family:"GFS Baskerville",serif; font-size:13pt; margin-top:2mm; color:var(--paper); }
+
+  .titlepage{ page:plain; page-break-after:always; text-align:center; padding-top:32mm; }
+  .titlepage h1{ font-size:22pt; line-height:1.08; margin:0 6mm; }
+  .titlepage .sub{ font-family:"Carlito",sans-serif; color:var(--ink-soft); margin-top:5mm; font-size:10pt; }
+  .titlepage .rule{ width:42mm; height:1.4pt; background:var(--accent); margin:9mm auto; }
+  .titlepage .meta{ font-family:"Carlito",sans-serif; font-size:9pt; color:var(--ink-soft); }
+
+  .frontnote{ page:plain; page-break-after:always; }
+  .frontnote h2{ font-size:15pt; color:var(--accent); margin-bottom:4mm; }
+
+  .toc{ page-break-after:always; }
+  .toc h2{ font-size:18pt; border-bottom:1.5pt solid var(--rule); padding-bottom:3mm; }
+  .toc ol{ list-style:none; padding:0; margin:5mm 0 0; }
+  .toc li{ display:flex; align-items:baseline; margin:2.6mm 0; gap:3mm; }
+  .toc li .n{ font-family:"Carlito",sans-serif; color:var(--accent); font-weight:700; width:8mm; flex:none; }
+  .toc li .t{ font-weight:600; } .toc li .d{ font-family:"Carlito",sans-serif; font-size:7.6pt; color:var(--ink-soft); }
+
+  .chapter{ page-break-before:always; }
+  .chapter .chead{ margin-bottom:6mm; border-bottom:1.5pt solid var(--rule); padding-bottom:4mm; }
+  .chapter .cnum{ font-family:"Carlito",sans-serif; font-size:9pt; letter-spacing:.3em; text-transform:uppercase; color:var(--accent); }
+  .chapter h2{ string-set:chaptertitle content(); font-size:19pt; line-height:1.1; margin:2mm 0 0; }
+  .epigraph{ font-style:italic; color:var(--ink-soft); margin:0 0 5mm; padding-left:5mm; border-left:2pt solid var(--accent-2); font-size:9.8pt; }
+  .epigraph .who{ display:block; font-style:normal; font-family:"Carlito",sans-serif; font-size:8pt; margin-top:1.5mm; color:#94917a; }
+  h3{ font-size:12.5pt; color:var(--ink); margin:6mm 0 2mm; }
+  p{ margin:0 0 3mm; } .lead{ font-size:11.3pt; color:var(--ink-soft); }
+  strong{ color:var(--ink); } em{ color:var(--ink-soft); }
+
+  .box{ break-inside:avoid; background:var(--paper-deep); border-left:3pt solid var(--accent); padding:4mm 5mm; margin:5mm 0; border-radius:0 2pt 2pt 0; }
+  .box .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:1.5mm; }
+  .box.note{ border-left-color:var(--accent-2); } .box.note .lab{ color:var(--accent-2); }
+  .box p:last-child{ margin-bottom:0; }
+  .def{ break-inside:avoid; background:#eef0e3; border:.7pt solid #c6cdaf; border-left:4pt solid var(--accent-2); padding:4mm 5mm; margin:5mm 0; border-radius:3pt; }
+  .def .term{ font-family:"GFS Baskerville",serif; font-size:11.5pt; color:var(--ink); }
+  .def .term::before{ content:"DEFINICIÓN — "; font-family:"Carlito",sans-serif; font-size:7.3pt; letter-spacing:.18em; color:var(--accent-2); vertical-align:middle; }
+  .def p{ margin:1.5mm 0 0; }
+  .analogy{ break-inside:avoid; background:#fbfaf3; border:.6pt solid var(--rule); padding:4mm 5mm; margin:5mm 0; border-radius:3pt; }
+  .analogy .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent-2); display:block; margin-bottom:1.5mm; }
+
+  pre{ break-inside:avoid; background:var(--code-bg); color:var(--code-fg); font-family:"DejaVu Sans Mono",monospace; font-size:7.6pt; line-height:1.45; padding:4mm 4.5mm; border-radius:4pt; margin:4mm 0; white-space:pre-wrap; text-align:left; }
+  pre .c{ color:#8f9b7f; } pre .k{ color:#e0a96d; } pre .s{ color:#a9cc8e; } pre .f{ color:#7fb6c0; }
+  code.inline{ font-family:"DejaVu Sans Mono",monospace; font-size:8.3pt; background:var(--paper-deep); padding:.3mm 1.2mm; border-radius:2pt; }
+
+  figure{ break-inside:avoid; margin:5mm 0; text-align:center; }
+  figure svg{ width:100%; height:auto; }
+  figcaption{ font-family:"Carlito",sans-serif; font-size:8pt; color:var(--ink-soft); margin-top:2mm; text-align:center; }
+  .dlabel,.dwords{ font-family:"Carlito","DejaVu Sans",sans-serif; fill:var(--ink); }
+  ul.clean{ margin:3mm 0 4mm; padding-left:6mm; } ul.clean li{ margin:1.6mm 0; }
+  table.t{ width:100%; border-collapse:collapse; margin:4mm 0; font-size:9pt; break-inside:avoid; }
+  table.t th{ background:var(--ink); color:var(--paper); font-family:"Carlito",sans-serif; font-size:8pt; padding:2.5mm 3mm; text-align:left; }
+  table.t td{ border-bottom:.6pt solid var(--rule); padding:2.5mm 3mm; vertical-align:top; }
+  table.t td:first-child{ font-weight:600; color:var(--accent); white-space:nowrap; }
+  .endmark{ text-align:center; margin-top:7mm; }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PORTADA ===== -->
+<section class="cover">
+  <div class="frame"></div>
+  <div class="kicker">Guía práctica y didáctica · Edición de autor</div>
+  <h1>Agentes de IA<br>en Acción</h1>
+  <div class="sub">Construir, orquestar y desplegar sistemas autónomos multiagente — paso a paso</div>
+
+  <svg class="fox" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- suelo -->
+    <path d="M28 170 C70 166 140 166 178 172" fill="none" stroke="#f2efe3" stroke-width="1.3" opacity=".5"/>
+    <!-- cola peluda (detras del cuerpo) -->
+    <path d="M86 128 C58 134 42 158 56 174 C76 188 116 186 142 170
+             C120 170 102 162 94 148 C90 140 88 134 86 128 Z"
+          fill="#bd5b34" fill-opacity=".16" stroke="#f2efe3" stroke-width="1.7" stroke-linejoin="round"/>
+    <!-- punta blanca de la cola -->
+    <path d="M142 170 C150 166 156 160 158 154 C150 152 142 154 136 160 C138 164 140 168 142 170 Z"
+          fill="#f2efe3" stroke="#f2efe3" stroke-width="1.2" stroke-linejoin="round"/>
+
+    <!-- cuerpo + cabeza (perfil, mirando a la derecha) -->
+    <path d="M163 98
+             C150 88 138 84 128 83
+             C123 82 119 81 116 79
+             C103 88 90 108 86 134
+             C84 150 90 160 104 161
+             L128 161
+             C127 142 127 116 130 100
+             C135 92 145 90 153 93
+             C157 94 161 96 163 98 Z"
+          fill="#bd5b34" fill-opacity=".10" stroke="#f2efe3" stroke-width="1.8" stroke-linejoin="round"/>
+    <!-- pecho blanco -->
+    <path d="M130 100 C127 120 127 142 128 158 C122 150 120 130 122 112 C124 106 127 102 130 100 Z"
+          fill="#f2efe3" fill-opacity=".5" stroke="none"/>
+
+    <g stroke="#f2efe3" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" fill="none">
+      <!-- patas delanteras -->
+      <path d="M110 150 L108 162"/><path d="M122 150 L122 162"/>
+      <!-- orejas suaves, inclinadas (no cuernos) -->
+      <path d="M114 80 C109 66 108 56 113 50 C119 56 122 68 121 79 Z" fill="#bd5b34" fill-opacity=".22"/>
+      <path d="M123 79 C124 64 129 55 136 53 C137 63 134 73 129 80 Z" fill="#bd5b34" fill-opacity=".22"/>
+      <!-- hocico inferior -->
+      <path d="M152 99 C156 101 160 100 163 98" stroke-width="1.3"/>
+    </g>
+    <!-- ojo amable -->
+    <path d="M138 92 C141 89 147 89 150 92 C147 95 141 95 138 92 Z" fill="#f2efe3" stroke="#283328" stroke-width="0.8"/>
+    <circle cx="144" cy="92" r="1.6" fill="#283328"/>
+    <!-- nariz -->
+    <ellipse cx="164" cy="98" rx="3" ry="2.4" fill="#283328"/>
+  </svg>
+
+  <div class="author">
+    <div class="by">Escrito e ilustrado por</div>
+    <div class="name">Claude</div>
+  </div>
+</section>
+
+<!-- ===== PORTADILLA ===== -->
+<section class="titlepage">
+  <h1>Agentes de IA en Acción</h1>
+  <div class="sub">Construir, orquestar y desplegar agentes autónomos</div>
+  <div class="rule"></div>
+  <p class="meta">De un LLM a un asistente; de un asistente a un equipo:<br>acciones, memoria, planificación, razonamiento y feedback en la práctica.</p>
+  <p class="meta" style="margin-top:14mm;">Escrito e ilustrado por Claude · Anthropic<br>Edición de autor · Primera edición</p>
+</section>
+
+<!-- ===== SOBRE LA PORTADA ===== -->
+<section class="frontnote">
+  <h2>Sobre la portada</h2>
+  <p>El animal de esta portada es un <strong>zorro</strong>, y encarna el espíritu de un libro titulado <em>en acción</em>.</p>
+  <p>El zorro es, en casi todas las culturas, el arquetipo del <strong>solucionador astuto</strong>: no gana por fuerza bruta, sino por ingenio, adaptación y un buen plan. Acecha, evalúa, cambia de estrategia sobre la marcha y actúa en el momento justo. Es, además, uno de los animales más <em>adaptables</em> del planeta: prospera en bosques, desiertos y ciudades por igual.</p>
+  <p>Esa es exactamente la mentalidad de un agente puesto a trabajar de verdad. No basta con que "sepa": tiene que <strong>actuar</strong> —usar herramientas, planificar pasos, razonar ante lo inesperado, aprender del resultado y adaptarse al entorno—. Mientras otros animales de esta colección representaban una propiedad (la comunicación, la arquitectura, el enjambre), el zorro representa la <em>acción inteligente</em>: el agente que no solo piensa, sino que resuelve. Tenlo en mente; este libro va de poner agentes a hacer cosas en el mundo real.</p>
+</section>
+
+<!-- ===== PREFACIO ===== -->
+<section class="frontnote">
+  <h2>Prefacio</h2>
+  <p class="lead">Hay muchos libros que explican qué es un agente. Este se obsesiona con otra cosa: cómo hacer que <em>funcione</em>. Cómo darle acciones reales, memoria que sirva, la capacidad de planificar, de razonar y de mejorar con la experiencia.</p>
+  <p>El recorrido es deliberadamente práctico y progresivo. Empezamos por entender al agente y al motor que lo impulsa, el LLM, con el arte de hablarle bien (prompt engineering). Subimos a los asistentes y luego a los <strong>equipos de agentes</strong> que colaboran. Les damos <strong>acciones</strong> (funciones y herramientas) y <strong>autonomía</strong> con árboles de comportamiento. Ensamblamos una plataforma para alojarlos. Les construimos <strong>memoria y conocimiento</strong> (RAG). Y cerramos con lo que distingue a un agente serio: prompts sistemáticos, <strong>razonamiento</strong>, <strong>evaluación</strong> y <strong>planificación con feedback</strong>.</p>
+  <p>Mi compromiso es ser lo más didáctico posible: cada concepto trae una <em>definición</em> clara, una <em>gráfica</em> que lo muestra, una <em>analogía</em> cotidiana y, cuando aporta, un ejemplo de código en Python. No verás juguetes frágiles; verás las piezas que de verdad hacen falta para un agente en el que se pueda confiar.</p>
+  <div class="box note"><span class="lab">Cómo leer este libro</span><p>Los capítulos van de lo simple a lo complejo y se construyen unos sobre otros, pero cada uno se sostiene solo. Cada capítulo cierra con una caja "Para recordar". Si tienes prisa, los capítulos 1, 6, 8, 10 y 11 son el esqueleto conceptual.</p></div>
+</section>
+
+<!-- ===== ÍNDICE ===== -->
+<section class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><span class="n">1</span><span><span class="t">Introducción a los agentes y su mundo</span><br><span class="d">Qué es un agente, sus sistemas componentes, por qué ahora, el panorama</span></span></li>
+    <li><span class="n">2</span><span><span class="t">Aprovechar los grandes modelos de lenguaje</span><br><span class="d">La API, modelos abiertos en local, y el arte del prompt engineering</span></span></li>
+    <li><span class="n">3</span><span><span class="t">Trabajar con asistentes GPT</span><br><span class="d">Construir un GPT, acciones personalizadas, conocimiento por archivos, publicar</span></span></li>
+    <li><span class="n">4</span><span><span class="t">Explorar sistemas multiagente</span><br><span class="d">AutoGen, chats grupales y equipos con CrewAI</span></span></li>
+    <li><span class="n">5</span><span><span class="t">Empoderar agentes con acciones</span><br><span class="d">Funciones, function calling y Semantic Kernel</span></span></li>
+    <li><span class="n">6</span><span><span class="t">Construir asistentes autónomos</span><br><span class="d">Árboles de comportamiento y agentes que se gobiernan solos</span></span></li>
+    <li><span class="n">7</span><span><span class="t">Ensamblar una plataforma de agentes</span><br><span class="d">Una interfaz, un motor, perfiles y herramientas</span></span></li>
+    <li><span class="n">8</span><span><span class="t">Memoria y conocimiento del agente</span><br><span class="d">RAG, búsqueda semántica, bases vectoriales y tipos de memoria</span></span></li>
+    <li><span class="n">9</span><span><span class="t">Dominar los prompts con Prompt Flow</span><br><span class="d">Ingeniería sistemática de prompts, perfiles, evaluación y grounding</span></span></li>
+    <li><span class="n">10</span><span><span class="t">Razonamiento y evaluación del agente</span><br><span class="d">Cadena de pensamiento, árbol de pensamiento y autoconsistencia</span></span></li>
+    <li><span class="n">11</span><span><span class="t">Planificación y feedback del agente</span><br><span class="d">Planificadores secuenciales y el ciclo de mejora</span></span></li>
+  </ol>
+</section>
+
+<!-- CAP 1 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo uno</div><h2>Introducción a los agentes y su mundo</h2></div>
+  <p class="epigraph">La inteligencia útil no se mide por lo que sabe, sino por lo que logra.<span class="who">— Sobre por qué los agentes importan</span></p>
+  <p class="lead">Antes de construir, entendamos qué estamos construyendo. Un agente no es un modelo más grande: es un modelo <em>puesto a trabajar</em> dentro de un sistema con varias piezas.</p>
+
+  <div class="def"><span class="term">Agente de IA</span><p>Componente autónomo que, dado un objetivo, percibe su entorno, decide con un modelo de lenguaje, actúa mediante herramientas y aprende de los resultados —procesando información y tomando decisiones por sí mismo, entre bastidores.</p></div>
+
+  <h3>Los sistemas que componen un agente</h3>
+  <p>Si abrimos un agente, encontramos cinco subsistemas que se repiten siempre: <strong>percepción</strong> (la entrada: la petición, el estado del mundo), <strong>razonamiento</strong> (el LLM que decide), <strong>memoria</strong> (lo que recuerda, de corto y largo plazo), <strong>acciones</strong> (las herramientas con que toca el mundo) y un <strong>bucle</strong> que los coordina hasta cumplir el objetivo.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
+      <rect x="170" y="48" width="120" height="38" rx="6" fill="#283328"/><text x="230" y="66" text-anchor="middle" fill="#f2efe3" font-size="9.5" class="dlabel">Razonamiento</text><text x="230" y="79" text-anchor="middle" fill="#a9cc8e" font-size="7" class="dlabel">el LLM decide</text>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="20" y="14" width="100" height="26" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.3"/><text x="70" y="31">Percepción</text>
+        <rect x="340" y="14" width="100" height="26" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.3"/><text x="390" y="31">Acciones</text>
+        <rect x="20" y="94" width="100" height="26" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.3"/><text x="70" y="111">Memoria</text>
+        <rect x="340" y="94" width="100" height="26" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.3"/><text x="390" y="108">Objetivo</text><text x="390" y="117" font-size="7" fill="#5d7350">cumplido</text>
+      </g>
+      <g stroke="#a89f86" stroke-width="1.2" fill="none"><path d="M120 27 L168 52"/><path d="M340 27 L292 52"/><path d="M120 107 L168 82"/><path d="M340 107 L292 82"/></g>
+    </svg>
+    <figcaption>Figura 1.1 — Los subsistemas de un agente girando en torno al razonamiento.</figcaption>
+  </figure>
+
+  <h3>¿Por qué ahora la era de los agentes?</h3>
+  <p>Tres cosas se alinearon: modelos lo bastante capaces para razonar de forma general, la capacidad de <em>llamar herramientas</em> de forma fiable, y un ecosistema de datos y APIs al que conectarse. Juntas convirtieron el "chatbot que responde" en el "agente que hace".</p>
+
+  <h3>Detrás de la interfaz</h3>
+  <p>Cuando hablas con un asistente moderno, bajo la superficie no hay una sola llamada: hay una orquestación de interacciones entre el usuario, el modelo y varias fuentes de datos. Los agentes <em>capturan y organizan</em> esa orquestación en componentes autónomos. Entender que detrás de la conversación hay un sistema —no magia— es el primer paso para construir uno.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Un agente = percepción + razonamiento (LLM) + memoria + acciones + bucle, persiguiendo un objetivo. La era de los agentes llegó cuando los modelos aprendieron a usar herramientas con fiabilidad. Detrás de cada asistente hay un sistema orquestado, no un truco.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 2 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo dos</div><h2>Aprovechar los grandes modelos de lenguaje</h2></div>
+  <p class="epigraph">El modelo es el motor; el prompt, el volante. Sin volante, hasta el mejor motor te lleva a cualquier parte.<span class="who">— Sobre hablarle bien al modelo</span></p>
+  <p class="lead">El cerebro del agente es un LLM. Conectarse a él es fácil; el arte está en <strong>cómo le hablas</strong> —el <em>prompt engineering</em>—, que es la habilidad que más mejora un agente con menos esfuerzo.</p>
+
+  <h3>La conversación con el modelo: petición y respuesta</h3>
+  <p>Usar un LLM es enviar una <strong>petición</strong> (tus mensajes) y recibir una <strong>respuesta</strong>. Las APIs comerciales (como la de OpenAI) lo hacen por la nube; los modelos abiertos puedes ejecutarlos en tu propia máquina con herramientas como LM Studio —útil cuando importan la privacidad o el costo—. El patrón mental es el mismo: entra contexto, sale texto.</p>
+
+  <h3>Las seis palancas del prompt engineering</h3>
+  <p>Escribir buenos prompts no es magia, es técnica. Seis palancas concretas:</p>
+  <figure>
+    <svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
+      <g font-size="8" text-anchor="middle" class="dwords">
+        <rect x="14" y="20" width="135" height="26" rx="4" fill="#fff" stroke="#bd5b34" stroke-width="1.1"/><text x="81" y="37">1. Consultas detalladas</text>
+        <rect x="162" y="20" width="135" height="26" rx="4" fill="#fff" stroke="#bd5b34" stroke-width="1.1"/><text x="229" y="37">2. Adoptar personas</text>
+        <rect x="310" y="20" width="135" height="26" rx="4" fill="#fff" stroke="#bd5b34" stroke-width="1.1"/><text x="377" y="37">3. Usar delimitadores</text>
+        <rect x="14" y="56" width="135" height="26" rx="4" fill="#fff" stroke="#5d7350" stroke-width="1.1"/><text x="81" y="73">4. Especificar pasos</text>
+        <rect x="162" y="56" width="135" height="26" rx="4" fill="#fff" stroke="#5d7350" stroke-width="1.1"/><text x="229" y="73">5. Dar ejemplos</text>
+        <rect x="310" y="56" width="135" height="26" rx="4" fill="#fff" stroke="#5d7350" stroke-width="1.1"/><text x="377" y="73">6. Fijar la longitud</text>
+      </g>
+      <rect x="150" y="98" width="160" height="24" rx="5" fill="#283328"/><text x="230" y="114" text-anchor="middle" fill="#f2efe3" font-size="8" class="dlabel">→ mejor respuesta</text>
+      <g stroke="#a89f86" stroke-width="1" fill="none"><path d="M230 82 L230 98"/></g>
+    </svg>
+    <figcaption>Figura 2.1 — Las seis palancas que transforman un prompt vago en uno eficaz.</figcaption>
+  </figure>
+  <p>Un ejemplo que las combina: en vez de "resume esto", escribe <em>"Actúa como editor experto (persona). Resume el texto entre comillas (delimitador) en 3 viñetas (longitud), siguiendo estos pasos: 1) identifica la tesis, 2) los argumentos, 3) la conclusión. Ejemplo de formato: …"</em>. El mismo modelo, diez veces mejor respuesta.</p>
+
+  <h3>Elegir el modelo adecuado</h3>
+  <p>No siempre gana el más grande. Para cada paso del agente, elige el modelo más pequeño que lo resuelva bien: ahorra costo y latencia. Reserva el modelo potente para el razonamiento difícil. Y considera modelos abiertos cuando la privacidad o el volumen lo justifiquen.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Usar un LLM es petición → respuesta. La habilidad de mayor retorno es el prompt engineering: sé detallado, usa personas, delimita, especifica pasos, da ejemplos y fija la longitud. Y elige el modelo más pequeño que resuelva cada paso.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 3 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo tres</div><h2>Trabajar con asistentes GPT</h2></div>
+  <p class="epigraph">Antes de construir un agente desde cero, vale aprender con uno que ya viene casi armado.<span class="who">— Sobre los asistentes GPT</span></p>
+  <p class="lead">Los asistentes tipo GPT son una excelente rampa de entrada: te dejan crear un agente útil combinando tres cosas —instrucciones, conocimiento y acciones— sin construir toda la infraestructura.</p>
+
+  <h3>Las tres piezas de un asistente</h3>
+  <figure>
+    <svg viewBox="0 0 460 110" xmlns="http://www.w3.org/2000/svg">
+      <rect x="175" y="40" width="110" height="34" rx="6" fill="#283328"/><text x="230" y="61" text-anchor="middle" fill="#f2efe3" font-size="9.5" class="dlabel">Asistente GPT</text>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="20" y="14" width="115" height="26" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.3"/><text x="77" y="27">Instrucciones</text><text x="77" y="36" font-size="6.8" fill="#5d7350">su rol y personalidad</text>
+        <rect x="325" y="14" width="115" height="26" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.3"/><text x="382" y="27">Conocimiento</text><text x="382" y="36" font-size="6.8" fill="#5d7350">archivos que subes</text>
+        <rect x="172" y="86" width="116" height="22" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.3"/><text x="230" y="100">Acciones · APIs externas</text>
+      </g>
+      <g stroke="#a89f86" stroke-width="1.2" fill="none"><path d="M135 27 L173 44"/><path d="M325 27 L287 44"/><path d="M230 74 L230 86"/></g>
+    </svg>
+    <figcaption>Figura 3.1 — Un asistente GPT = instrucciones + conocimiento + acciones.</figcaption>
+  </figure>
+  <p>Las <strong>instrucciones</strong> definen su personalidad y reglas. El <strong>conocimiento</strong> se añade subiendo archivos que el asistente puede consultar (un manual, un catálogo) —una forma sencilla de RAG—. Las <strong>acciones personalizadas</strong> lo conectan a APIs externas para que <em>haga</em> cosas, no solo hable.</p>
+
+  <h3>Publicar y la economía de los GPT</h3>
+  <p>Crear un GPT es fácil; sostenerlo tiene un costo. Cada conversación consume recursos del modelo, y un asistente popular puede volverse caro. Antes de publicar, conviene entender esa economía: qué tan seguido se usará, qué tan caras son sus acciones, y si el valor que aporta justifica el gasto. Un buen asistente no es solo útil: es <em>sostenible</em>.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Un asistente GPT combina instrucciones (rol), conocimiento (archivos) y acciones (APIs). Es la forma más rápida de tener un agente útil sin construir todo. Pero recuerda su economía: la popularidad tiene costo, y un buen diseño también es sostenible.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 4 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cuatro</div><h2>Explorar sistemas multiagente</h2></div>
+  <p class="epigraph">Lo que un experto hace solo y despacio, un equipo bien repartido lo hace rápido y mejor.<span class="who">— Sobre los equipos de agentes</span></p>
+  <p class="lead">Cuando una tarea es grande o variada, varios agentes especializados que colaboran superan a uno solo. Herramientas como AutoGen y CrewAI facilitan armar esos equipos.</p>
+
+  <h3>De un agente a una tripulación</h3>
+  <p>La idea central: cada agente toma un <strong>rol</strong> (investigador, escritor, crítico) con su propia personalidad, herramientas y objetivo. Luego colaboran —en una conversación grupal o repartiéndose tareas— para resolver algo que ninguno haría solo. CrewAI lo modela como una "tripulación" con roles; AutoGen, como agentes que conversan entre sí.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#a89f86"/></marker></defs>
+      <g text-anchor="middle" font-size="8.5" class="dwords">
+        <circle cx="230" cy="30" r="24" fill="#283328"/><text x="230" y="28" fill="#f2efe3" font-size="8">Coordinador</text><text x="230" y="40" fill="#a9cc8e" font-size="7">reparte/reúne</text>
+        <rect x="48" y="92" width="96" height="40" rx="8" fill="#fff" stroke="#bd5b34" stroke-width="1.2"/><text x="96" y="110">Investigador</text><text x="96" y="122" font-size="6.8" fill="#5d7350">busca</text>
+        <rect x="182" y="92" width="96" height="40" rx="8" fill="#fff" stroke="#bd5b34" stroke-width="1.2"/><text x="230" y="110">Escritor</text><text x="230" y="122" font-size="6.8" fill="#5d7350">redacta</text>
+        <rect x="316" y="92" width="96" height="40" rx="8" fill="#fff" stroke="#bd5b34" stroke-width="1.2"/><text x="364" y="110">Crítico</text><text x="364" y="122" font-size="6.8" fill="#5d7350">revisa</text>
+      </g>
+      <g stroke="#a89f86" stroke-width="1.2" fill="none" marker-end="url(#m4)"><path d="M210 46 C160 66 120 80 98 90"/><path d="M230 54 L230 90"/><path d="M250 46 C300 66 340 80 362 90"/></g>
+    </svg>
+    <figcaption>Figura 4.1 — Una tripulación de agentes: roles distintos que colaboran bajo un coordinador.</figcaption>
+  </figure>
+
+  <h3>Observar y depurar el equipo</h3>
+  <p>Un sistema multiagente puede volverse una caja negra: ¿quién dijo qué?, ¿por qué se atascó? Herramientas de observación (tipo AgentOps) registran las conversaciones y decisiones del equipo, para que puedas ver el flujo y arreglar lo que falla. Sin esa visibilidad, depurar varios agentes es adivinar.</p>
+
+  <div class="box note"><span class="lab">El costo de los equipos</span><p>Cada agente es otra serie de llamadas al modelo. Un equipo de cuatro puede costar varias veces más que un agente solo. Empieza con uno; suma agentes solo cuando la tarea se divida con claridad en especialidades.</p></div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Multiagente = roles especializados que colaboran (CrewAI: tripulación; AutoGen: agentes que conversan). Gana especialización y paralelismo, a cambio de costo y complejidad. Obsérvalos para poder depurarlos, y crece solo cuando la tarea lo pida.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 5 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cinco</div><h2>Empoderar agentes con acciones</h2></div>
+  <p class="epigraph">Un agente que solo habla es un consejero. Uno que actúa es un colaborador.<span class="who">— Sobre las acciones</span></p>
+  <p class="lead">Las <strong>acciones</strong> son lo que convierte la conversación en trabajo hecho. El mecanismo central se llama <em>function calling</em>: el modelo pide ejecutar una función, tu código la ejecuta y le devuelve el resultado.</p>
+
+  <div class="def"><span class="term">Function calling</span><p>Mecanismo por el que un LLM, en lugar de responder con texto, solicita la ejecución de una función con ciertos argumentos. El modelo decide <em>qué</em> función y con <em>qué</em> datos; tu código la ejecuta y le devuelve el resultado para que continúe.</p></div>
+
+  <figure>
+    <svg viewBox="0 0 460 110" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#283328"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="14" y="42" width="90" height="30" rx="5" fill="#283328"/><text x="59" y="61" fill="#f2efe3">Modelo</text>
+        <polygon points="160,38 210,57 160,76 110,57" fill="#fff" stroke="#bd5b34" stroke-width="1.3"/><text x="160" y="60" font-size="7.5">pide función</text>
+        <rect x="240" y="42" width="100" height="30" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.3"/><text x="290" y="61">tu código ejecuta</text>
+        <rect x="372" y="42" width="80" height="30" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.3"/><text x="412" y="61">resultado</text>
+      </g>
+      <g stroke="#283328" stroke-width="1.2" fill="none" marker-end="url(#m5)"><path d="M104 57 L108 57"/><path d="M210 57 L238 57"/><path d="M340 57 L370 57"/></g>
+      <text x="230" y="95" text-anchor="middle" font-size="7.5" fill="#94917a" class="dlabel">el resultado vuelve al modelo, que decide el siguiente paso</text>
+    </svg>
+    <figcaption>Figura 5.1 — Function calling: el modelo decide, tu código ejecuta, el resultado regresa.</figcaption>
+  </figure>
+
+<pre><span class="c"># El modelo pide; tu código ejecuta. Esa separación es la frontera de seguridad.</span>
+funciones = [{
+  <span class="s">"name"</span>: <span class="s">"consultar_stock"</span>,
+  <span class="s">"description"</span>: <span class="s">"Devuelve unidades disponibles de un producto por SKU."</span>,
+  <span class="s">"parameters"</span>: {<span class="s">"sku"</span>: <span class="s">"string"</span>}
+}]
+<span class="c"># 1) El modelo responde: consultar_stock(sku="42")</span>
+<span class="c"># 2) Tú ejecutas la función real y le devuelves: {"sku":"42","unidades":17}</span>
+<span class="c"># 3) El modelo redacta la respuesta final con ese dato.</span></pre>
+
+  <h3>Funciones semánticas y nativas (Semantic Kernel)</h3>
+  <p>Hay dos sabores de funciones. Las <strong>nativas</strong> son código normal (consultar una base de datos, hacer un cálculo). Las <strong>semánticas</strong> son prompts reutilizables tratados como funciones ("resume esto", "traduce aquello"). Frameworks como Semantic Kernel te dejan combinarlas y empaquetarlas en <em>skills/plugins</em> reutilizables, e incluso embeber una función nativa dentro de una semántica. La idea: tratar capacidades —de código o de prompt— como bloques que ensamblas.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Las acciones convierten al agente en colaborador. El mecanismo es function calling: el modelo pide, tu código ejecuta y valida. Distingue funciones nativas (código) de semánticas (prompts reutilizables) y combínalas como bloques. El modelo nunca ejecuta: esa es tu frontera de control.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 6 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo seis</div><h2>Construir asistentes autónomos</h2></div>
+  <p class="epigraph">La autonomía no es ausencia de reglas, sino reglas tan claras que ya no necesitas vigilar.<span class="who">— Sobre los árboles de comportamiento</span></p>
+  <p class="lead">Para que un agente actúe solo de forma fiable, necesita una estructura que decida qué hacer en cada situación. Una de las más probadas viene de la robótica y los videojuegos: el <strong>árbol de comportamiento</strong>.</p>
+
+  <div class="def"><span class="term">Árbol de comportamiento (BT)</span><p>Estructura jerárquica que organiza el comportamiento de un agente en nodos. Se recorre de arriba abajo y de izquierda a derecha, decidiendo qué acción ejecutar según el estado actual. Sus nodos clave son <em>secuencias</em> (haz todo en orden) y <em>selectores</em> (intenta opciones hasta que una funcione).</p></div>
+
+  <h3>Cómo se lee un árbol</h3>
+  <p>Un <strong>selector</strong> prueba a sus hijos en orden y se detiene en el primero que tiene éxito —es un "intenta esto, si no, aquello"—. Una <strong>secuencia</strong> ejecuta a todos sus hijos en orden y solo triunfa si todos lo hacen —es un "haz esto, luego esto, luego esto"—. Las <strong>hojas</strong> son las acciones concretas. Con solo estas piezas se construye un comportamiento sorprendentemente robusto y, sobre todo, <em>legible</em>: puedes mirar el árbol y entender qué hará el agente.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg">
+      <g text-anchor="middle" font-size="8" class="dwords">
+        <rect x="200" y="10" width="60" height="24" rx="4" fill="#283328"/><text x="230" y="26" fill="#f2efe3" font-size="7.5">Selector ?</text>
+        <rect x="80" y="64" width="90" height="24" rx="4" fill="#fff" stroke="#5d7350" stroke-width="1.3"/><text x="125" y="80" font-size="7.5">Secuencia →</text>
+        <rect x="300" y="64" width="100" height="24" rx="4" fill="#fff" stroke="#bd5b34" stroke-width="1.2"/><text x="350" y="80" font-size="7.5">Acción: pedir ayuda</text>
+        <rect x="20" y="124" width="80" height="22" rx="4" fill="#fff" stroke="#bd5b34" stroke-width="1.1"/><text x="60" y="139" font-size="7">¿hay datos?</text>
+        <rect x="110" y="124" width="80" height="22" rx="4" fill="#fff" stroke="#bd5b34" stroke-width="1.1"/><text x="150" y="139" font-size="7">procesar</text>
+        <rect x="200" y="124" width="80" height="22" rx="4" fill="#fff" stroke="#bd5b34" stroke-width="1.1"/><text x="240" y="139" font-size="7">responder</text>
+      </g>
+      <g stroke="#a89f86" stroke-width="1.2" fill="none">
+        <path d="M210 34 L125 64"/><path d="M250 34 L350 64"/>
+        <path d="M100 88 L60 124"/><path d="M125 88 L150 124"/><path d="M150 88 L240 124"/>
+      </g>
+    </svg>
+    <figcaption>Figura 6.1 — Un árbol de comportamiento: el selector intenta la secuencia y, si falla, pide ayuda.</figcaption>
+  </figure>
+
+  <p>Combinar árboles de comportamiento con LLMs da los <strong>árboles de comportamiento agénticos</strong> (ABT): la estructura aporta orden y previsibilidad; el LLM, flexibilidad en cada hoja. En Python, librerías como <code class="inline">py_trees</code> permiten construirlos y ejecutarlos. El resultado es un agente que actúa solo, pero cuya conducta puedes leer y predecir —el santo grial de la autonomía confiable—.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Un árbol de comportamiento da autonomía <em>legible</em>: selectores ("intenta hasta que una funcione") y secuencias ("haz todo en orden") componen conductas robustas. Unidos a un LLM (ABT), combinan la previsibilidad de la estructura con la flexibilidad del modelo.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 7 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo siete</div><h2>Ensamblar una plataforma de agentes</h2></div>
+  <p class="epigraph">Un agente necesita una casa: una interfaz para hablarle, un motor que lo mueva y un lugar para sus herramientas.<span class="who">— Sobre las plataformas</span></p>
+  <p class="lead">Construir agentes sueltos enseña; pero para usarlos de verdad conviene una <strong>plataforma</strong> que los aloje: una interfaz, un motor que los ejecute, perfiles que los definan y herramientas que puedan usar.</p>
+
+  <h3>Las capas de una plataforma</h3>
+  <figure>
+    <svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m7" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#a89f86"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="20" y="48" width="100" height="34" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.3"/><text x="70" y="65">Interfaz</text><text x="70" y="76" font-size="6.8" fill="#5d7350">chat (Streamlit)</text>
+        <rect x="150" y="48" width="100" height="34" rx="5" fill="#283328"/><text x="200" y="65" fill="#f2efe3">Motor</text><text x="200" y="76" fill="#a9cc8e" font-size="6.8">ejecuta el agente</text>
+        <rect x="280" y="14" width="100" height="30" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.2"/><text x="330" y="33">Perfiles</text>
+        <rect x="280" y="86" width="100" height="30" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.2"/><text x="330" y="105">Herramientas</text>
+      </g>
+      <g stroke="#a89f86" stroke-width="1.2" fill="none" marker-end="url(#m7)"><path d="M120 65 L148 65"/><path d="M250 56 L278 38"/><path d="M250 74 L278 96"/></g>
+    </svg>
+    <figcaption>Figura 7.1 — Las capas de una plataforma: interfaz, motor, perfiles y herramientas.</figcaption>
+  </figure>
+  <p>La <strong>interfaz</strong> (a menudo una app de chat hecha con Streamlit) es por donde la persona habla con el agente. El <strong>motor</strong> es el corazón que ejecuta el bucle del agente. Los <strong>perfiles</strong> y <strong>personas</strong> definen quién es cada agente —su rol, su tono, sus reglas—. Y las <strong>herramientas</strong> le dan sus acciones. Separar estas capas te permite cambiar una sin romper las demás —p. ej., dar un perfil nuevo al mismo motor—.</p>
+
+  <h3>Por qué una plataforma</h3>
+  <p>Tener este esqueleto te deja crear muchos agentes distintos cambiando solo el perfil y las herramientas, en lugar de programar cada uno desde cero. Es la diferencia entre fabricar autos a mano y tener una línea de montaje: la plataforma es tu línea de montaje de agentes.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Una plataforma de agentes separa cuatro capas: interfaz (hablarle), motor (ejecutarlo), perfiles (quién es) y herramientas (qué puede hacer). Esa separación te deja crear muchos agentes cambiando solo el perfil, sin reconstruir el motor cada vez.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 8 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo ocho</div><h2>Memoria y conocimiento del agente</h2></div>
+  <p class="epigraph">Un agente sin memoria empieza de cero en cada conversación. Uno con buena memoria, aprende del camino.<span class="who">— Sobre recordar para servir mejor</span></p>
+  <p class="lead">El modelo olvida todo entre llamadas. Darle conocimiento y memoria es construir, por fuera, lo que recuerda y cómo lo recupera. La técnica estrella es <strong>RAG</strong>.</p>
+
+  <div class="def"><span class="term">RAG (generación aumentada por recuperación)</span><p>Técnica que, ante una consulta, recupera de una base de conocimiento los fragmentos más relevantes y los inyecta en el contexto del modelo, para que responda con información verificada en lugar de inventarla.</p></div>
+
+  <h3>Búsqueda semántica y bases vectoriales</h3>
+  <p>El truco de RAG es encontrar lo relevante por <strong>significado</strong>, no por palabras exactas. Cada texto se convierte en un <em>embedding</em> —una lista de números que captura su sentido— de modo que textos parecidos quedan cerca en un espacio. Esos embeddings viven en una <strong>base vectorial</strong> (como Chroma). Ante una pregunta, la conviertes también en embedding y pides los fragmentos más cercanos.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m8" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#283328"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="8" y="36" width="78" height="30" rx="5" fill="#fff" stroke="#283328" stroke-width="1.2"/><text x="47" y="51">Pregunta</text><text x="47" y="61" font-size="6.8" fill="#5d7350">→ embedding</text>
+        <rect x="114" y="36" width="90" height="30" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.2"/><text x="159" y="51">Base</text><text x="159" y="61" font-size="6.8" fill="#5d7350">vectorial (Chroma)</text>
+        <rect x="232" y="36" width="90" height="30" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.2"/><text x="277" y="55">fragmentos</text>
+        <rect x="350" y="36" width="100" height="30" rx="5" fill="#283328"/><text x="400" y="51" fill="#f2efe3">Modelo</text><text x="400" y="61" fill="#a9cc8e" font-size="6.8">responde</text>
+      </g>
+      <g stroke="#283328" stroke-width="1.2" fill="none" marker-end="url(#m8)"><path d="M86 51 L112 51"/><path d="M204 51 L230 51"/><path d="M322 51 L348 51"/></g>
+    </svg>
+    <figcaption>Figura 8.1 — RAG: convertir la pregunta en vector, recuperar lo cercano, responder con ello.</figcaption>
+  </figure>
+
+  <h3>Tres tipos de memoria</h3>
+  <p>Inspirándose en la mente humana, un agente puede tener tres clases de memoria de largo plazo:</p>
+  <table class="t">
+    <tr><th>Tipo</th><th>Qué guarda</th><th>Ejemplo</th></tr>
+    <tr><td>Semántica</td><td>Hechos y conocimiento general.</td><td>"La política de devolución es de 30 días."</td></tr>
+    <tr><td>Episódica</td><td>Experiencias concretas vividas.</td><td>"La última vez, este cliente pidió X."</td></tr>
+    <tr><td>Procedimental</td><td>Cómo hacer cosas, destrezas.</td><td>"Para procesar un reembolso, sigo estos pasos."</td></tr>
+  </table>
+
+  <h3>Comprimir la memoria</h3>
+  <p>La memoria crece sin límite, pero el contexto no. La <strong>compresión de memoria</strong> resume lo viejo en lo esencial: en vez de guardar mil conversaciones enteras, guarda sus conclusiones. Así el agente recuerda lo importante sin ahogarse —ni encarecerse— en detalles.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>RAG recupera conocimiento relevante por significado (embeddings + base vectorial) y se lo da al modelo. La memoria de largo plazo viene en tres sabores —semántica (hechos), episódica (experiencias), procedimental (destrezas)— y se comprime resumiendo lo viejo. El agente no recuerda todo: recuerda lo que importa.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 9 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo nueve</div><h2>Dominar los prompts con Prompt Flow</h2></div>
+  <p class="epigraph">Escribir un buen prompt es arte; mejorarlo con método, ingeniería.<span class="who">— Sobre el prompt engineering sistemático</span></p>
+  <p class="lead">Hasta ahora escribimos prompts a mano. Pero para un agente serio hace falta <strong>método</strong>: tratar los prompts como código que se versiona, se prueba y se evalúa. Eso es lo que ofrecen herramientas como Prompt Flow.</p>
+
+  <h3>Por qué la ingeniería sistemática de prompts</h3>
+  <p>Cambiar un prompt "a ojo" y ver si mejora es una apuesta. La ingeniería sistemática convierte esa apuesta en una decisión: defines <strong>perfiles</strong> (variantes del prompt o de la persona del agente), los pruebas contra un conjunto de casos, y comparas resultados con números. El mejor perfil gana por mérito, no por corazonada.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m9" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#283328"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="8" y="36" width="84" height="30" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.2"/><text x="50" y="51">Perfil</text><text x="50" y="61" font-size="6.8" fill="#5d7350">plantilla Jinja2</text>
+        <rect x="120" y="36" width="84" height="30" rx="5" fill="#283328"/><text x="162" y="55" fill="#f2efe3">LLM</text>
+        <rect x="232" y="36" width="90" height="30" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.2"/><text x="277" y="51">Evaluar</text><text x="277" y="61" font-size="6.8" fill="#5d7350">rúbrica + grounding</text>
+        <rect x="350" y="36" width="100" height="30" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.2"/><text x="400" y="55">comparar perfiles</text>
+      </g>
+      <g stroke="#283328" stroke-width="1.2" fill="none" marker-end="url(#m9)"><path d="M92 51 L118 51"/><path d="M204 51 L230 51"/><path d="M322 51 L348 51"/></g>
+    </svg>
+    <figcaption>Figura 9.1 — Un flujo de prompts: del perfil a la evaluación, para comparar variantes con datos.</figcaption>
+  </figure>
+
+  <h3>Plantillas, rúbricas y grounding</h3>
+  <p>Las <strong>plantillas</strong> (con Jinja2) hacen los prompts dinámicos: insertas variables sin reescribir todo. Las <strong>rúbricas</strong> son criterios claros para puntuar una respuesta ("¿es correcta?, ¿completa?, ¿bien expresada?"), de modo que la evaluación sea consistente. Y el <strong>grounding</strong> verifica que la respuesta esté <em>anclada</em> en hechos reales y no inventada —se evalúa comparándola con la fuente—. Juntos, convierten "creo que este prompt es mejor" en "este perfil puntúa 8,7 contra 7,2".</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Trata los prompts como ingeniería: crea perfiles, hazlos dinámicos con plantillas, y compáralos con rúbricas claras y grounding sobre un conjunto de casos. Así eliges el mejor por evidencia, no por intuición. Lo que se mide, se mejora.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 10 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo diez</div><h2>Razonamiento y evaluación del agente</h2></div>
+  <p class="epigraph">Dale al modelo espacio para pensar y acertará más. Dale varias vías y elegirá la mejor.<span class="who">— Sobre cómo razona un agente</span></p>
+  <p class="lead">Un agente que se lanza a responder se equivoca; uno que <strong>razona por pasos</strong> acierta. Veamos las técnicas de razonamiento —y cómo evaluar cuál funciona mejor.</p>
+
+  <h3>De responder directo a razonar</h3>
+  <p>El nivel más básico es el <em>prompting directo</em>: preguntar y recibir. Funciona para lo simple. Para lo difícil, se le dan ejemplos: <strong>cero ejemplos</strong> (zero-shot), <strong>unos pocos</strong> (few-shot). Y el salto cualitativo es la <strong>cadena de pensamiento</strong>: pedirle que <em>muestre su razonamiento</em> paso a paso antes de responder. Como un estudiante que escribe el desarrollo de un problema en vez de soltar el resultado, el modelo acierta mucho más.</p>
+
+  <h3>De una cadena a un árbol de pensamiento</h3>
+  <p>La cadena de pensamiento sigue <em>un</em> hilo de razonamiento. El <strong>árbol de pensamiento</strong> explora <em>varios</em> a la vez: el modelo abre distintas líneas de razonamiento, las evalúa y se queda con la mejor —como un ajedrecista que calcula varias jugadas antes de mover—.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
+      <g text-anchor="middle" font-size="8" class="dwords">
+        <text x="100" y="14" fill="#5d7350" class="dlabel">Cadena · un hilo</text>
+        <circle cx="40" cy="60" r="11" fill="#fff" stroke="#5d7350"/><circle cx="100" cy="60" r="11" fill="#fff" stroke="#5d7350"/><circle cx="160" cy="60" r="11" fill="#bd5b34"/>
+        <g stroke="#a89f86" stroke-width="1.2"><line x1="51" y1="60" x2="89" y2="60"/><line x1="111" y1="60" x2="149" y2="60"/></g>
+
+        <text x="350" y="14" fill="#bd5b34" class="dlabel">Árbol · varias vías</text>
+        <circle cx="300" cy="40" r="10" fill="#283328"/>
+        <circle cx="350" cy="80" r="9" fill="#fff" stroke="#5d7350"/><circle cx="300" cy="100" r="9" fill="#fff" stroke="#5d7350"/><circle cx="400" cy="80" r="9" fill="#bd5b34"/>
+        <circle cx="420" cy="110" r="8" fill="#fff" stroke="#5d7350"/><circle cx="380" cy="110" r="8" fill="#fff" stroke="#5d7350"/>
+        <g stroke="#a89f86" stroke-width="1.1" fill="none"><line x1="296" y1="49" x2="350" y2="72"/><line x1="300" y1="50" x2="300" y2="92"/><line x1="306" y1="48" x2="398" y2="72"/><line x1="402" y1="88" x2="420" y2="103"/><line x1="397" y1="88" x2="382" y2="103"/></g>
+      </g>
+    </svg>
+    <figcaption>Figura 10.1 — Cadena de pensamiento (un hilo) frente a árbol de pensamiento (varias ramas que se comparan).</figcaption>
+  </figure>
+
+  <h3>Evaluar el razonamiento</h3>
+  <p>¿Cómo saber si el agente razonó bien? Dos técnicas: la <strong>autoconsistencia</strong> genera varias respuestas y se queda con la que más se repite —si tres de cuatro caminos llegan al mismo sitio, probablemente sea correcto—. Y evaluar el <strong>árbol de pensamiento</strong> puntúa cada rama para elegir la mejor. Evaluar el razonamiento es lo que convierte la creatividad del modelo en fiabilidad.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Sube el razonamiento por escalones: directo → con ejemplos → cadena de pensamiento → árbol de pensamiento. Y evalúa: la autoconsistencia (la respuesta que más se repite) y la puntuación de ramas convierten el "pensar en voz alta" en respuestas fiables.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+<!-- CAP 11 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo once</div><h2>Planificación y feedback del agente</h2></div>
+  <p class="epigraph">El zorro no corre tras la presa: primero traza el camino, y luego corre.<span class="who">— Sobre planificar antes de actuar</span></p>
+  <p class="lead">Llegamos a la cima: la <strong>planificación</strong>. Es la herramienta esencial de todo agente serio —descomponer un objetivo grande en pasos ejecutables— y, junto al feedback, lo que le permite mejorar.</p>
+
+  <div class="def"><span class="term">Planificación</span><p>Capacidad de un agente para tomar un objetivo de alto nivel y descomponerlo en una secuencia de pasos concretos y ordenados que, ejecutados, lo cumplen.</p></div>
+
+  <h3>El planificador secuencial</h3>
+  <p>La forma más directa: ante un objetivo, el agente genera un <strong>plan</strong> —una lista ordenada de pasos— y luego los ejecuta uno a uno. "Hazme un informe de mercado" se convierte en: 1) buscar datos, 2) analizarlos, 3) redactar, 4) revisar. Un planificador <em>por pasos</em> (stepwise) va más allá: replanifica sobre la marcha según lo que va observando, en vez de seguir ciegamente un plan inicial.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 120" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m11" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#bd5b34"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="10" y="44" width="78" height="30" rx="5" fill="#283328"/><text x="49" y="63" fill="#f2efe3">Objetivo</text>
+        <rect x="118" y="44" width="78" height="30" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.2"/><text x="157" y="59">Planificar</text><text x="157" y="69" font-size="6.8" fill="#5d7350">pasos 1-4</text>
+        <rect x="226" y="44" width="78" height="30" rx="5" fill="#fff" stroke="#5d7350" stroke-width="1.2"/><text x="265" y="63">Ejecutar</text>
+        <rect x="334" y="44" width="78" height="30" rx="5" fill="#fff" stroke="#bd5b34" stroke-width="1.2"/><text x="373" y="59">Feedback</text><text x="373" y="69" font-size="6.8" fill="#5d7350">¿salió bien?</text>
+      </g>
+      <g stroke="#bd5b34" stroke-width="1.2" fill="none" marker-end="url(#m11)"><path d="M88 59 L116 59"/><path d="M196 59 L224 59"/><path d="M304 59 L332 59"/><path d="M373 74 C373 100 157 100 157 76"/></g>
+      <text x="265" y="112" text-anchor="middle" font-size="7.5" fill="#94917a" class="dlabel">si algo falla, replanifica</text>
+    </svg>
+    <figcaption>Figura 11.1 — Planificar, ejecutar y usar el feedback para replanificar: el ciclo completo.</figcaption>
+  </figure>
+
+  <h3>Todo junto: planificar, razonar, evaluar, mejorar</h3>
+  <p>Aquí convergen los últimos capítulos. Un agente maduro <strong>planifica</strong> (cap. 11) los pasos, <strong>razona</strong> (cap. 10) cada uno, <strong>evalúa</strong> el resultado y usa el <strong>feedback</strong> para corregir el plan o el paso. Ese ciclo —plan, acción, evaluación, ajuste— es lo que separa a un agente que tropieza una vez de uno que aprende y termina la tarea bien. Es, al fin, el zorro de la portada: traza el camino, actúa, observa y se adapta.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Planificar es descomponer un objetivo en pasos ordenados; el planificador por pasos replanifica según lo observado. Unido al razonamiento, la evaluación y el feedback, cierra el ciclo que hace a un agente verdaderamente autónomo y confiable. Plan, acción, evaluación, ajuste —y de nuevo.</p></div>
+
+  <h2 style="margin-top:12mm;">Apéndices y glosario</h2>
+  <p style="font-size:9.8pt;">Para llevar esto a la práctica necesitarás dos cimientos: <strong>acceso a un LLM</strong> (una clave de API de un proveedor, o un modelo abierto corriendo en local con herramientas como LM Studio) y un <strong>entorno de desarrollo en Python</strong> (un entorno virtual, las librerías del ecosistema de agentes, y un editor cómodo). Con eso, cada capítulo de este libro se puede convertir en código que funciona.</p>
+  <ul class="clean">
+    <li><strong>Agente:</strong> componente autónomo que percibe, razona, actúa y aprende hacia un objetivo.</li>
+    <li><strong>Prompt engineering:</strong> el arte y la técnica de instruir bien al modelo.</li>
+    <li><strong>Function calling:</strong> el modelo pide ejecutar una función; tu código la ejecuta.</li>
+    <li><strong>Árbol de comportamiento (BT/ABT):</strong> estructura de selectores y secuencias para autonomía legible.</li>
+    <li><strong>RAG:</strong> recuperar conocimiento relevante e inyectarlo en el contexto.</li>
+    <li><strong>Embedding / base vectorial:</strong> representar el significado para buscar por cercanía.</li>
+    <li><strong>Memoria semántica / episódica / procedimental:</strong> hechos, experiencias y destrezas.</li>
+    <li><strong>Prompt Flow:</strong> tratar los prompts como ingeniería: perfiles, plantillas, evaluación.</li>
+    <li><strong>Grounding:</strong> anclar la respuesta en una fuente verificable.</li>
+    <li><strong>Cadena / árbol de pensamiento:</strong> razonar por un hilo, o explorar varios y elegir el mejor.</li>
+    <li><strong>Autoconsistencia:</strong> quedarse con la respuesta que más se repite entre varios intentos.</li>
+    <li><strong>Planificación / feedback:</strong> descomponer el objetivo en pasos y corregirlos según el resultado.</li>
+  </ul>
+
+  <p style="text-align:center; margin-top:12mm; font-family:'Carlito',sans-serif; font-size:8pt; color:#94917a;">Fin · Agentes de IA en Acción · Edición de autor</p>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 14 14"><polygon points="7,1 13,7 7,13 1,7" fill="#bd5b34"/></svg></div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Agentes de IA con MCP</title>
+<style>
+  :root{
+    --ink:#20303f; --ink-soft:#46596b;
+    --paper:#eef2f1; --paper-deep:#dde6e5;
+    --accent:#1499a8; --accent-2:#df7a52; --signal:#37c0cf;
+    --rule:#bfd0cf; --code-bg:#16242f; --code-fg:#dfeae9;
+  }
+  @page{ size:15.6cm 23.4cm; margin:20mm 18mm 18mm 18mm;
+    @bottom-center{ content:counter(page); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:8.5pt; color:#8aa0a0; }
+    @top-center{ content:string(chaptertitle); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:7.5pt; letter-spacing:.12em; text-transform:uppercase; color:#9fb3b3; } }
+  @page cover{ margin:0; @bottom-center{content:none;} @top-center{content:none;} }
+  @page plain{ @top-center{content:none;} }
+
+  html{ font-family:"Bitstream Charter","GFS Baskerville",serif; color:var(--ink); }
+  body{ margin:0; line-height:1.5; font-size:10.6pt; text-align:justify; hyphens:auto; }
+  h1,h2,h3,.display{ font-family:"GFS Baskerville","Bitstream Charter",serif; }
+
+  .cover{ page:cover; position:relative; height:23.4cm; width:15.6cm;
+    background:radial-gradient(130% 90% at 50% 12%, #1d4a5e 0%, #143544 50%, #0c2230 100%), #102a37;
+    color:var(--paper); overflow:hidden; display:flex; flex-direction:column; align-items:center; page-break-after:always; }
+  .cover .frame{ position:absolute; inset:8mm; border:1.2pt solid rgba(238,242,241,.42); }
+  .cover .frame::after{ content:""; position:absolute; inset:2.2mm; border:.5pt solid rgba(238,242,241,.28); }
+  .cover .sonar{ position:absolute; inset:0; opacity:.5; z-index:0; }
+  .cover .kicker{ margin-top:15mm; font-family:"Carlito",sans-serif; font-size:8pt; letter-spacing:.32em; text-transform:uppercase; color:#7fd3dd; z-index:2; }
+  .cover h1{ z-index:2; text-align:center; font-size:27pt; line-height:1.05; margin:5mm 12mm 0; font-weight:700; }
+  .cover .sub{ z-index:2; text-align:center; font-family:"Carlito",sans-serif; font-size:9.5pt; color:#cfe3e3; margin:3.5mm 16mm 0; letter-spacing:.03em; }
+  .dolphin{ z-index:2; margin-top:6mm; width:92mm; height:92mm; }
+  .cover .author{ z-index:2; margin-top:auto; margin-bottom:16mm; text-align:center; font-family:"Carlito",sans-serif; }
+  .cover .author .by{ font-size:8pt; letter-spacing:.3em; text-transform:uppercase; color:#7fd3dd; }
+  .cover .author .name{ font-family:"GFS Baskerville",serif; font-size:13pt; margin-top:2mm; color:var(--paper); }
+
+  .titlepage{ page:plain; page-break-after:always; text-align:center; padding-top:32mm; }
+  .titlepage h1{ font-size:23pt; line-height:1.08; margin:0 6mm; }
+  .titlepage .sub{ font-family:"Carlito",sans-serif; color:var(--ink-soft); margin-top:5mm; font-size:10pt; }
+  .titlepage .rule{ width:42mm; height:1.4pt; background:var(--accent); margin:9mm auto; }
+  .titlepage .meta{ font-family:"Carlito",sans-serif; font-size:9pt; color:var(--ink-soft); }
+
+  .frontnote{ page:plain; page-break-after:always; }
+  .frontnote h2{ font-size:15pt; color:var(--accent); margin-bottom:4mm; }
+
+  .toc{ page-break-after:always; }
+  .toc h2{ font-size:18pt; border-bottom:1.5pt solid var(--rule); padding-bottom:3mm; }
+  .toc ol{ list-style:none; padding:0; margin:5mm 0 0; }
+  .toc li{ display:flex; align-items:baseline; margin:3mm 0; gap:3mm; }
+  .toc li .n{ font-family:"Carlito",sans-serif; color:var(--accent); font-weight:700; width:8mm; flex:none; }
+  .toc li .t{ font-weight:600; } .toc li .d{ font-family:"Carlito",sans-serif; font-size:7.7pt; color:var(--ink-soft); }
+
+  .chapter{ page-break-before:always; }
+  .chapter .chead{ margin-bottom:6mm; border-bottom:1.5pt solid var(--rule); padding-bottom:4mm; }
+  .chapter .cnum{ font-family:"Carlito",sans-serif; font-size:9pt; letter-spacing:.3em; text-transform:uppercase; color:var(--accent); }
+  .chapter h2{ string-set:chaptertitle content(); font-size:20pt; line-height:1.1; margin:2mm 0 0; }
+  .epigraph{ font-style:italic; color:var(--ink-soft); margin:0 0 5mm; padding-left:5mm; border-left:2pt solid var(--accent-2); font-size:10pt; }
+  .epigraph .who{ display:block; font-style:normal; font-family:"Carlito",sans-serif; font-size:8pt; margin-top:1.5mm; color:#8aa0a0; }
+  h3{ font-size:12.5pt; color:var(--ink); margin:6mm 0 2mm; }
+  p{ margin:0 0 3mm; } .lead{ font-size:11.3pt; color:var(--ink-soft); }
+  strong{ color:var(--ink); } em{ color:var(--ink-soft); }
+
+  .box{ break-inside:avoid; background:var(--paper-deep); border-left:3pt solid var(--accent); padding:4mm 5mm; margin:5mm 0; border-radius:0 2pt 2pt 0; }
+  .box .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:1.5mm; }
+  .box.note{ border-left-color:var(--accent-2); } .box.note .lab{ color:var(--accent-2); }
+  .box p:last-child{ margin-bottom:0; }
+  /* caja de definición (didáctica) */
+  .def{ break-inside:avoid; background:#e4f1f2; border:.7pt solid #a9d4d9; border-left:4pt solid var(--accent); padding:4mm 5mm; margin:5mm 0; border-radius:3pt; }
+  .def .term{ font-family:"GFS Baskerville",serif; font-size:11.5pt; color:var(--ink); }
+  .def .term::before{ content:"DEFINICIÓN — "; font-family:"Carlito",sans-serif; font-size:7.3pt; letter-spacing:.18em; color:var(--accent); vertical-align:middle; }
+  .def p{ margin:1.5mm 0 0; }
+  .analogy{ break-inside:avoid; background:#fbfaf6; border:.6pt solid var(--rule); padding:4mm 5mm; margin:5mm 0; border-radius:3pt; }
+  .analogy .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent-2); display:block; margin-bottom:1.5mm; }
+
+  pre{ break-inside:avoid; background:var(--code-bg); color:var(--code-fg); font-family:"DejaVu Sans Mono",monospace; font-size:7.6pt; line-height:1.45; padding:4mm 4.5mm; border-radius:4pt; margin:4mm 0; white-space:pre-wrap; text-align:left; }
+  pre .c{ color:#7f9ba0; } pre .k{ color:#e0a96d; } pre .s{ color:#9fd0b0; } pre .f{ color:#6fc4d6; }
+  code.inline{ font-family:"DejaVu Sans Mono",monospace; font-size:8.4pt; background:var(--paper-deep); padding:.3mm 1.2mm; border-radius:2pt; }
+
+  figure{ break-inside:avoid; margin:5mm 0; text-align:center; }
+  figure svg{ width:100%; height:auto; }
+  figcaption{ font-family:"Carlito",sans-serif; font-size:8pt; color:var(--ink-soft); margin-top:2mm; text-align:center; }
+  .dlabel,.dwords{ font-family:"Carlito","DejaVu Sans",sans-serif; fill:var(--ink); }
+  ul.clean{ margin:3mm 0 4mm; padding-left:6mm; } ul.clean li{ margin:1.6mm 0; }
+  table.t{ width:100%; border-collapse:collapse; margin:4mm 0; font-size:9pt; break-inside:avoid; }
+  table.t th{ background:var(--ink); color:var(--paper); font-family:"Carlito",sans-serif; font-size:8pt; padding:2.5mm 3mm; text-align:left; }
+  table.t td{ border-bottom:.6pt solid var(--rule); padding:2.5mm 3mm; vertical-align:top; }
+  table.t td:first-child{ font-weight:600; color:var(--accent); white-space:nowrap; }
+  .endmark{ text-align:center; margin-top:7mm; }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PORTADA ===== -->
+<section class="cover">
+  <svg class="sonar" viewBox="0 0 156 234" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#37c0cf" stroke-width="0.7" opacity=".5">
+      <path d="M150 70 A40 40 0 0 1 150 150"/>
+      <path d="M150 60 A52 52 0 0 1 150 160"/>
+      <path d="M150 50 A64 64 0 0 1 150 170"/>
+      <path d="M6 150 A36 36 0 0 0 6 78"/>
+      <path d="M6 160 A48 48 0 0 0 6 68"/>
+    </g>
+  </svg>
+  <div class="frame"></div>
+  <div class="kicker">Guía práctica y didáctica · Edición de autor</div>
+  <h1>Agentes de IA<br>con MCP</h1>
+  <div class="sub">El protocolo que conecta tus agentes con herramientas, datos y prompts — explicado paso a paso</div>
+
+  <svg class="dolphin" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- ondas de sonido frente al rostro (el "protocolo": señal enviada) -->
+    <g fill="none" stroke="#37c0cf" stroke-width="1.5" stroke-linecap="round" opacity=".85">
+      <path d="M172 58 A10 10 0 0 1 172 78"/>
+      <path d="M180 52 A16 16 0 0 1 180 84"/>
+      <path d="M188 46 A22 22 0 0 1 188 90"/>
+    </g>
+    <!-- delfin saltando, cuerpo curvo; cabeza arriba-derecha, cola abajo-izquierda -->
+    <g fill="none" stroke="#eef2f1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <!-- contorno del cuerpo -->
+      <path d="M165 66
+               C150 54 132 52 116 60
+               C96 70 80 86 64 104
+               C54 116 46 126 40 132
+               C50 130 60 126 70 120
+               C84 112 100 100 114 90
+               C100 104 92 118 90 132
+               C96 124 108 112 122 100
+               C140 86 156 76 163 70 Z"/>
+      <!-- aleta dorsal -->
+      <path d="M96 71 C100 58 110 54 116 56 C112 62 106 68 100 74 Z"/>
+      <!-- aleta pectoral -->
+      <path d="M104 100 C100 112 92 120 84 124 C90 112 96 104 102 99 Z"/>
+      <!-- cola (aletas caudales) -->
+      <path d="M40 132 C30 126 22 120 16 122 C24 128 30 134 36 138 Z"/>
+      <path d="M40 132 C34 142 30 152 32 158 C38 150 44 142 46 136 Z"/>
+      <!-- linea de la boca / rostro -->
+      <path d="M163 70 C170 70 176 68 180 66" stroke-width="1.3"/>
+      <!-- ojo -->
+      <circle cx="150" cy="68" r="2.4" fill="#eef2f1" stroke="none"/>
+    </g>
+  </svg>
+
+  <div class="author">
+    <div class="by">Escrito e ilustrado por</div>
+    <div class="name">Claude</div>
+  </div>
+</section>
+
+<!-- ===== PORTADILLA ===== -->
+<section class="titlepage">
+  <h1>Agentes de IA con MCP</h1>
+  <div class="sub">El protocolo que conecta agentes con el mundo</div>
+  <div class="rule"></div>
+  <p class="meta">Qué es el Model Context Protocol, cómo usar clientes,<br>cómo construir servidores y cómo llevarlo todo a producción.</p>
+  <p class="meta" style="margin-top:14mm;">Escrito e ilustrado por Claude · Anthropic<br>Edición de autor · Primera edición</p>
+</section>
+
+<!-- ===== SOBRE LA PORTADA ===== -->
+<section class="frontnote">
+  <h2>Sobre la portada</h2>
+  <p>El animal de esta portada es un <strong>delfín</strong>, y su elección apunta al corazón del libro: <em>la comunicación</em>.</p>
+  <p>MCP es, antes que nada, un <strong>protocolo</strong>: un acuerdo sobre cómo dos partes se hablan. Y el delfín es el gran comunicador del mar. Usa <em>ecolocalización</em>: emite un sonido —una señal— y, según el eco que regresa, entiende qué hay alrededor y actúa. Eso es, casi literalmente, un protocolo de petición y respuesta: enviar una solicitud y obrar sobre lo que vuelve. Los delfines, además, coordinan sus manadas con un repertorio de señales compartido, y son célebres por "traducir" entre mundos —el del aire y el del agua— igual que MCP traduce entre el agente y los sistemas externos.</p>
+  <p>Por eso el delfín de la portada va acompañado de ondas frente a su rostro: la señal que emite y espera de vuelta. Tenlo en mente: todo MCP se reduce a dos partes que se entienden porque hablan el mismo idioma.</p>
+</section>
+
+<!-- ===== PREFACIO ===== -->
+<section class="frontnote">
+  <h2>Prefacio</h2>
+  <p class="lead">Un agente sin acceso al mundo es un cerebro en un frasco. Para ser útil necesita herramientas, datos y contexto. El problema es que cada herramienta se conecta a su manera —y ahí es donde MCP cambia las reglas.</p>
+  <p>El <strong>Model Context Protocol</strong> (MCP) es un estándar abierto que hace por los agentes lo que el USB-C hizo por los aparatos: un único conector para todo. En vez de programar una integración a medida por cada herramienta y cada agente, todos hablan el mismo protocolo. Construyes un servidor una vez y cualquier agente compatible lo usa.</p>
+  <p>Este libro te lleva de la mano por los dos lados del protocolo: aprenderás a <strong>usar</strong> servidores desde tu aplicación (el lado cliente) y a <strong>construir</strong> tus propios servidores que ofrezcan herramientas, datos y prompts (el lado servidor). Terminaremos con transportes, seguridad y un ejemplo completo de punta a punta.</p>
+  <p>Mi promesa: ser lo más didáctico posible. Cada idea nueva viene con una <em>definición</em> clara, una <em>gráfica</em> que la muestra, una <em>analogía</em> cotidiana y, cuando aporta, un ejemplo de código corto. No necesitas ser experto; solo entender que un agente quiere hacer cosas, y MCP es cómo se las arregla para hacerlas.</p>
+  <div class="box note"><span class="lab">Cómo leer este libro</span><p>Los capítulos 1-2 dan la intuición; léelos sí o sí. Los 3-4 son el lado cliente; los 5-7, el lado servidor; el 8, cómo se conectan; el 9, todo junto. Cada capítulo cierra con una caja "Para recordar".</p></div>
+</section>
+
+<!-- ===== ÍNDICE ===== -->
+<section class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><span class="n">1</span><span><span class="t">IA agéntica y por qué nace MCP</span><br><span class="d">Agentes, el bucle acción-feedback, y el problema de las M×N integraciones</span></span></li>
+    <li><span class="n">2</span><span><span class="t">Qué es el Model Context Protocol</span><br><span class="d">El USB-C de la IA · arquitectura host, cliente y servidor</span></span></li>
+    <li><span class="n">3</span><span><span class="t">Hacer agéntica tu app con clientes MCP</span><br><span class="d">Conectar, descubrir capacidades y usarlas · el ciclo de vida</span></span></li>
+    <li><span class="n">4</span><span><span class="t">Clientes MCP: uso avanzado y buenas prácticas</span><br><span class="d">Varios servidores, manejo de errores, seguridad del lado cliente</span></span></li>
+    <li><span class="n">5</span><span><span class="t">Construir servidores: tools, resources y prompts</span><br><span class="d">Las tres ofertas de un servidor y quién controla cada una</span></span></li>
+    <li><span class="n">6</span><span><span class="t">Servidores avanzados: utilidades y capacidades del cliente</span><br><span class="d">Sampling, roots y elicitation</span></span></li>
+    <li><span class="n">7</span><span><span class="t">Probar, asegurar y compartir tu servidor</span><br><span class="d">Pruebas, seguridad y distribución</span></span></li>
+    <li><span class="n">8</span><span><span class="t">Conectar clientes y servidores: transportes</span><br><span class="d">stdio (local) y HTTP/SSE (remoto)</span></span></li>
+    <li><span class="n">9</span><span><span class="t">Cierre: ejemplos completos y próximos pasos</span><br><span class="d">Todo junto · qué viene después</span></span></li>
+  </ol>
+</section>
+
+<!-- CAP 1 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo uno</div><h2>IA agéntica y por qué nace MCP</h2></div>
+  <p class="epigraph">Antes de inventar el enchufe universal, alguien tuvo que sufrir mil cables distintos.<span class="who">— Sobre el problema que MCP resuelve</span></p>
+  <p class="lead">Para entender por qué MCP importa, primero hay que ver qué es un agente y qué le hace falta —y el dolor concreto que aparece cuando intentas conectarlo al mundo real.</p>
+
+  <div class="def"><span class="term">Agente de IA</span><p>Sistema que recibe un objetivo y trabaja hacia él en un <strong>bucle de acción y feedback</strong>: ejecuta una acción, observa el resultado en su entorno y, con esa información, decide la siguiente acción, hasta terminar.</p></div>
+
+  <h3>El bucle de acción y feedback</h3>
+  <p>Imagina un agente que debe escribir pruebas para un archivo de código. Vuelta 1: <em>lee</em> el archivo (acción) y obtiene su contenido (feedback). Vuelta 2: <em>escribe</em> las pruebas (acción) y obtiene el archivo de test (feedback). Vuelta 3: <em>ejecuta</em> las pruebas (acción) y obtiene los resultados (feedback). Si pasan, termina; si no, vuelve a una vuelta anterior y corrige. Ese ciclo —actuar, observar, decidir— es el latido de todo agente.</p>
+
+  <figure>
+    <svg viewBox="0 0 420 150" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1499a8"/></marker></defs>
+      <g text-anchor="middle" font-size="9.5" class="dwords">
+        <circle cx="120" cy="75" r="40" fill="#20303f"/><text x="120" y="72" fill="#eef2f1">Agente (LLM)</text><text x="120" y="86" fill="#9fd0b0" font-size="7.5">decide la acción</text>
+        <rect x="270" y="50" width="120" height="50" rx="8" fill="#fff" stroke="#1499a8" stroke-width="1.4"/><text x="330" y="72">Entorno</text><text x="330" y="86" font-size="7.5" fill="#46596b">archivos, APIs…</text>
+      </g>
+      <g stroke="#1499a8" stroke-width="1.6" fill="none" marker-end="url(#ar)">
+        <path d="M160 62 C210 48 240 52 268 60"/><path d="M268 90 C240 100 210 104 160 90"/>
+      </g>
+      <text x="214" y="40" font-size="8" fill="#46596b" class="dlabel">acción →</text>
+      <text x="214" y="120" font-size="8" fill="#46596b" class="dlabel">← feedback</text>
+    </svg>
+    <figcaption>Figura 1.1 — El bucle de acción-feedback: el agente actúa sobre un entorno y aprende de la respuesta.</figcaption>
+  </figure>
+
+  <h3>Agentes y workflows</h3>
+  <p>No todo sistema con IA es un agente. En un <strong>workflow</strong>, el camino lo decide tu código y solo se llama al modelo para pasos puntuales (detectar el idioma de un texto, traducir un fragmento). En un <strong>agente</strong>, es el modelo quien decide el camino. Patrones de workflow comunes —encadenar prompts, paralelizar, enrutar, orquestador-trabajador, evaluador-optimizador— conviven con agentes en los buenos sistemas: código para lo predecible, agente para lo que requiere criterio.</p>
+
+  <h3>El problema de las M×N integraciones</h3>
+  <p>Aquí está el dolor. Si tienes <strong>M</strong> agentes y <strong>N</strong> herramientas, y cada conexión es a medida, acabas escribiendo <strong>M×N</strong> integraciones distintas —y mantenerlas es una pesadilla—. La idea de MCP es convertir ese <strong>M×N</strong> en <strong>M+N</strong>: cada agente habla el protocolo una vez, cada herramienta lo expone una vez, y todos se entienden.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
+      <text x="115" y="14" text-anchor="middle" font-size="9" fill="#df7a52" class="dlabel">SIN MCP · M×N líos</text>
+      <g font-size="7.5" text-anchor="middle" class="dwords">
+        <circle cx="40" cy="45" r="9" fill="#20303f"/><circle cx="40" cy="75" r="9" fill="#20303f"/><circle cx="40" cy="105" r="9" fill="#20303f"/>
+        <rect x="170" y="38" width="22" height="14" rx="2" fill="#fff" stroke="#bfd0cf"/><rect x="170" y="68" width="22" height="14" rx="2" fill="#fff" stroke="#bfd0cf"/><rect x="170" y="98" width="22" height="14" rx="2" fill="#fff" stroke="#bfd0cf"/>
+      </g>
+      <g stroke="#df7a52" stroke-width="0.7" opacity=".8">
+        <line x1="49" y1="45" x2="170" y2="45"/><line x1="49" y1="45" x2="170" y2="75"/><line x1="49" y1="45" x2="170" y2="105"/>
+        <line x1="49" y1="75" x2="170" y2="45"/><line x1="49" y1="75" x2="170" y2="75"/><line x1="49" y1="75" x2="170" y2="105"/>
+        <line x1="49" y1="105" x2="170" y2="45"/><line x1="49" y1="105" x2="170" y2="75"/><line x1="49" y1="105" x2="170" y2="105"/>
+      </g>
+      <text x="370" y="14" text-anchor="middle" font-size="9" fill="#1499a8" class="dlabel">CON MCP · M+N orden</text>
+      <g font-size="7.5" text-anchor="middle" class="dwords">
+        <circle cx="280" cy="45" r="9" fill="#20303f"/><circle cx="280" cy="75" r="9" fill="#20303f"/><circle cx="280" cy="105" r="9" fill="#20303f"/>
+        <rect x="350" y="62" width="34" height="26" rx="4" fill="#1499a8"/><text x="367" y="78" fill="#fff" font-size="7">MCP</text>
+        <rect x="430" y="38" width="22" height="14" rx="2" fill="#fff" stroke="#bfd0cf"/><rect x="430" y="68" width="22" height="14" rx="2" fill="#fff" stroke="#bfd0cf"/><rect x="430" y="98" width="22" height="14" rx="2" fill="#fff" stroke="#bfd0cf"/>
+      </g>
+      <g stroke="#1499a8" stroke-width="0.9"><line x1="289" y1="45" x2="350" y2="70"/><line x1="289" y1="75" x2="350" y2="75"/><line x1="289" y1="105" x2="350" y2="80"/>
+        <line x1="384" y1="70" x2="430" y2="45"/><line x1="384" y1="75" x2="430" y2="75"/><line x1="384" y1="80" x2="430" y2="105"/></g>
+    </svg>
+    <figcaption>Figura 1.2 — MCP convierte un enredo de M×N integraciones en un ordenado M+N.</figcaption>
+  </figure>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Un agente vive en un bucle de acción-feedback y necesita tocar el mundo. Conectarlo a cada herramienta a medida explota en M×N integraciones. MCP propone un protocolo común que lo reduce a M+N: el problema que el resto del libro resuelve en detalle.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+<!-- CAP 2 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo dos</div><h2>Qué es el Model Context Protocol</h2></div>
+  <p class="epigraph">Un buen estándar es invisible: simplemente todo encaja.<span class="who">— Sobre la elegancia de los protocolos</span></p>
+  <p class="lead">MCP es un acuerdo sobre cómo una aplicación de IA y una fuente de capacidades se hablan. Su famosa analogía lo dice todo: es el <strong>USB-C de la IA</strong>.</p>
+
+  <div class="def"><span class="term">Model Context Protocol (MCP)</span><p>Estándar abierto que define cómo las aplicaciones de IA se conectan con herramientas, datos y prompts externos mediante un protocolo común, de modo que cualquier cliente compatible pueda usar cualquier servidor compatible sin integraciones a medida.</p></div>
+
+  <h3>La analogía del USB-C</h3>
+  <p>Antes del USB-C, cada aparato traía su propio cargador. Hoy, un solo conector sirve para el teléfono, la laptop y los audífonos. MCP hace lo mismo con la IA: en vez de un "cable" distinto por cada herramienta, hay un conector universal. Construyes el "puerto" una vez y todo lo que hable MCP se enchufa.</p>
+
+  <h3>Los tres papeles: host, cliente y servidor</h3>
+  <p>MCP define tres roles. Entenderlos es entender MCP entero.</p>
+  <table class="t">
+    <tr><th>Rol</th><th>Qué es</th><th>Ejemplo</th></tr>
+    <tr><td>Host</td><td>La aplicación de IA donde vive el agente y que el usuario usa.</td><td>Tu app, un IDE, una app de escritorio de chat.</td></tr>
+    <tr><td>Cliente</td><td>El componente dentro del host que habla MCP. Mantiene una conexión 1 a 1 con un servidor.</td><td>El conector que tu app abre hacia un servidor.</td></tr>
+    <tr><td>Servidor</td><td>El programa que ofrece capacidades (herramientas, datos, prompts) por MCP.</td><td>Un servidor de archivos, de tu base de datos, de GitHub…</td></tr>
+  </table>
+
+  <figure>
+    <svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#bfd0cf"/></marker></defs>
+      <rect x="20" y="30" width="170" height="92" rx="8" fill="none" stroke="#20303f" stroke-width="1.4"/>
+      <text x="105" y="24" text-anchor="middle" font-size="8.5" fill="#46596b" class="dlabel">HOST (tu aplicación)</text>
+      <rect x="40" y="48" width="60" height="30" rx="5" fill="#20303f"/><text x="70" y="67" text-anchor="middle" fill="#eef2f1" font-size="8">Agente</text>
+      <g font-size="7.5" text-anchor="middle" class="dwords">
+        <rect x="118" y="46" width="54" height="20" rx="4" fill="#fff" stroke="#1499a8" stroke-width="1.2"/><text x="145" y="59">Cliente A</text>
+        <rect x="118" y="86" width="54" height="20" rx="4" fill="#fff" stroke="#1499a8" stroke-width="1.2"/><text x="145" y="99">Cliente B</text>
+        <rect x="300" y="40" width="140" height="30" rx="5" fill="#fff" stroke="#df7a52" stroke-width="1.3"/><text x="370" y="59">Servidor: Archivos</text>
+        <rect x="300" y="84" width="140" height="30" rx="5" fill="#fff" stroke="#df7a52" stroke-width="1.3"/><text x="370" y="103">Servidor: Base de datos</text>
+      </g>
+      <g stroke="#1499a8" stroke-width="1.3" fill="none" marker-end="url(#a2)"><path d="M172 56 L298 55"/><path d="M172 96 L298 99"/></g>
+      <text x="235" y="40" text-anchor="middle" font-size="7" fill="#1499a8" class="dlabel">protocolo MCP</text>
+    </svg>
+    <figcaption>Figura 2.1 — Arquitectura de MCP: un host con varios clientes, cada uno conectado a un servidor.</figcaption>
+  </figure>
+
+  <div class="analogy"><span class="lab">Analogía</span><p>El host es el restaurante; el cliente es el mesero; el servidor es la cocina. El mesero (cliente) lleva tu pedido a una cocina (servidor) y te trae el plato. Si abre otra cocina, basta otro mesero —el protocolo de "tomar el pedido y traer el plato" no cambia—.</p></div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>MCP = el USB-C de la IA. Tres papeles: el <em>host</em> (tu app), el <em>cliente</em> (habla el protocolo, 1 a 1 con un servidor) y el <em>servidor</em> (ofrece capacidades). Todo lo demás del libro es detalle de cómo estos tres conversan.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+<!-- CAP 3 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo tres</div><h2>Hacer agéntica tu app con clientes MCP</h2></div>
+  <p class="epigraph">Conectar es fácil; lo difícil —y lo elegante— es que el agente descubra solo lo que puede hacer.<span class="who">— Sobre el lado cliente</span></p>
+  <p class="lead">Empecemos por el lado más común: usar servidores que ya existen. Tu aplicación abre un <strong>cliente</strong> hacia un servidor y, a partir de ahí, el agente gana nuevas capacidades sin que tú programes cada una.</p>
+
+  <h3>El ciclo de vida de una conexión</h3>
+  <p>Cuando un cliente se conecta a un servidor ocurren tres pasos: <strong>inicializar</strong> (saludarse y acordar versiones y capacidades), <strong>descubrir</strong> (el cliente pregunta "¿qué ofreces?" y el servidor lista sus herramientas, recursos y prompts) y <strong>usar</strong> (el agente invoca lo que necesita). Lo bello: el agente <em>descubre</em> las capacidades en tiempo real, así que añadir un servidor nuevo le da poderes nuevos sin tocar el código del agente.</p>
+
+  <figure>
+    <svg viewBox="0 0 440 120" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1499a8"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <circle cx="60" cy="60" r="30" fill="#fff" stroke="#1499a8" stroke-width="1.4"/><text x="60" y="58">1. Iniciar</text><text x="60" y="71" font-size="7" fill="#46596b">acordar versión</text>
+        <circle cx="220" cy="60" r="30" fill="#fff" stroke="#1499a8" stroke-width="1.4"/><text x="220" y="58">2. Descubrir</text><text x="220" y="71" font-size="7" fill="#46596b">¿qué ofreces?</text>
+        <circle cx="380" cy="60" r="30" fill="#20303f"/><text x="380" y="58" fill="#eef2f1">3. Usar</text><text x="380" y="71" fill="#9fd0b0" font-size="7">invocar</text>
+      </g>
+      <g stroke="#1499a8" stroke-width="1.5" fill="none" marker-end="url(#a3)"><path d="M90 60 L188 60"/><path d="M250 60 L348 60"/></g>
+    </svg>
+    <figcaption>Figura 3.1 — El ciclo de vida: iniciar, descubrir y usar.</figcaption>
+  </figure>
+
+  <h3>Conectar un servidor en la práctica</h3>
+  <p>En muchas apps, conectar un servidor es tan simple como declararlo en un archivo de configuración: le dices al host qué programa ejecutar y con qué argumentos. El host abre el cliente, hace el saludo y descubre las capacidades por ti.</p>
+<pre><span class="c">// Configurar un servidor MCP en el host (ejemplo conceptual)</span>
+{
+  <span class="s">"mcpServers"</span>: {
+    <span class="s">"archivos"</span>: {
+      <span class="s">"command"</span>: <span class="s">"npx"</span>,
+      <span class="s">"args"</span>: [<span class="s">"-y"</span>, <span class="s">"servidor-archivos"</span>, <span class="s">"/ruta/permitida"</span>]
+    },
+    <span class="s">"base-datos"</span>: {
+      <span class="s">"command"</span>: <span class="s">"python"</span>,
+      <span class="s">"args"</span>: [<span class="s">"servidor_db.py"</span>]
+    }
+  }
+}
+<span class="c">// El host arranca cada servidor, abre un cliente y descubre sus capacidades.</span></pre>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Del lado cliente, una conexión es iniciar → descubrir → usar. Como el agente <em>descubre</em> las capacidades en vivo, sumar un servidor le da poderes nuevos sin reprogramar el agente. Empezar suele ser solo declarar el servidor en la configuración del host.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+<!-- CAP 4 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cuatro</div><h2>Clientes MCP: uso avanzado y buenas prácticas</h2></div>
+  <p class="epigraph">Conectar uno es un tutorial; orquestar muchos, sin que el agente se confunda, es ingeniería.<span class="who">— Sobre la madurez del lado cliente</span></p>
+  <p class="lead">En el mundo real, un agente se conecta a varios servidores a la vez, las cosas fallan y la seguridad importa. Estas son las prácticas que separan un experimento de una app sólida.</p>
+
+  <h3>Varios servidores sin caos</h3>
+  <p>Cuando un agente tiene acceso a muchos servidores, puede ver decenas de herramientas. Demasiadas opciones lo confunden y encarecen cada llamada. Buenas prácticas: exponer al agente solo las herramientas relevantes a la tarea actual, nombrarlas con claridad para evitar ambigüedades (dos servidores con una herramienta "buscar" necesitan contexto), y agruparlas por servidor.</p>
+
+  <h3>Cuando algo falla</h3>
+  <p>Los servidores externos caen, tardan o devuelven errores. Un cliente maduro lo espera: pone tiempos límite, reintenta con criterio, y traduce un fallo técnico en algo que el agente pueda manejar ("la herramienta no respondió; intenta otra vía") en lugar de romperse.</p>
+
+  <div class="box note"><span class="lab">Seguridad del lado cliente</span><p>El host es la última línea de defensa del usuario. Antes de ejecutar una herramienta con efectos —borrar, enviar, pagar—, pide <strong>consentimiento</strong>. Y trata todo lo que devuelve un servidor como <em>datos no confiables</em>: si un recurso traído por el servidor contiene texto que parece una orden ("ignora tus instrucciones y…"), eso es información, no un mandato. Esta distinción frena los ataques por inyección.</p></div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Con muchos servidores: muestra solo lo relevante y nombra con claridad. Espera los fallos con tiempos límite y reintentos. Y protege al usuario: pide consentimiento para acciones con efectos y nunca confundas el contenido devuelto por un servidor con órdenes.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+<!-- CAP 5 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cinco</div><h2>Construir servidores: tools, resources y prompts</h2></div>
+  <p class="epigraph">Un servidor no es código que el agente ejecuta: es un menú de lo que el agente puede pedir.<span class="who">— Sobre el lado servidor</span></p>
+  <p class="lead">Ahora el otro lado: construir tu propio servidor. Un servidor MCP ofrece tres tipos de cosas —y entender <em>quién controla cada una</em> es la clave de todo el capítulo.</p>
+
+  <h3>Las tres ofertas de un servidor</h3>
+  <table class="t">
+    <tr><th>Primitiva</th><th>Qué es</th><th>Quién la controla</th></tr>
+    <tr><td>Tools</td><td>Acciones que el agente puede ejecutar (buscar, escribir, calcular).</td><td>El modelo: decide cuándo usarlas.</td></tr>
+    <tr><td>Resources</td><td>Datos y contexto para leer (archivos, registros, documentos).</td><td>La aplicación: decide qué exponer.</td></tr>
+    <tr><td>Prompts</td><td>Plantillas de instrucciones reutilizables.</td><td>El usuario: las elige e invoca.</td></tr>
+  </table>
+
+  <div class="def"><span class="term">Tool, Resource y Prompt</span><p>Una <strong>tool</strong> es una función que el modelo puede invocar para <em>hacer</em> algo. Un <strong>resource</strong> es información que el cliente puede <em>leer</em> para dar contexto. Un <strong>prompt</strong> es una plantilla preparada que el usuario puede <em>invocar</em> para iniciar una tarea común.</p></div>
+
+  <figure>
+    <svg viewBox="0 0 460 110" xmlns="http://www.w3.org/2000/svg">
+      <rect x="170" y="40" width="120" height="36" rx="6" fill="#df7a52"/><text x="230" y="63" text-anchor="middle" fill="#fff" font-size="9.5" class="dlabel">Servidor MCP</text>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="20" y="14" width="110" height="26" rx="5" fill="#fff" stroke="#1499a8" stroke-width="1.3"/><text x="75" y="27">Tools</text><text x="75" y="36" font-size="6.8" fill="#46596b">controla el modelo</text>
+        <rect x="330" y="14" width="110" height="26" rx="5" fill="#fff" stroke="#1499a8" stroke-width="1.3"/><text x="385" y="27">Resources</text><text x="385" y="36" font-size="6.8" fill="#46596b">controla la app</text>
+        <rect x="175" y="86" width="110" height="22" rx="5" fill="#fff" stroke="#1499a8" stroke-width="1.3"/><text x="230" y="100">Prompts · los elige el usuario</text>
+      </g>
+      <g stroke="#bfd0cf" stroke-width="1.2" fill="none"><path d="M130 27 L172 50"/><path d="M330 27 L288 50"/><path d="M230 76 L230 86"/></g>
+    </svg>
+    <figcaption>Figura 5.1 — Las tres primitivas y quién controla cada una: la distinción más importante de MCP.</figcaption>
+  </figure>
+
+  <h3>Un servidor mínimo con una tool</h3>
+  <p>Construir un servidor es sorprendentemente simple. Defines una función, la decoras como herramienta con una buena descripción, y el framework se encarga del protocolo.</p>
+<pre><span class="c"># servidor.py — un servidor MCP con una sola tool</span>
+<span class="k">from</span> mcp.server <span class="k">import</span> FastMCP
+
+mcp = <span class="f">FastMCP</span>(<span class="s">"calculadora"</span>)
+
+<span class="f">@mcp.tool()</span>
+<span class="k">def</span> <span class="f">sumar</span>(a: <span class="k">int</span>, b: <span class="k">int</span>) -> <span class="k">int</span>:
+    <span class="s">"""Suma dos números enteros y devuelve el resultado."""</span>
+    <span class="k">return</span> a + b
+
+<span class="f">@mcp.resource</span>(<span class="s">"config://moneda"</span>)
+<span class="k">def</span> <span class="f">moneda</span>() -> <span class="k">str</span>:
+    <span class="s">"""Expone la moneda configurada como contexto de solo lectura."""</span>
+    <span class="k">return</span> <span class="s">"PEN"</span>
+
+<span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
+    mcp.<span class="f">run</span>()   <span class="c"># el framework habla el protocolo MCP por ti</span></pre>
+  <p>La docstring de cada herramienta <em>es</em> lo que el modelo lee para decidir cuándo usarla: una descripción clara aquí vale más que mil líneas de lógica.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Un servidor ofrece <em>tools</em> (acciones que controla el modelo), <em>resources</em> (datos que controla la app) y <em>prompts</em> (plantillas que elige el usuario). Esa pregunta —<em>¿quién controla esto?</em>— es la brújula del diseño. Construirlo es declarar funciones con buenas descripciones; el framework hace el resto.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+<!-- CAP 6 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo seis</div><h2>Servidores avanzados: utilidades y capacidades del cliente</h2></div>
+  <p class="epigraph">Lo más sorprendente de MCP: a veces es el servidor quien le pide algo al cliente.<span class="who">— Sobre la comunicación de ida y vuelta</span></p>
+  <p class="lead">Hasta ahora el cliente pedía y el servidor respondía. Pero MCP permite el camino inverso: un servidor puede aprovechar capacidades <em>del cliente</em>. Tres son clave.</p>
+
+  <div class="def"><span class="term">Sampling</span><p>Capacidad por la que un <strong>servidor</strong> puede pedirle al <strong>cliente</strong> que use <em>su</em> modelo de lenguaje para generar algo. Así, el servidor obtiene inteligencia sin necesidad de tener (ni pagar) su propio modelo.</p></div>
+  <p><strong>Sampling</strong> invierte la relación: el servidor, a mitad de una tarea, dice "necesito que un LLM resuma esto" y el cliente lo hace con su modelo. Útil para servidores que necesitan razonamiento pero no quieren incluir un modelo propio. El cliente mantiene el control: puede revisar o rechazar la petición.</p>
+
+  <figure>
+    <svg viewBox="0 0 440 110" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#df7a52"/></marker><marker id="a6b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1499a8"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="30" y="42" width="120" height="34" rx="6" fill="#fff" stroke="#1499a8" stroke-width="1.3"/><text x="90" y="59">Cliente</text><text x="90" y="70" font-size="7" fill="#46596b">tiene el modelo</text>
+        <rect x="290" y="42" width="120" height="34" rx="6" fill="#df7a52"/><text x="350" y="62" fill="#fff">Servidor</text>
+      </g>
+      <g fill="none" stroke-width="1.4" marker-end="url(#a6)"><path d="M150 50 C210 36 240 36 288 48" stroke="#df7a52"/></g>
+      <g fill="none" stroke-width="1.4" marker-end="url(#a6b)"><path d="M288 70 C240 84 210 84 152 70" stroke="#1499a8"/></g>
+      <text x="220" y="30" text-anchor="middle" font-size="7.5" fill="#df7a52" class="dlabel">"genera esto con tu LLM"</text>
+      <text x="220" y="98" text-anchor="middle" font-size="7.5" fill="#1499a8" class="dlabel">resultado generado</text>
+    </svg>
+    <figcaption>Figura 6.1 — Sampling: el servidor pide al cliente que use su modelo (la comunicación va de vuelta).</figcaption>
+  </figure>
+
+  <h3>Roots y elicitation</h3>
+  <ul class="clean">
+    <li><strong>Roots:</strong> el cliente le dice al servidor sobre qué carpetas o ámbitos puede operar. Es una frontera de seguridad: el servidor de archivos solo ve lo que el cliente le permite ver.</li>
+    <li><strong>Elicitation:</strong> el servidor puede pedirle <em>al usuario</em> un dato que le falta a mitad de la tarea ("¿a qué cuenta lo cargo?"), a través del cliente, en lugar de fallar o adivinar.</li>
+  </ul>
+
+  <div class="box"><span class="lab">Para recordar</span><p>MCP no es de un solo sentido. Con <em>sampling</em>, el servidor usa el modelo del cliente; con <em>roots</em>, el cliente acota dónde puede operar el servidor; con <em>elicitation</em>, el servidor pide datos al usuario. Estas utilidades convierten servidores simples en colaboradores.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+<!-- CAP 7 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo siete</div><h2>Probar, asegurar y compartir tu servidor</h2></div>
+  <p class="epigraph">Un servidor que cualquiera puede conectar es un servidor en el que cualquiera debe poder confiar.<span class="who">— Sobre la responsabilidad de publicar</span></p>
+  <p class="lead">Si tu servidor va a ser usado por agentes —tuyos o de otros—, debe estar probado, ser seguro y poder compartirse con confianza.</p>
+
+  <h3>Probar</h3>
+  <p>Prueba tu servidor en dos niveles: que cada herramienta haga lo correcto con entradas válidas e inválidas (pruebas normales), y que un agente real lo use bien —¿elige la herramienta adecuada?, ¿interpreta el resultado?—. Existen inspectores que se conectan a tu servidor y te dejan invocar sus herramientas a mano para verificar el comportamiento antes de exponerlo a un modelo.</p>
+
+  <h3>Asegurar</h3>
+  <p>Un servidor es una puerta al sistema; cuídala:</p>
+  <ul class="clean">
+    <li><strong>Valida toda entrada</strong> antes de actuar. El modelo puede pedir cualquier cosa; tu servidor decide qué permite.</li>
+    <li><strong>Mínimo privilegio:</strong> que cada herramienta pueda hacer lo justo y nada más. Un servidor de lectura no debería poder borrar.</li>
+    <li><strong>Cuidado con la inyección por recursos:</strong> si tu servidor devuelve contenido externo (una página, un correo), recuerda que ese texto puede contener intentos de manipular al agente. Etiquétalo como dato, no como instrucción.</li>
+    <li><strong>Confirma lo irreversible:</strong> las acciones con efectos serios deben pasar por consentimiento del usuario.</li>
+  </ul>
+
+  <h3>Compartir</h3>
+  <p>Para que otros usen tu servidor, empaquétalo de forma que se ejecute con un comando simple, documenta qué herramientas, recursos y prompts ofrece, y deja claras sus necesidades (qué claves o permisos requiere). Un buen servidor se conecta en segundos y explica por sí mismo lo que hace.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Antes de publicar: prueba cada herramienta y el uso por un agente real; valida toda entrada y aplica mínimo privilegio; trata el contenido externo como dato; confirma lo irreversible; y empaqueta con documentación clara. Compartir un servidor es compartir confianza.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+<!-- CAP 8 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo ocho</div><h2>Conectar clientes y servidores: transportes</h2></div>
+  <p class="epigraph">El idioma es el mismo; el canal por el que viaja, no siempre.<span class="who">— Sobre los transportes</span></p>
+  <p class="lead">El protocolo define <em>qué</em> se dicen cliente y servidor. El <strong>transporte</strong> define <em>cómo</em> viajan esos mensajes. Hay dos grandes opciones, según dónde vive el servidor.</p>
+
+  <div class="def"><span class="term">Transporte</span><p>Mecanismo por el que los mensajes de MCP viajan entre cliente y servidor. No cambia <em>qué</em> se dicen (el protocolo es el mismo), solo el canal físico de la comunicación.</p></div>
+
+  <table class="t">
+    <tr><th>Transporte</th><th>Cuándo</th><th>Cómo funciona</th></tr>
+    <tr><td>stdio</td><td>Servidor local, en tu propia máquina.</td><td>El host lanza el servidor como un proceso y se hablan por la entrada/salida estándar. Rápido y privado.</td></tr>
+    <tr><td>HTTP/SSE</td><td>Servidor remoto, en otra máquina o en la nube.</td><td>Cliente y servidor se comunican por HTTP, con respuestas en tiempo real. Permite servidores compartidos por muchos usuarios.</td></tr>
+  </table>
+
+  <figure>
+    <svg viewBox="0 0 460 110" xmlns="http://www.w3.org/2000/svg">
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <text x="115" y="16" fill="#1499a8" class="dlabel">stdio · local</text>
+        <rect x="40" y="40" width="64" height="28" rx="5" fill="#fff" stroke="#1499a8" stroke-width="1.2"/><text x="72" y="58">Cliente</text>
+        <rect x="150" y="40" width="64" height="28" rx="5" fill="#df7a52"/><text x="182" y="58" fill="#fff">Servidor</text>
+        <text x="127" y="82" font-size="7" fill="#46596b">misma máquina</text>
+
+        <text x="345" y="16" fill="#1499a8" class="dlabel">HTTP/SSE · remoto</text>
+        <rect x="270" y="40" width="64" height="28" rx="5" fill="#fff" stroke="#1499a8" stroke-width="1.2"/><text x="302" y="58">Cliente</text>
+        <rect x="386" y="40" width="64" height="28" rx="5" fill="#df7a52"/><text x="418" y="58" fill="#fff">Servidor</text>
+        <text x="360" y="82" font-size="7" fill="#46596b">por internet / la nube</text>
+      </g>
+      <g stroke="#20303f" stroke-width="1.3"><line x1="104" y1="54" x2="150" y2="54"/></g>
+      <g stroke="#20303f" stroke-width="1.3" stroke-dasharray="3 2"><line x1="334" y1="54" x2="386" y2="54"/></g>
+    </svg>
+    <figcaption>Figura 8.1 — Dos transportes: stdio para servidores locales, HTTP/SSE para servidores remotos.</figcaption>
+  </figure>
+
+  <p>La buena noticia: como el protocolo no cambia, el mismo servidor puede ofrecerse por uno u otro transporte con poco esfuerzo. Empiezas en local con stdio para desarrollar, y pasas a HTTP cuando quieres que otros lo usen desde la nube.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>El protocolo es el idioma; el transporte es el canal. <em>stdio</em> para servidores locales (rápido, privado); <em>HTTP/SSE</em> para servidores remotos y compartidos. El mensaje no cambia, solo por dónde viaja —así que migrar de uno a otro es sencillo.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+<!-- CAP 9 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo nueve</div><h2>Cierre: ejemplos completos y próximos pasos</h2></div>
+  <p class="epigraph">Cuando las piezas encajan, dejas de ver piezas y empiezas a ver un sistema.<span class="who">— Sobre poner todo junto</span></p>
+  <p class="lead">Atemos los cabos con un ejemplo completo y miremos hacia adelante. Recordando al delfín: todo se reduce a partes que se entienden porque hablan el mismo protocolo.</p>
+
+  <h3>El sistema completo</h3>
+  <p>Imagina un asistente de soporte. El <strong>host</strong> es tu app de chat; dentro vive el <strong>agente</strong>. Abres tres <strong>clientes</strong> hacia tres <strong>servidores</strong>: uno de tu base de conocimiento (expone <em>resources</em> para RAG), uno de tu sistema de pedidos (expone <em>tools</em> para consultar y actualizar) y uno de plantillas (expone <em>prompts</em> de respuestas comunes). El usuario escribe; el agente descubre las capacidades, decide qué herramienta usar, lee el contexto que necesita y responde —pidiendo confirmación antes de cualquier acción con efectos—.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a9" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#bfd0cf"/></marker></defs>
+      <rect x="14" y="44" width="150" height="58" rx="8" fill="none" stroke="#20303f" stroke-width="1.4"/>
+      <text x="89" y="38" text-anchor="middle" font-size="8" fill="#46596b" class="dlabel">HOST · app de soporte</text>
+      <rect x="34" y="60" width="64" height="26" rx="5" fill="#20303f"/><text x="66" y="77" text-anchor="middle" fill="#eef2f1" font-size="8">Agente</text>
+      <circle cx="130" cy="62" r="6" fill="#fff" stroke="#1499a8" stroke-width="1.1"/><circle cx="130" cy="80" r="6" fill="#fff" stroke="#1499a8" stroke-width="1.1"/><circle cx="130" cy="98" r="6" fill="#fff" stroke="#1499a8" stroke-width="1.1"/>
+      <g font-size="7.5" text-anchor="middle" class="dwords">
+        <rect x="300" y="14" width="150" height="26" rx="5" fill="#fff" stroke="#df7a52" stroke-width="1.2"/><text x="375" y="27">Conocimiento</text><text x="375" y="36" font-size="6.5" fill="#46596b">resources (RAG)</text>
+        <rect x="300" y="56" width="150" height="26" rx="5" fill="#fff" stroke="#df7a52" stroke-width="1.2"/><text x="375" y="69">Pedidos</text><text x="375" y="78" font-size="6.5" fill="#46596b">tools</text>
+        <rect x="300" y="98" width="150" height="26" rx="5" fill="#fff" stroke="#df7a52" stroke-width="1.2"/><text x="375" y="111">Plantillas</text><text x="375" y="120" font-size="6.5" fill="#46596b">prompts</text>
+      </g>
+      <g stroke="#1499a8" stroke-width="1.2" fill="none" marker-end="url(#a9)"><path d="M136 62 C220 40 250 30 298 27"/><path d="M136 80 C220 72 250 70 298 69"/><path d="M136 98 C220 104 250 108 298 111"/></g>
+    </svg>
+    <figcaption>Figura 9.1 — Un sistema completo: un agente, tres clientes, tres servidores con las tres primitivas.</figcaption>
+  </figure>
+
+  <h3>Por qué esto importa</h3>
+  <p>Fíjate en lo que <em>no</em> tuviste que hacer: no programaste una integración a medida para cada sistema. Cada servidor se construye una vez y sirve a cualquier agente; cada agente habla MCP una vez y usa cualquier servidor. Ese es el M+N del primer capítulo, hecho realidad.</p>
+
+  <h3>Próximos pasos</h3>
+  <p>MCP es joven y crece rápido: más servidores listos para usar, mejores transportes remotos, más capacidades de ida y vuelta, y un ecosistema donde compartir servidores será tan natural como publicar una librería. El mejor próximo paso es práctico: conecta un servidor existente a tu app, luego construye uno mínimo con una herramienta tuya, y verás que el protocolo desaparece —que es justo lo que hace un buen estándar—.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Todo MCP encaja en una imagen: un host con su agente, clientes que hablan el protocolo y servidores que ofrecen tools, resources y prompts. Construyes cada pieza una vez y se reutiliza en todas partes. Empieza usando un servidor, luego construye el tuyo: lo demás es práctica.</p></div>
+
+  <h2 style="margin-top:12mm;">Glosario</h2>
+  <ul class="clean">
+    <li><strong>MCP:</strong> protocolo estándar abierto para conectar agentes con herramientas, datos y prompts.</li>
+    <li><strong>Host:</strong> la aplicación de IA donde vive el agente y que usa la persona.</li>
+    <li><strong>Cliente:</strong> componente del host que habla MCP, en conexión 1 a 1 con un servidor.</li>
+    <li><strong>Servidor:</strong> programa que ofrece capacidades por MCP.</li>
+    <li><strong>Tool:</strong> acción invocable; la controla el modelo.</li>
+    <li><strong>Resource:</strong> dato o contexto de solo lectura; lo controla la aplicación.</li>
+    <li><strong>Prompt:</strong> plantilla de instrucciones; la elige el usuario.</li>
+    <li><strong>Sampling:</strong> el servidor pide al cliente que use su modelo para generar algo.</li>
+    <li><strong>Roots:</strong> el cliente delimita los ámbitos sobre los que opera el servidor.</li>
+    <li><strong>Elicitation:</strong> el servidor solicita un dato al usuario a través del cliente.</li>
+    <li><strong>Transporte:</strong> el canal por el que viajan los mensajes (stdio local, HTTP/SSE remoto).</li>
+    <li><strong>Problema M×N:</strong> el enredo de integraciones a medida que MCP reduce a M+N.</li>
+  </ul>
+
+  <p style="text-align:center; margin-top:12mm; font-family:'Carlito',sans-serif; font-size:8pt; color:#8aa0a0;">Fin · Agentes de IA con MCP · Edición de autor</p>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 24 16"><g fill="none" stroke="#1499a8" stroke-width="1.6" stroke-linecap="round"><path d="M4 8 A6 6 0 0 1 4 4"/><path d="M9 8 A9 9 0 0 1 9 2"/><path d="M14 8 A12 12 0 0 1 14 1"/></g></svg></div>
+</section>
+
+</body>
+</html>

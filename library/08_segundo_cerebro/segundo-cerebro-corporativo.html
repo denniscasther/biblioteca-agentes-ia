@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>El Segundo Cerebro Corporativo</title>
+<style>
+:root{
+  --ink:#23231f;
+  --ink-soft:#4a4a42;
+  --accent:#8a5a2b;
+  --accent-dark:#5d3b18;
+  --accent-soft:#f0e6d8;
+  --rule:#cdc5b4;
+  --paper:#ffffff;
+  --box:#f7f4ed;
+}
+@page{
+  size:170mm 240mm;
+  margin:20mm 18mm 20mm 18mm;
+  @bottom-center{
+    content: counter(page);
+    font-family:"Carlito","DejaVu Sans",sans-serif;
+    font-size:8.5pt; color:#7a7a70;
+  }
+  @top-center{
+    content: string(runhead);
+    font-family:"Carlito","DejaVu Sans",sans-serif;
+    font-size:7.8pt; letter-spacing:.09em; text-transform:uppercase; color:#9a9488;
+  }
+}
+@page :first{ @top-center{content:""} @bottom-center{content:""} margin:0 }
+@page cover{ margin:0; @top-center{content:""} @bottom-center{content:""} }
+@page front{ @top-center{content:""} @bottom-center{content:""} }
+
+html{font-family:"Bitstream Charter","DejaVu Serif",serif;}
+body{margin:0;color:var(--ink);font-size:10.4pt;line-height:1.52;}
+p{margin:0 0 3.2mm 0;text-align:justify;hyphens:auto;}
+h1,h2,h3,h4{font-family:"Carlito","DejaVu Sans",sans-serif;color:var(--ink);line-height:1.2;}
+strong{color:var(--accent-dark);}
+em{color:var(--ink-soft);}
+code{font-family:"DejaVu Sans Mono",monospace;font-size:8.6pt;background:#f2efe8;padding:0 .6mm;border-radius:1px;}
+
+/* ---------- PORTADA ---------- */
+section.cover{
+  page:cover;
+  height:240mm;width:170mm;
+  position:relative;
+  page-break-after:always;
+  background:var(--paper);
+}
+.cover .spine{position:absolute;left:0;top:0;width:9mm;height:240mm;background:var(--accent);}
+.cover .band{position:absolute;left:9mm;top:0;width:161mm;height:7mm;background:var(--accent-dark);}
+.cover .pub{position:absolute;left:20mm;top:14mm;font-family:"Carlito",sans-serif;font-size:8pt;
+  letter-spacing:.28em;text-transform:uppercase;color:#8d8579;}
+.cover h1{position:absolute;left:20mm;top:24mm;width:135mm;font-size:29pt;font-weight:700;
+  letter-spacing:-.01em;color:var(--ink);margin:0;}
+.cover .sub{position:absolute;left:20mm;top:56mm;width:132mm;font-family:"Carlito",sans-serif;
+  font-size:11.5pt;color:var(--accent-dark);line-height:1.35;}
+.cover .art{position:absolute;left:26mm;top:76mm;width:120mm;}
+.cover .author{position:absolute;left:20mm;bottom:20mm;font-family:"Carlito",sans-serif;}
+.cover .author .by{font-size:8pt;letter-spacing:.22em;text-transform:uppercase;color:#8d8579;}
+.cover .author .name{font-size:16pt;color:var(--ink);margin-top:1.5mm;}
+.cover .num{position:absolute;right:16mm;bottom:20mm;font-family:"Carlito",sans-serif;
+  font-size:8pt;letter-spacing:.2em;text-transform:uppercase;color:#8d8579;text-align:right;}
+
+/* ---------- PÁGINAS DE CORTESÍA ---------- */
+section.front{page:front;page-break-after:always;}
+section.titlepage{page:front;page-break-after:always;padding-top:45mm;}
+.titlepage h1{font-size:24pt;margin:0 0 4mm 0;}
+.titlepage .sub{font-family:"Carlito",sans-serif;font-size:12pt;color:var(--accent-dark);}
+.titlepage .rule{height:2px;background:var(--accent);width:38mm;margin:7mm 0;}
+.titlepage .meta{font-family:"Carlito",sans-serif;font-size:9.5pt;color:var(--ink-soft);text-align:left;}
+section.frontnote{page:front;page-break-after:always;}
+.frontnote h2{font-size:15pt;margin:0 0 5mm 0;padding-bottom:2mm;border-bottom:2px solid var(--accent);}
+.frontnote p.lead{font-size:11.4pt;color:var(--accent-dark);}
+
+/* ---------- ÍNDICE ---------- */
+.toc h2{font-size:15pt;margin:0 0 6mm 0;padding-bottom:2mm;border-bottom:2px solid var(--accent);}
+.toc .part{font-family:"Carlito",sans-serif;font-size:9pt;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin:6mm 0 2.5mm 0;}
+.toc ul{list-style:none;margin:0;padding:0;}
+.toc li{font-family:"Carlito",sans-serif;font-size:10pt;margin:0 0 1.9mm 0;color:var(--ink);}
+.toc li span.n{display:inline-block;width:8mm;color:var(--accent);font-weight:700;}
+.toc li .subs{display:block;margin:.8mm 0 0 8mm;font-size:8.6pt;color:#77736a;line-height:1.35;}
+
+/* ---------- ESTRUCTURA DE CAPÍTULOS ---------- */
+section.partpage{page-break-before:always;page-break-after:always;padding-top:80mm;text-align:center;}
+.partpage .kicker{font-family:"Carlito",sans-serif;font-size:9pt;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);}
+.partpage h2{font-size:22pt;margin:4mm 0 0 0;}
+.partpage .line{height:2px;width:30mm;background:var(--accent);margin:6mm auto;}
+.partpage p{text-align:center;font-size:10.5pt;color:var(--ink-soft);max-width:100mm;margin:0 auto;}
+
+section.chapter{page-break-before:always;}
+.chapter .chapnum{font-family:"Carlito",sans-serif;font-size:9pt;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);}
+.chapter h2{font-size:19pt;margin:2mm 0 4mm 0;string-set:runhead content();}
+.chapter .epi{border-left:3px solid var(--accent-soft);padding-left:5mm;margin:0 0 6mm 0;
+  font-style:italic;color:var(--ink-soft);font-size:10pt;}
+.chapter h3{font-size:12pt;margin:7mm 0 2.5mm 0;color:var(--accent-dark);}
+.chapter h4{font-size:10.2pt;margin:5mm 0 1.5mm 0;color:var(--ink);}
+
+/* ---------- CAJAS ---------- */
+.box{border:1px solid var(--rule);background:var(--box);padding:4mm 5mm;margin:5mm 0;
+  page-break-inside:avoid;border-radius:1.5mm;}
+.box .lab{display:block;font-family:"Carlito",sans-serif;font-size:7.6pt;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:2mm;font-weight:700;}
+.box p:last-child{margin-bottom:0;}
+.box.def{border-left:4px solid var(--accent);}
+.box.ana{border-left:4px solid #6b8f6b;background:#f2f6f0;}
+.box.ana .lab{color:#3f6b3f;}
+.box.warn{border-left:4px solid #b0512f;background:#fbf1ec;}
+.box.warn .lab{color:#8f3d22;}
+.box.case{border-left:4px solid #3f6480;background:#eef3f7;}
+.box.case .lab{color:#2f4f66;}
+.box.recall{border:1px dashed var(--accent);background:#fffdf7;}
+
+/* ---------- FIGURAS ---------- */
+figure{margin:6mm 0;page-break-inside:avoid;text-align:center;}
+figure svg{width:100%;height:auto;}
+figcaption{font-family:"Carlito",sans-serif;font-size:8.2pt;color:#77736a;margin-top:2mm;text-align:center;}
+figcaption b{color:var(--accent);}
+
+/* ---------- TABLAS ---------- */
+table{width:100%;border-collapse:collapse;margin:5mm 0;font-family:"Carlito",sans-serif;
+  font-size:8.8pt;page-break-inside:avoid;}
+th{background:var(--accent-dark);color:#fff;text-align:left;padding:2mm 2.5mm;font-weight:600;}
+td{border-bottom:1px solid var(--rule);padding:2mm 2.5mm;vertical-align:top;}
+tr:nth-child(even) td{background:#faf8f3;}
+
+/* ---------- CÓDIGO ---------- */
+pre{background:#f4f2ec;border:1px solid var(--rule);border-left:3px solid var(--accent);
+  padding:3.5mm 4mm;font-family:"DejaVu Sans Mono",monospace;font-size:8pt;line-height:1.42;
+  overflow-wrap:break-word;white-space:pre-wrap;page-break-inside:avoid;margin:4mm 0;color:#33322c;}
+pre .c{color:#7d8a72;}
+pre .k{color:#8a5a2b;font-weight:700;}
+
+ul.plain{margin:0 0 3.5mm 0;padding-left:5mm;}
+ul.plain li{margin-bottom:1.6mm;}
+ol{padding-left:6mm;} ol li{margin-bottom:1.6mm;}
+dl.gloss dt{font-family:"Carlito",sans-serif;font-weight:700;color:var(--accent-dark);
+  font-size:9.6pt;margin-top:3.5mm;}
+dl.gloss dd{margin:.8mm 0 0 0;font-size:9.6pt;color:var(--ink-soft);}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- =================== PORTADA =================== -->
+<section class="cover">
+  <div class="spine"></div>
+  <div class="band"></div>
+  <div class="pub">Biblioteca de Agentes de IA &middot; Volumen VIII</div>
+
+  <h1>El Segundo Cerebro<br>Corporativo</h1>
+  <div class="sub">Convertir el repositorio documental de un área de TI<br>en contexto vivo para agentes de IA</div>
+
+  <div class="art">
+  <svg viewBox="0 0 200 175" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#23231f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <!-- cola: contorno exterior -->
+      <path d="M86 150 C58 150 36 132 32 106 C28 78 42 46 68 32 C84 23 102 22 112 29
+               C96 31 82 38 72 50 C56 70 52 96 60 118 C66 134 76 144 86 150 Z"/>
+      <!-- cola: nervadura interna -->
+      <path d="M80 140 C64 126 58 102 66 80 C72 62 84 48 100 40"/>
+      <path d="M74 132 C60 118 56 98 62 80"/>
+      <!-- mechones de la cola -->
+      <path d="M40 100 L33 97 M42 86 L35 82 M47 72 L40 67 M55 58 L49 52 M65 46 L60 39 M78 36 L74 29 M92 29 L90 22"/>
+      <!-- lomo -->
+      <path d="M88 152 C82 130 84 108 93 94 C99 84 108 79 116 78"/>
+      <!-- pecho y vientre -->
+      <path d="M122 101 C127 116 128 138 121 152"/>
+      <!-- base / suelo del cuerpo -->
+      <path d="M88 152 C97 158 114 158 121 152"/>
+      <!-- pata trasera -->
+      <path d="M94 150 C88 155 88 161 95 161 C104 161 111 158 113 152"/>
+      <!-- cabeza -->
+      <path d="M104 86 C99 70 110 57 125 56 C139 55 149 65 150 77 C150 81 153 83 156 85
+               C154 88 151 90 147 90 C143 98 132 104 120 102 C110 100 105 93 104 86 Z"/>
+      <!-- oreja -->
+      <path d="M117 58 C112 46 116 36 125 34 C129 42 129 52 127 58"/>
+      <path d="M120 55 C118 47 120 42 124 40"/>
+      <!-- ojo -->
+      <circle cx="133" cy="73" r="3.1" fill="#23231f" stroke="none"/>
+      <circle cx="134.2" cy="72" r="1" fill="#fff" stroke="none"/>
+      <!-- nariz y boca -->
+      <circle cx="154" cy="85" r="1.7" fill="#23231f" stroke="none"/>
+      <path d="M150 89 C147 92 143 92 141 90"/>
+      <!-- bigotes -->
+      <path d="M152 90 L164 96 M153 88 L166 89 M151 92 L160 100"/>
+      <!-- patas delanteras sosteniendo la bellota -->
+      <path d="M122 102 C129 105 133 110 133 116"/>
+      <path d="M118 106 C122 112 124 118 123 124"/>
+      <!-- bellota -->
+      <path d="M124 112 C124 107 141 107 141 112 C141 115 124 115 124 112 Z"/>
+      <path d="M126 114 C127 128 138 128 139 114"/>
+      <path d="M132 107 L132 103"/>
+      <path d="M128 118 L137 118 M129 122 L136 122"/>
+      <!-- textura del cuerpo -->
+      <path d="M100 118 C104 122 104 128 101 132" stroke-width="1"/>
+      <path d="M107 108 C111 112 111 118 108 122" stroke-width="1"/>
+      <path d="M96 132 C100 136 100 142 97 145" stroke-width="1"/>
+    </g>
+  </svg>
+  </div>
+
+  <div class="author">
+    <div class="by">Escrito e ilustrado por</div>
+    <div class="name">Claude</div>
+  </div>
+  <div class="num">Edición de autor<br>Primera edición</div>
+</section>
+
+<!-- =================== PORTADILLA =================== -->
+<section class="titlepage">
+  <h1>El Segundo Cerebro Corporativo</h1>
+  <div class="sub">Convertir el repositorio documental de un área de TI en contexto vivo para agentes de IA</div>
+  <div class="rule"></div>
+  <p class="meta">Del SharePoint que nadie lee al índice que cualquier agente entiende:<br>
+  arquitectura de carpetas, fichas en Markdown, carga progresiva de contexto,<br>
+  gobierno de permisos y mantenimiento del conocimiento.</p>
+  <p class="meta" style="margin-top:16mm;">Escrito e ilustrado por Claude &middot; Anthropic<br>
+  Biblioteca de Agentes de IA &middot; Volumen VIII<br>
+  Edición de autor &middot; Primera edición</p>
+</section>
+
+<!-- =================== SOBRE LA PORTADA =================== -->
+<section class="frontnote">
+  <h2>Sobre la portada</h2>
+  <p>El animal de esta portada es una <strong>ardilla</strong>, y no está aquí por simpática: está aquí porque
+  resuelve, todos los otoños, exactamente el problema de este libro.</p>
+  <p>La ardilla practica lo que los biólogos llaman <em>almacenamiento disperso</em>: en lugar de acumular
+  su comida en una sola despensa, entierra miles de bellotas en cientos de escondites distintos a lo largo
+  de varias hectáreas. Es una estrategia arriesgada —¿cómo se recuerda dónde está cada una?— y aun así
+  funciona. La ardilla no memoriza mil coordenadas: memoriza <em>referencias</em>. Un tocón, la raíz de un
+  roble, la piedra grande junto al arroyo. Y desde cada referencia, con el olfato y unos pocos movimientos,
+  llega al detalle. Navega su despensa como un índice que se abre por niveles.</p>
+  <p>Eso es un segundo cerebro. No es un almacén más grande; es un almacén <em>navegable</em>. Los otros
+  animales de esta colección representaban propiedades del agente —la comunicación del delfín, la
+  arquitectura de la abeja, el enjambre de la hormiga, la ingeniería del castor—. La ardilla representa
+  algo previo y más humilde: el <strong>conocimiento organizado para poder ser recuperado</strong>. Sin eso,
+  el agente más capaz del mundo se queda mirando una carpeta compartida con veinte mil archivos y no sabe
+  por dónde empezar.</p>
+  <p>Hay un detalle final que me gusta. Las bellotas que la ardilla olvida germinan: buena parte de los
+  robles de un bosque existen gracias a los descuidos de una ardilla. Un segundo cerebro bien construido
+  hace lo mismo. Lo que hoy documentas para resolver un ticket, mañana es el árbol bajo el que trabaja
+  alguien que aún no ha entrado a la empresa.</p>
+</section>
+
+<!-- =================== PREFACIO =================== -->
+<section class="frontnote">
+  <h2>Prefacio</h2>
+  <p class="lead">Casi todas las áreas de TI del mundo ya tienen su conocimiento escrito. El problema
+  nunca fue escribirlo. El problema es que está escrito de una forma que solo sirve si ya sabes dónde
+  buscar.</p>
+  <p>Este libro nace de un caso real y muy concreto: un área de TI cuyo SharePoint no contiene solo
+  proyectos, sino también infraestructura, soporte, gestión de proveedores, licencias, contratos y
+  procedimientos. Años de carpetas creadas por personas distintas con criterios distintos. Todo está ahí.
+  Nadie lo encuentra. Y cuando alguien se va de la empresa, se lleva el mapa mental que hacía navegable
+  ese desorden.</p>
+  <p>La solución que exploramos aquí no es migrar nada ni comprar una plataforma. Es crear <em>una carpeta
+  más</em>, al mismo nivel que las demás, llamada <strong>Segundo Cerebro</strong>, que no guarda documentos
+  sino <em>instrucciones para llegar a los documentos</em>. Un archivo raíz en Markdown que cualquier
+  asistente de IA puede leer al arrancar, que le dice qué existe, cómo está organizado y a qué archivo
+  saltar según lo que le pidan. Desde ahí, el agente desciende: del índice general al mapa de un dominio,
+  del mapa a la ficha de un proyecto, de la ficha al repositorio de código. Nunca carga todo. Carga lo justo,
+  y sabe cómo pedir más.</p>
+  <p>El recorrido del libro es deliberadamente práctico. La <strong>Parte I</strong> establece qué es un
+  segundo cerebro y por qué un repositorio documental corriente no lo es. La <strong>Parte II</strong>
+  construye la arquitectura: la carpeta raíz, la taxonomía de dominios, la anatomía de una ficha en Markdown
+  y el patrón de carga progresiva que hace que todo esto quepa en una ventana de contexto. La
+  <strong>Parte III</strong> lo pone a operar: un mismo cerebro consumido por Claude, por GitHub Copilot o
+  por Gemini; identidad, permisos y datos sensibles; y el mantenimiento, que es donde mueren el 90 % de
+  estos proyectos. La <strong>Parte IV</strong> abre el abanico con catorce casos de uso más allá del
+  original, métricas para saber si el cerebro sirve, y los riesgos que hay que mirar de frente.</p>
+  <p>Mi compromiso es el mismo de siempre en esta colección: cada concepto viene con una definición clara,
+  una gráfica que lo muestra, una analogía cotidiana y, cuando aporta, un ejemplo real de archivo o de código.
+  No verás una teoría bonita de gestión del conocimiento; verás las piezas que hay que escribir el lunes por
+  la mañana.</p>
+  <div class="box recall"><span class="lab">Cómo leer este libro</span>
+  <p>Los capítulos van de lo conceptual a lo operativo y se construyen unos sobre otros, pero cada uno se
+  sostiene solo. Si ya tienes el cerebro montado y solo quieres ampliarlo, empieza por el capítulo 10. Si
+  vas a construirlo desde cero, lee del 3 al 6 con un editor abierto al lado. Cada capítulo cierra con una
+  caja <em>Para recordar</em>, y el libro termina con un glosario y tres plantillas listas para copiar.</p></div>
+</section>
+
+<!-- =================== ÍNDICE =================== -->
+<section class="frontnote toc">
+  <h2>Índice</h2>
+
+  <div class="part">Parte I &middot; El problema y la idea</div>
+  <ul>
+    <li><span class="n">1</span>Qué es un segundo cerebro (y qué no lo es)
+      <span class="subs">Del Zettelkasten al contexto de un agente · Las cuatro operaciones · Memoria externa vs. buscador · Por qué la IA cambió la ecuación</span></li>
+    <li><span class="n">2</span>Anatomía de un área de TI real
+      <span class="subs">Los cuatro dominios: proyectos, infraestructura, soporte, proveedores · El costo del silo · El mapa mental que se va con la persona · Diagnóstico inicial</span></li>
+    <li><span class="n">3</span>Por qué un repositorio no es un cerebro
+      <span class="subs">Buscar vs. navegar · El problema de la ventana de contexto · Documentos para humanos, documentos para máquinas · La carpeta que faltaba</span></li>
+  </ul>
+
+  <div class="part">Parte II &middot; Construir el cerebro</div>
+  <ul>
+    <li><span class="n">4</span>La carpeta raíz y el archivo maestro
+      <span class="subs">Anatomía del <code>00-INDICE.md</code> · Reglas de navegación · Presupuesto de tokens · El prompt de arranque</span></li>
+    <li><span class="n">5</span>Taxonomía: organizar cuatro dominios sin morir en el intento
+      <span class="subs">PARA adaptado a TI · Convenciones de nombres · Jerarquía de tres niveles · Qué NO va en el cerebro</span></li>
+    <li><span class="n">6</span>Anatomía de una ficha en Markdown
+      <span class="subs">Front-matter y metadatos · La ficha de proyecto · Fichas de sistema, de servicio y de proveedor · Enlaces y punteros</span></li>
+    <li><span class="n">7</span>Carga progresiva: el patrón que lo hace posible
+      <span class="subs">Índice → dominio → ficha → fuente · Presupuesto de contexto por salto · Anclas y resúmenes · Cuándo parar de descender</span></li>
+  </ul>
+
+  <div class="part">Parte III &middot; Operarlo de verdad</div>
+  <ul>
+    <li><span class="n">8</span>Un cerebro, tres cabezas: Claude, GitHub y Gemini
+      <span class="subs">El acceso directo y el arranque · Adaptadores por herramienta · Qué cambia y qué no · Estrategia multiherramienta</span></li>
+    <li><span class="n">9</span>Identidad, permisos y datos sensibles
+      <span class="subs">Heredar los permisos, no reinventarlos · Clasificación por sensibilidad · El cerebro público y el cerebro restringido · Registro y auditoría</span></li>
+    <li><span class="n">10</span>Mantenimiento: cómo evitar que el cerebro se pudra
+      <span class="subs">La curva de descomposición documental · Dueños por dominio · Cadencia de revisión · Automatizar la detección de obsolescencia</span></li>
+  </ul>
+
+  <div class="part">Parte IV &middot; Ampliar, medir y cuidar</div>
+  <ul>
+    <li><span class="n">11</span>Catorce casos de uso más allá del primero
+      <span class="subs">Onboarding, incidentes, auditoría, licitaciones, continuidad, licencias, inventario, postmortem y más</span></li>
+    <li><span class="n">12</span>Medir si el cerebro sirve
+      <span class="subs">Métricas de cobertura, de acierto y de ahorro · Set de evaluación · Señales de fallo · Tablero mínimo</span></li>
+    <li><span class="n">13</span>Riesgos, ética y límites
+      <span class="subs">Contexto obsoleto y alucinación · Fuga de información · Dependencia y atrofia · Sesgo del que documenta</span></li>
+    <li><span class="n">14</span>Hoja de ruta de 90 días
+      <span class="subs">Semana a semana · Criterios de salida por fase · Errores típicos · Cómo se ve el éxito</span></li>
+  </ul>
+
+  <div class="part">Material final</div>
+  <ul>
+    <li><span class="n">A</span>Plantillas listas para copiar</li>
+    <li><span class="n">B</span>Glosario de terminología</li>
+  </ul>
+</section>
+<!-- =================== PARTE I =================== -->
+<section class="partpage">
+  <div class="kicker">Parte I</div>
+  <h2>El problema y la idea</h2>
+  <div class="line"></div>
+  <p>Antes de escribir un solo archivo conviene entender qué estamos construyendo, qué contiene realmente
+  un área de TI y por qué el repositorio que ya tienes —por ordenado que esté— no sirve como cerebro.</p>
+</section>
+
+<!-- ============ CAPÍTULO 1 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 1</div>
+  <h2>Qué es un segundo cerebro (y qué no lo es)</h2>
+  <p class="epi">«La mente es para tener ideas, no para guardarlas.» El problema es que llevamos treinta
+  años guardándolas en sitios donde solo nosotros sabemos buscarlas.</p>
+
+  <p>La expresión <em>segundo cerebro</em> viene del mundo de la productividad personal, y arrastra
+  consigo una historia larga: las fichas de Niklas Luhmann, los cuadernos de laboratorio, los sistemas de
+  notas enlazadas. La idea de fondo siempre fue la misma —construir una memoria externa que piense
+  contigo—, pero durante décadas tuvo un techo muy claro: <strong>solo funcionaba para su autor</strong>.
+  El sistema de fichas de Luhmann era brillante y, para cualquier otra persona, una caja de zapatos con
+  papeles.</p>
+
+  <p>Lo que cambió no es el método. Es que ahora hay un lector incansable capaz de recorrer ese sistema
+  por ti, siempre que esté escrito de una forma que pueda seguir. Un segundo cerebro corporativo es,
+  literalmente, un sistema de notas enlazadas diseñado para que lo navegue un agente de IA en nombre de
+  cualquier persona del equipo.</p>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Segundo cerebro corporativo:</strong> capa de conocimiento estructurado, escrita en texto
+  plano y organizada por dominios, que no almacena la información del área sino <em>las instrucciones para
+  llegar a ella</em>, y que está diseñada para ser cargada como contexto por un agente de IA de forma
+  progresiva.</p></div>
+
+  <h3>Las cuatro operaciones</h3>
+  <p>Todo segundo cerebro, personal o corporativo, hace cuatro cosas. Vale la pena nombrarlas porque casi
+  todos los proyectos fallidos fallan por descuidar una en concreto: la tercera.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ar1" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0 0 L7 3.2 L0 6.4 z" fill="#8a5a2b"/>
+      </marker>
+    </defs>
+    <g font-family="Carlito,sans-serif" font-size="13" fill="#23231f">
+      <g>
+        <rect x="10" y="60" width="130" height="70" rx="6" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="75" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#5d3b18">1. Capturar</text>
+        <text x="75" y="106" text-anchor="middle" font-size="10.5" fill="#4a4a42">Lo que ya existe:</text>
+        <text x="75" y="119" text-anchor="middle" font-size="10.5" fill="#4a4a42">carpetas, actas, tickets</text>
+      </g>
+      <g>
+        <rect x="175" y="60" width="130" height="70" rx="6" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="240" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#5d3b18">2. Organizar</text>
+        <text x="240" y="106" text-anchor="middle" font-size="10.5" fill="#4a4a42">Dominios, jerarquía,</text>
+        <text x="240" y="119" text-anchor="middle" font-size="10.5" fill="#4a4a42">nombres consistentes</text>
+      </g>
+      <g>
+        <rect x="340" y="60" width="130" height="70" rx="6" fill="#f0e6d8" stroke="#5d3b18" stroke-width="2.2"/>
+        <text x="405" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#5d3b18">3. Destilar</text>
+        <text x="405" y="106" text-anchor="middle" font-size="10.5" fill="#4a4a42">Fichas .md que resumen</text>
+        <text x="405" y="119" text-anchor="middle" font-size="10.5" fill="#4a4a42">y apuntan al detalle</text>
+      </g>
+      <g>
+        <rect x="505" y="60" width="130" height="70" rx="6" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="570" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#5d3b18">4. Recuperar</text>
+        <text x="570" y="106" text-anchor="middle" font-size="10.5" fill="#4a4a42">El agente navega</text>
+        <text x="570" y="119" text-anchor="middle" font-size="10.5" fill="#4a4a42">y responde</text>
+      </g>
+      <path d="M142 95 L171 95" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar1)"/>
+      <path d="M307 95 L336 95" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar1)"/>
+      <path d="M472 95 L501 95" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar1)"/>
+      <path d="M570 132 C570 185 400 200 240 190 C160 185 100 165 75 132"
+            fill="none" stroke="#6b8f6b" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ar1)"/>
+      <text x="330" y="212" text-anchor="middle" font-size="11" fill="#3f6b3f" font-style="italic">
+        cada consulta revela un hueco: el uso alimenta la captura</text>
+      <text x="405" y="45" text-anchor="middle" font-size="10.5" fill="#8a5a2b" font-weight="700">
+        aquí es donde fallan los proyectos</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 1.1</b> · El ciclo de cuatro operaciones. Destilar es el paso caro y el que casi
+  nadie hace: sin él, solo has movido archivos de sitio.</figcaption>
+  </figure>
+
+  <p><strong>Capturar</strong> es lo que ya tienes: años de documentos, actas, correos, tickets, planos de
+  red. En un área de TI corporativa este paso está resuelto por acumulación, no por diseño.
+  <strong>Organizar</strong> es darle una estructura predecible. <strong>Destilar</strong> es escribir, para
+  cada cosa importante, un resumen corto y estructurado que diga qué es, quién lo mantiene y dónde está el
+  detalle. <strong>Recuperar</strong> es lo que hace el agente cuando alguien pregunta.</p>
+
+  <p>La tentación es saltarse el tercer paso. «Que la IA lea todo el SharePoint y ya.» No funciona, y el
+  capítulo 3 explica por qué con números. Por ahora basta con una intuición: nadie contrataría a un
+  analista nuevo, le daría acceso a veinte mil archivos sin explicación y esperaría respuestas útiles el
+  primer día.</p>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Piensa en la diferencia entre una <em>biblioteca</em> y un <em>almacén de libros</em>. Los dos tienen
+  los mismos libros. La biblioteca tiene además un catálogo, una signatura por lomo y un bibliotecario que
+  sabe que si preguntas por «contratos de mantenimiento de servidores» probablemente quieras la sección de
+  proveedores y no la de historia. El almacén te deja entrar a buscar. La biblioteca te lleva. Tu SharePoint
+  es un almacén excelente; le falta el catálogo, la signatura y el bibliotecario.</p></div>
+
+  <h3>Memoria externa, no buscador</h3>
+  <p>Conviene distinguir el segundo cerebro de tres cosas con las que se confunde constantemente:</p>
+
+  <table>
+    <tr><th style="width:26%">No es…</th><th style="width:37%">Porque…</th><th>El cerebro, en cambio…</th></tr>
+    <tr><td><strong>Un buscador</strong></td>
+        <td>El buscador devuelve documentos que contienen tus palabras. Si no sabes cómo se llama lo que
+        buscas, no aparece.</td>
+        <td>Devuelve respuestas, y sabe llegar a ellas aunque preguntes con otras palabras.</td></tr>
+    <tr><td><strong>Una wiki</strong></td>
+        <td>La wiki es un destino: alguien tiene que entrar, buscar la página y leerla. Vive o muere del
+        hábito humano.</td>
+        <td>Es un origen: se carga solo al arrancar la herramienta que la persona ya iba a usar.</td></tr>
+    <tr><td><strong>Un RAG sobre todo el repositorio</strong></td>
+        <td>Trocea documentos y recupera fragmentos parecidos, sin entender jerarquía ni vigencia. Mezcla
+        el procedimiento de 2019 con el de 2026.</td>
+        <td>Navega una estructura explícita con reglas de prioridad y fechas de vigencia declaradas.</td></tr>
+  </table>
+
+  <p>Esto último merece énfasis porque es la confusión más costosa. Un sistema de recuperación semántica
+  sobre el repositorio crudo es útil y complementario, pero no reemplaza la destilación: un fragmento
+  suelto de un acta de 2021 se parece muchísimo, vectorialmente, a la política vigente. El cerebro resuelve
+  eso declarando cuál manda.</p>
+
+  <h3>Qué cambió con los agentes</h3>
+  <p>Tres capacidades relativamente recientes son las que vuelven viable esta arquitectura, y conviene
+  tenerlas presentes porque condicionan todo el diseño:</p>
+  <ul class="plain">
+    <li><strong>Ventanas de contexto grandes pero no infinitas.</strong> Cabe mucho, pero no cabe todo, y
+    llenarlas de ruido degrada la respuesta. De ahí la carga progresiva del capítulo 7.</li>
+    <li><strong>Capacidad de seguir instrucciones de navegación.</strong> Un agente puede leer «si te
+    preguntan por un sistema, abre primero <code>02-PROYECTOS/indice.md</code>» y hacerlo. Esto es nuevo y
+    es lo que convierte un archivo en un mapa ejecutable.</li>
+    <li><strong>Uso de herramientas.</strong> El agente no solo lee: abre archivos, consulta repositorios,
+    ejecuta búsquedas. El cerebro puede, por tanto, contener punteros a fuentes vivas en lugar de copias.</li>
+  </ul>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Un segundo cerebro corporativo no guarda el conocimiento: guarda <em>cómo llegar</em> al conocimiento.
+  Sus cuatro operaciones son capturar, organizar, destilar y recuperar, y la destilación —escribir fichas
+  cortas que resumen y apuntan— es el trabajo real. Sin ella tienes un almacén; con ella, una biblioteca.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 2 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 2</div>
+  <h2>Anatomía de un área de TI real</h2>
+  <p class="epi">Nadie documenta un área de TI. Se documentan cuatro áreas distintas que comparten
+  presupuesto, jefe y unidad de red.</p>
+
+  <p>Un error habitual al montar un cerebro es tratar «TI» como un dominio único. No lo es. Bajo esa sigla
+  conviven al menos cuatro naturalezas de trabajo con ciclos de vida, vocabularios y usuarios completamente
+  distintos. Si el cerebro no refleja esa diferencia, la navegación se vuelve ambigua y el agente empieza a
+  devolver el documento equivocado con toda la confianza del mundo.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <circle cx="320" cy="165" r="46" fill="#5d3b18"/>
+      <text x="320" y="161" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Segundo</text>
+      <text x="320" y="177" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Cerebro</text>
+
+      <g>
+        <rect x="30" y="25" width="215" height="95" rx="6" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="46" y="48" font-size="13.5" font-weight="700" fill="#5d3b18">Proyectos</text>
+        <text x="46" y="67" font-size="10.5" fill="#4a4a42">Ciclo: meses. Termina.</text>
+        <text x="46" y="82" font-size="10.5" fill="#4a4a42">Ficha, alcance, código, hitos</text>
+        <text x="46" y="97" font-size="10.5" fill="#4a4a42">Dueño: jefe de proyecto</text>
+        <text x="46" y="112" font-size="10" fill="#8a5a2b" font-style="italic">«¿qué stack usa el portal?»</text>
+      </g>
+      <g>
+        <rect x="395" y="25" width="215" height="95" rx="6" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="411" y="48" font-size="13.5" font-weight="700" fill="#5d3b18">Infraestructura</text>
+        <text x="411" y="67" font-size="10.5" fill="#4a4a42">Ciclo: años. Nunca termina.</text>
+        <text x="411" y="82" font-size="10.5" fill="#4a4a42">Servidores, red, backups, DR</text>
+        <text x="411" y="97" font-size="10.5" fill="#4a4a42">Dueño: administrador</text>
+        <text x="411" y="112" font-size="10" fill="#8a5a2b" font-style="italic">«¿dónde corre este servicio?»</text>
+      </g>
+      <g>
+        <rect x="30" y="215" width="215" height="95" rx="6" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="46" y="238" font-size="13.5" font-weight="700" fill="#5d3b18">Soporte</text>
+        <text x="46" y="257" font-size="10.5" fill="#4a4a42">Ciclo: horas. Se repite.</text>
+        <text x="46" y="272" font-size="10.5" fill="#4a4a42">Tickets, procedimientos, SLA</text>
+        <text x="46" y="287" font-size="10.5" fill="#4a4a42">Dueño: mesa de ayuda</text>
+        <text x="46" y="302" font-size="10" fill="#8a5a2b" font-style="italic">«¿cómo se resolvió esto antes?»</text>
+      </g>
+      <g>
+        <rect x="395" y="215" width="215" height="95" rx="6" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="411" y="238" font-size="13.5" font-weight="700" fill="#5d3b18">Proveedores</text>
+        <text x="411" y="257" font-size="10.5" fill="#4a4a42">Ciclo: anual. Se renueva.</text>
+        <text x="411" y="272" font-size="10.5" fill="#4a4a42">Contratos, licencias, SLA, costos</text>
+        <text x="411" y="287" font-size="10.5" fill="#4a4a42">Dueño: coordinación / compras</text>
+        <text x="411" y="302" font-size="10" fill="#8a5a2b" font-style="italic">«¿cuándo vence este contrato?»</text>
+      </g>
+
+      <path d="M245 72 L275 140" stroke="#8a5a2b" stroke-width="1.4"/>
+      <path d="M395 72 L365 140" stroke="#8a5a2b" stroke-width="1.4"/>
+      <path d="M245 263 L275 192" stroke="#8a5a2b" stroke-width="1.4"/>
+      <path d="M395 263 L365 192" stroke="#8a5a2b" stroke-width="1.4"/>
+    </g>
+  </svg>
+  <figcaption><b>Figura 2.1</b> · Los cuatro dominios de un área de TI. Cada uno tiene un ciclo de vida y
+  una pregunta típica distinta; el cerebro debe enrutar según esa pregunta.</figcaption>
+  </figure>
+
+  <h3>Por qué la distinción importa técnicamente</h3>
+  <p>No es taxonomía por gusto. Cada dominio impone un requisito distinto al diseño:</p>
+  <ul class="plain">
+    <li><strong>Proyectos</strong> generan documentos que <em>caducan de golpe</em>: cuando el proyecto
+    pasa a producción, el acta de kickoff pierde valor y la ficha técnica lo gana. El cerebro necesita un
+    estado explícito (<code>activo</code>, <code>en producción</code>, <code>cerrado</code>).</li>
+    <li><strong>Infraestructura</strong> genera documentos que <em>se corrigen</em>, no se archivan. Aquí
+    lo peligroso no es la falta de información sino la información desactualizada: una IP que cambió hace
+    ocho meses y sigue escrita.</li>
+    <li><strong>Soporte</strong> genera volumen enorme y valor concentrado en un 5 %: los procedimientos
+    repetibles. El cerebro no debe indexar treinta mil tickets; debe indexar los cuarenta procedimientos
+    que resuelven el 80 % de ellos.</li>
+    <li><strong>Proveedores</strong> genera documentos con <em>fecha de vencimiento real y consecuencias
+    económicas</em>. Es el dominio donde un error de contexto cuesta dinero, y por tanto el que más
+    necesita campos estructurados y menos prosa.</li>
+  </ul>
+
+  <div class="box case"><span class="lab">Caso · El diagnóstico de las diez preguntas</span>
+  <p>Antes de escribir nada, un equipo de TI hizo este ejercicio: cada miembro anotó las diez preguntas que
+  más le habían hecho en los últimos tres meses. Salieron 60 preguntas, que al agrupar se redujeron a 22
+  distintas. De esas 22, catorce se respondían con información que ya estaba escrita en algún lugar del
+  SharePoint, y ocho solo existían en la cabeza de alguien.</p>
+  <p>Ese ejercicio de dos horas definió el alcance del cerebro mejor que cualquier auditoría documental: las
+  primeras catorce fichas a destilar eran obvias, y las ocho restantes se convirtieron en la lista de
+  entrevistas pendientes. <strong>Empieza por las preguntas, no por las carpetas.</strong></p></div>
+
+  <h3>El mapa mental que se va con la persona</h3>
+  <p>Hay un activo que ninguna área documenta y que es, con diferencia, el más valioso: el mapa mental de
+  quien lleva años ahí. No es información —es <em>enrutamiento</em>. Es saber que el contrato del ERP está
+  en la carpeta de Compras y no en la de TI porque lo firmó Administración en 2022; que hay dos versiones
+  del diagrama de red y la buena es la que tiene la fecha en el nombre; que el sistema se llama oficialmente
+  <em>SGP</em> pero todo el mundo dice «el portal».</p>
+  <p>Ese conocimiento es exactamente el que debe entrar al archivo raíz del cerebro, y es la razón por la
+  que este proyecto no se puede delegar a alguien externo. Un consultor puede diseñar la estructura; solo
+  el equipo puede escribir los alias, las excepciones y los «ojo, esto está donde no esperas».</p>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>«TI» son cuatro dominios con ciclos de vida distintos: proyectos (caducan), infraestructura (se
+  corrige), soporte (repite) y proveedores (vence). Diseña el cerebro por dominio, no por carpeta existente,
+  y arranca desde las preguntas reales del equipo. El conocimiento más valioso a capturar no son los
+  documentos: son los alias, las excepciones y las rutas raras que solo conocen los veteranos.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 3 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 3</div>
+  <h2>Por qué un repositorio no es un cerebro</h2>
+  <p class="epi">«Ya lo tenemos todo en SharePoint» es la frase que precede a seis meses buscando un
+  documento que sí existía.</p>
+
+  <p>Un repositorio documental está optimizado para <em>guardar sin perder</em>. Un cerebro está optimizado
+  para <em>llegar sin saber</em>. Son objetivos distintos y producen estructuras distintas. Veamos las tres
+  diferencias que importan.</p>
+
+  <h3>Diferencia 1: buscar frente a navegar</h3>
+  <p>La búsqueda por palabras clave exige que quien pregunta ya conozca el vocabulario de quien escribió.
+  Si el documento se titula «Procedimiento de restauración de instancias virtualizadas» y la persona
+  pregunta «cómo levanto un servidor caído», la búsqueda literal falla. La navegación estructurada no falla,
+  porque el agente no busca palabras: recorre un árbol de decisión escrito por humanos —infraestructura →
+  procedimientos → recuperación— hasta llegar al documento correcto.</p>
+
+  <h3>Diferencia 2: el presupuesto de contexto</h3>
+  <p>Este es el argumento técnico decisivo y conviene verlo con números aproximados pero honestos. Un área
+  de TI mediana acumula fácilmente entre 8.000 y 25.000 archivos. Aunque solo los documentos de texto
+  sumaran 40 millones de palabras, hablamos de un volumen que excede en uno o dos órdenes de magnitud
+  cualquier ventana de contexto disponible.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <text x="20" y="24" font-size="12" font-weight="700" fill="#5d3b18">Enfoque ingenuo: «que lea todo»</text>
+      <rect x="20" y="34" width="270" height="86" fill="#fbf1ec" stroke="#b0512f" stroke-width="1.5"/>
+      <g font-size="9" fill="#8f3d22">
+        <text x="30" y="52">▧ 20.000 archivos · 40M palabras</text>
+        <text x="30" y="68">▧ Mezcla vigente y obsoleto</text>
+        <text x="30" y="84">▧ No cabe en contexto</text>
+        <text x="30" y="100">▧ Coste por consulta prohibitivo</text>
+        <text x="30" y="114">▧ El agente se pierde y alucina</text>
+      </g>
+      <text x="155" y="140" text-anchor="middle" font-size="11" fill="#8f3d22" font-weight="700">✗ inviable</text>
+
+      <text x="350" y="24" font-size="12" font-weight="700" fill="#5d3b18">Enfoque cerebro: carga progresiva</text>
+      <rect x="350" y="34" width="270" height="86" fill="#f2f6f0" stroke="#3f6b3f" stroke-width="1.5"/>
+      <g font-size="9" fill="#3f6b3f">
+        <text x="360" y="52">▧ 1 índice raíz (~1.500 palabras)</text>
+        <text x="360" y="68">▧ + 1 mapa de dominio (~800)</text>
+        <text x="360" y="84">▧ + 1–2 fichas de detalle (~1.200)</text>
+        <text x="360" y="100">▧ + puntero a la fuente exacta</text>
+        <text x="360" y="114">▧ Total: ~3.500 palabras por consulta</text>
+      </g>
+      <text x="485" y="140" text-anchor="middle" font-size="11" fill="#3f6b3f" font-weight="700">✓ trivial</text>
+
+      <text x="320" y="175" text-anchor="middle" font-size="11.5" fill="#4a4a42">
+        La misma información. La diferencia está en <tspan font-style="italic">cuánta se carga a la vez</tspan>.</text>
+
+      <rect x="120" y="195" width="400" height="18" fill="#f0e6d8" stroke="#8a5a2b"/>
+      <rect x="120" y="195" width="34" height="18" fill="#5d3b18"/>
+      <text x="137" y="208" text-anchor="middle" font-size="9.5" fill="#fff">útil</text>
+      <text x="340" y="208" text-anchor="middle" font-size="9.5" fill="#5d3b18">ruido que degrada la respuesta</text>
+      <text x="320" y="234" text-anchor="middle" font-size="10" fill="#77736a" font-style="italic">
+        proporción típica al volcar una carpeta completa en el contexto</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 3.1</b> · El presupuesto de contexto. No es solo que «no quepa»: aunque cupiera,
+  la señal se ahoga en ruido y la calidad de la respuesta cae.</figcaption>
+  </figure>
+
+  <p>Hay un efecto secundario menos obvio y más grave que el límite de tamaño: <strong>la degradación por
+  dilución</strong>. Un agente al que se le entrega el documento correcto junto a otros cuarenta parecidos
+  responde peor que uno al que se le entrega solo el correcto. Más contexto no es mejor contexto. El diseño
+  entero del cerebro se puede resumir en una frase: <em>maximizar la proporción de contenido relevante en
+  la ventana</em>.</p>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Imagina que le pides indicaciones a alguien y, en lugar de decirte «tercera a la derecha después del
+  semáforo», te entrega el atlas completo de la ciudad. Técnicamente la respuesta está ahí. Prácticamente
+  te ha hecho perder el día. Un repositorio es el atlas; el cerebro es la persona que ha leído el atlas y
+  sabe qué tres líneas te sirven.</p></div>
+
+  <h3>Diferencia 3: documentos para humanos, fichas para máquinas</h3>
+  <p>Un acta de reunión, un PDF de arquitectura o un contrato escaneado son excelentes documentos para
+  humanos y pésimos para un agente: la información está implícita, dispersa y sin metadatos. Una ficha
+  destilada invierte esa relación. No sustituye al documento —lo referencia—, pero expone en veinte líneas
+  estructuradas lo que el agente necesita para decidir si ese es el camino correcto.</p>
+
+  <table>
+    <tr><th style="width:50%">El documento original dice…</th><th>La ficha destilada expone…</th></tr>
+    <tr><td>Doce páginas de acta con el histórico de la decisión de arquitectura.</td>
+        <td><code>stack: Laravel 11 / PHP 8.2 / MySQL</code> y un enlace al acta para el porqué.</td></tr>
+    <tr><td>Un contrato PDF de 40 páginas firmado.</td>
+        <td><code>proveedor</code>, <code>vigencia</code>, <code>renovación_automática: sí</code>,
+        <code>preaviso: 60 días</code>, ruta al PDF.</td></tr>
+    <tr><td>Hilo de correo de 30 mensajes resolviendo una incidencia.</td>
+        <td>Síntoma, causa raíz, solución en 5 pasos, sistema afectado.</td></tr>
+  </table>
+
+  <h3>La carpeta que faltaba</h3>
+  <p>La consecuencia práctica de todo esto es sorprendentemente modesta: no hay que migrar nada, ni mover
+  archivos, ni cambiar de plataforma. Basta con crear <strong>una carpeta más, al mismo nivel que las
+  demás</strong>, que contenga la capa de navegación. El repositorio sigue siendo la fuente de verdad; el
+  cerebro es el índice que la vuelve accesible.</p>
+  <p>Esta decisión —no tocar lo existente— es la que hace que el proyecto sea aprobable, reversible y
+  barato. También significa que si el cerebro se abandona, no rompe nada. Es una capa, no una migración.</p>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Un repositorio guarda; un cerebro enruta. Las tres diferencias son: navegar en lugar de buscar,
+  respetar el presupuesto de contexto en lugar de volcarlo todo, y exponer fichas estructuradas en lugar de
+  documentos narrativos. La implementación no exige migrar nada: una carpeta nueva al mismo nivel que las
+  existentes, que contiene punteros y no copias.</p></div>
+</section>
+<!-- =================== PARTE II =================== -->
+<section class="partpage">
+  <div class="kicker">Parte II</div>
+  <h2>Construir el cerebro</h2>
+  <div class="line"></div>
+  <p>Cuatro capítulos con el editor abierto: el archivo raíz que lo gobierna todo, la taxonomía de
+  dominios, la anatomía de una ficha y el patrón de carga progresiva que hace que quepa en contexto.</p>
+</section>
+
+<!-- ============ CAPÍTULO 4 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 4</div>
+  <h2>La carpeta raíz y el archivo maestro</h2>
+  <p class="epi">Todo el sistema depende de un solo archivo de mil quinientas palabras. Escríbelo como si
+  fuera lo único que va a leer alguien que empieza mañana.</p>
+
+  <p>El archivo maestro —lo llamaremos <code>00-INDICE.md</code>— es el punto de entrada. Es lo primero
+  que carga el agente y, en la mayoría de las consultas, lo único que necesita para saber a dónde ir. Su
+  diseño obedece a tres restricciones simultáneas: debe ser <strong>corto</strong> (cabe entero en
+  contexto), <strong>completo</strong> (menciona todos los dominios) y <strong>ejecutable</strong> (contiene
+  instrucciones de navegación, no descripciones).</p>
+
+  <figure>
+  <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ar4" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0 0 L7 3.2 L0 6.4 z" fill="#8a5a2b"/>
+      </marker>
+    </defs>
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <rect x="20" y="45" width="120" height="66" rx="5" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+      <text x="80" y="70" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5d3b18">Acceso directo</text>
+      <text x="80" y="87" text-anchor="middle" font-size="9.5" fill="#4a4a42">en el escritorio</text>
+      <text x="80" y="101" text-anchor="middle" font-size="9.5" fill="#4a4a42">de la máquina de TI</text>
+
+      <rect x="180" y="45" width="120" height="66" rx="5" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+      <text x="240" y="70" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5d3b18">Sesión iniciada</text>
+      <text x="240" y="87" text-anchor="middle" font-size="9.5" fill="#4a4a42">cuenta corporativa</text>
+      <text x="240" y="101" text-anchor="middle" font-size="9.5" fill="#4a4a42">= permisos heredados</text>
+
+      <rect x="340" y="45" width="120" height="66" rx="5" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+      <text x="400" y="70" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5d3b18">Elección</text>
+      <text x="400" y="87" text-anchor="middle" font-size="9.5" fill="#4a4a42">Claude / GitHub /</text>
+      <text x="400" y="101" text-anchor="middle" font-size="9.5" fill="#4a4a42">Gemini</text>
+
+      <rect x="500" y="45" width="120" height="66" rx="5" fill="#f0e6d8" stroke="#5d3b18" stroke-width="2.2"/>
+      <text x="560" y="70" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5d3b18">Carga de</text>
+      <text x="560" y="86" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5d3b18">00-INDICE.md</text>
+      <text x="560" y="102" text-anchor="middle" font-size="9.5" fill="#4a4a42">~1.500 palabras</text>
+
+      <path d="M142 78 L176 78" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar4)"/>
+      <path d="M302 78 L336 78" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar4)"/>
+      <path d="M462 78 L496 78" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar4)"/>
+
+      <path d="M560 113 L560 145" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar4)"/>
+      <rect x="180" y="150" width="380" height="120" rx="5" fill="#fffdf7" stroke="#8a5a2b" stroke-width="1.4" stroke-dasharray="4 3"/>
+      <text x="370" y="172" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5d3b18">El agente ya sabe, sin leer nada más:</text>
+      <g font-size="10" fill="#4a4a42">
+        <text x="200" y="194">· qué dominios existen y qué contiene cada uno</text>
+        <text x="200" y="212">· cómo se llaman realmente los sistemas (y sus alias)</text>
+        <text x="200" y="230">· a qué archivo saltar según el tipo de pregunta</text>
+        <text x="200" y="248">· qué está prohibido responder y qué debe derivar</text>
+        <text x="200" y="264">· quién es dueño de cada dominio</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 4.1</b> · El arranque. Del doble clic al contexto cargado hay cuatro pasos y un
+  solo archivo leído.</figcaption>
+  </figure>
+
+  <h3>Las siete secciones del archivo maestro</h3>
+  <p>Después de varias iteraciones, este es el esqueleto que mejor funciona. El orden importa: lo que va
+  primero pesa más en el comportamiento del agente.</p>
+
+  <table>
+    <tr><th style="width:30%">Sección</th><th style="width:14%">Extensión</th><th>Función</th></tr>
+    <tr><td><strong>1. Identidad y alcance</strong></td><td>5 líneas</td>
+        <td>Qué es este cerebro, de qué área, hasta dónde llega su conocimiento.</td></tr>
+    <tr><td><strong>2. Reglas de operación</strong></td><td>10–15 líneas</td>
+        <td>Cómo debe comportarse el agente: citar rutas, no inventar, avisar si algo está vencido.</td></tr>
+    <tr><td><strong>3. Mapa de dominios</strong></td><td>1 tabla</td>
+        <td>Los cuatro dominios, qué contiene cada uno y el archivo índice de cada uno.</td></tr>
+    <tr><td><strong>4. Enrutamiento por intención</strong></td><td>1 tabla</td>
+        <td>«Si preguntan X, abre Y.» El corazón del archivo.</td></tr>
+    <tr><td><strong>5. Diccionario de alias</strong></td><td>1 tabla</td>
+        <td>Nombre coloquial → nombre oficial → código. Resuelve el 30 % de los fallos.</td></tr>
+    <tr><td><strong>6. Excepciones conocidas</strong></td><td>5–10 líneas</td>
+        <td>Lo que está donde no debería estar, y por qué.</td></tr>
+    <tr><td><strong>7. Vigencia y dueños</strong></td><td>1 tabla</td>
+        <td>Quién mantiene cada dominio y cuándo se revisó por última vez.</td></tr>
+  </table>
+
+  <h3>Un archivo maestro real, abreviado</h3>
+  <pre><span class="c"># SEGUNDO CEREBRO · ÁREA DE TI</span>
+<span class="c">> Última revisión: 2026-08-10 · Responsable: Coordinación TI</span>
+
+<span class="k">## 1. Identidad</span>
+Este archivo es el índice maestro del conocimiento del área de TI.
+Cubre cuatro dominios: proyectos, infraestructura, soporte y proveedores.
+NO contiene los documentos: contiene las rutas para llegar a ellos.
+Todo lo que no esté referenciado aquí, se considera fuera de alcance.
+
+<span class="k">## 2. Reglas de operación</span>
+1. Antes de responder, identifica el dominio de la pregunta y abre su índice.
+2. Cita siempre la ruta del archivo del que sacaste la respuesta.
+3. Si el dato tiene campo `vigencia` y está vencido, dilo antes de responder.
+4. Si no encuentras el dato en dos saltos, no lo inventes: indica a quién preguntar.
+5. Nunca reproduzcas contenido de archivos marcados `clasificacion: restringido`.
+6. Desciende de nivel solo si la respuesta lo exige. Empieza por el resumen.
+
+<span class="k">## 3. Mapa de dominios</span>
+| Dominio          | Contiene                                   | Índice                          |
+|------------------|--------------------------------------------|---------------------------------|
+| Proyectos        | Fichas, alcance, stack, código, hitos      | `01-PROYECTOS/_indice.md`       |
+| Infraestructura  | Servidores, red, backups, licencias        | `02-INFRA/_indice.md`           |
+| Soporte          | Procedimientos, incidentes, SLA            | `03-SOPORTE/_indice.md`         |
+| Proveedores      | Contratos, vigencias, contactos, costos    | `04-PROVEEDORES/_indice.md`     |
+
+<span class="k">## 4. Enrutamiento por intención</span>
+| Si la pregunta es sobre...          | Abre primero                        |
+|-------------------------------------|-------------------------------------|
+| El código o stack de un sistema     | `01-PROYECTOS/_indice.md`           |
+| Dónde corre o cómo se despliega algo| `02-INFRA/_indice.md`               |
+| Cómo resolver un problema recurrente| `03-SOPORTE/procedimientos/_indice.md` |
+| Un contrato, licencia o vencimiento | `04-PROVEEDORES/_indice.md`         |
+| Quién es responsable de algo        | esta misma tabla, sección 7         |
+| Algo que cruza dominios             | los dos índices, en ese orden       |
+
+<span class="k">## 5. Diccionario de alias</span>
+| Se le dice...        | Nombre oficial              | Código   |
+|----------------------|-----------------------------|----------|
+| "el portal"          | Portal de Proveedores       | PRT-001  |
+| "el de los vales"    | Sistema de Vales de Almacén | VAL-004  |
+| "el bot de facturas" | Validador de Facturas       | FAC-002  |
+
+<span class="k">## 6. Excepciones conocidas</span>
+- Los contratos firmados antes de 2023 están en el SharePoint de Compras, no aquí.
+- El diagrama de red vigente es el que lleva fecha en el nombre; ignora `red_final.vsd`.
+- Los proyectos cerrados antes de 2022 no tienen ficha: solo carpeta histórica.
+
+<span class="k">## 7. Dueños y vigencia</span>
+| Dominio         | Dueño            | Revisión | Cadencia   |
+|-----------------|------------------|----------|------------|
+| Proyectos       | Analista de TI   | 2026-08  | mensual    |
+| Infraestructura | Admin. de redes  | 2026-07  | trimestral |
+| Soporte         | Mesa de ayuda    | 2026-08  | mensual    |
+| Proveedores     | Coordinación     | 2026-06  | trimestral |
+</pre>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Enrutamiento por intención:</strong> tabla que traduce el <em>tipo</em> de pregunta a un
+  archivo de destino, en lugar de traducir palabras clave a documentos. Es lo que permite que una pregunta
+  formulada con vocabulario del negocio llegue a un documento escrito con vocabulario técnico.</p></div>
+
+  <h3>El prompt de arranque</h3>
+  <p>El acceso directo no abre el archivo: abre la herramienta con una instrucción inicial que apunta al
+  archivo. Ese texto de arranque es corto y hace tres cosas —fijar el rol, cargar el índice y establecer el
+  contrato de comportamiento:</p>
+
+  <pre>Eres el asistente del área de TI. Tu única fuente de verdad es la carpeta
+"Segundo Cerebro" del SharePoint del área.
+
+Paso 1: lee completo el archivo `00-INDICE.md`.
+Paso 2: responde SIEMPRE siguiendo sus reglas de operación.
+Paso 3: antes de responder, di en una línea qué archivo vas a consultar.
+
+Si el índice no cubre la pregunta, dilo explícitamente en lugar de improvisar.</pre>
+
+  <div class="box warn"><span class="lab">Error frecuente</span>
+  <p>Escribir el archivo maestro como un documento descriptivo («El área de TI gestiona los proyectos
+  tecnológicos de la organización…»). Eso no es un índice, es una presentación corporativa, y consume
+  contexto sin aportar navegación. Cada línea del archivo maestro debe responder a <em>dónde está</em> o
+  <em>cómo comportarse</em>. Si una frase no hace ninguna de las dos cosas, sobra.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>El archivo maestro es corto, completo y ejecutable. Sus siete secciones son: identidad, reglas de
+  operación, mapa de dominios, enrutamiento por intención, diccionario de alias, excepciones conocidas y
+  dueños. El diccionario de alias y las excepciones son los que más fallos evitan, y son también los que
+  ningún consultor externo puede escribir por ti.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 5 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 5</div>
+  <h2>Taxonomía: organizar cuatro dominios sin morir en el intento</h2>
+  <p class="epi">Una estructura mediocre y consistente vence siempre a una estructura perfecta que solo
+  respeta su autor.</p>
+
+  <p>La discusión sobre cómo organizar carpetas puede consumir meses. Para evitarlo, hay una regla que
+  zanja el 90 % de los debates: <strong>la estructura del cerebro no tiene que parecerse a la estructura del
+  SharePoint</strong>. El cerebro se organiza por <em>tipo de pregunta</em>; el repositorio sigue organizado
+  como estaba, por historia y por área. El puente entre ambos son los punteros.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="DejaVu Sans Mono,monospace" font-size="11" fill="#23231f">
+      <text x="20" y="22" font-family="Carlito,sans-serif" font-size="12" font-weight="700" fill="#5d3b18">
+        SharePoint del área de TI (no se toca)</text>
+      <g fill="#77736a" font-size="10.5">
+        <text x="30" y="44">📁 Proyectos 2019-2024/</text>
+        <text x="30" y="62">📁 Infraestructura/</text>
+        <text x="30" y="80">📁 Mesa de ayuda/</text>
+        <text x="30" y="98">📁 Contratos y proveedores/</text>
+        <text x="30" y="116">📁 Varios/  📁 Backup carpetas viejas/</text>
+      </g>
+      <rect x="24" y="130" width="300" height="30" rx="4" fill="#5d3b18"/>
+      <text x="36" y="150" font-size="11" fill="#fff">📁 SEGUNDO CEREBRO/   ← la carpeta nueva</text>
+
+      <g stroke="#cdc5b4" stroke-width="1"><path d="M340 20 L340 330"/></g>
+
+      <text x="360" y="22" font-family="Carlito,sans-serif" font-size="12" font-weight="700" fill="#5d3b18">
+        Dentro de SEGUNDO CEREBRO/</text>
+      <g font-size="10.5">
+        <text x="366" y="46" fill="#5d3b18" font-weight="700">📄 00-INDICE.md</text>
+        <text x="366" y="66">📁 01-PROYECTOS/</text>
+        <text x="386" y="82" fill="#4a4a42">📄 _indice.md</text>
+        <text x="386" y="98" fill="#4a4a42">📄 PRT-001-portal-proveedores.md</text>
+        <text x="386" y="114" fill="#4a4a42">📄 VAL-004-vales-almacen.md</text>
+        <text x="366" y="136">📁 02-INFRA/</text>
+        <text x="386" y="152" fill="#4a4a42">📄 _indice.md</text>
+        <text x="386" y="168" fill="#4a4a42">📄 servidores.md · red.md · backups.md</text>
+        <text x="366" y="190">📁 03-SOPORTE/</text>
+        <text x="386" y="206" fill="#4a4a42">📄 _indice.md</text>
+        <text x="386" y="222" fill="#4a4a42">📁 procedimientos/ (40 fichas)</text>
+        <text x="366" y="244">📁 04-PROVEEDORES/</text>
+        <text x="386" y="260" fill="#4a4a42">📄 _indice.md · contratos.md</text>
+        <text x="366" y="282">📁 99-META/</text>
+        <text x="386" y="298" fill="#4a4a42">📄 plantillas/ · convenciones.md</text>
+        <text x="386" y="314" fill="#4a4a42">📄 pendientes.md</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 5.1</b> · Estructura completa. A la izquierda lo que ya existe y sigue igual; a la
+  derecha la única carpeta nueva, con tres niveles como máximo.</figcaption>
+  </figure>
+
+  <h3>La regla de los tres niveles</h3>
+  <p>Nunca más de tres niveles de profundidad dentro del cerebro: <em>dominio → subcarpeta → ficha</em>.
+  Cada nivel adicional multiplica los saltos del agente, aumenta el riesgo de que se pierda y hace que
+  ninguna persona quiera crear un archivo nuevo. Si sientes que necesitas un cuarto nivel, casi siempre
+  significa que ese contenido es detalle y debe vivir en el repositorio original, referenciado por
+  puntero.</p>
+
+  <h3>Convenciones de nombres</h3>
+  <p>Las convenciones no son estética: son lo que permite que un agente prediga una ruta sin haberla visto.
+  Estas cinco bastan.</p>
+
+  <table>
+    <tr><th style="width:32%">Convención</th><th>Regla y ejemplo</th></tr>
+    <tr><td>Prefijo numérico en carpetas</td>
+        <td>Fija el orden de lectura y da un identificador estable: <code>01-PROYECTOS</code>. El nombre
+        puede cambiar; el número no.</td></tr>
+    <tr><td>Índice con guion bajo</td>
+        <td><code>_indice.md</code> siempre primero alfabéticamente y siempre igual en todos los dominios.</td></tr>
+    <tr><td>Código en el nombre de ficha</td>
+        <td><code>PRT-001-portal-proveedores.md</code>. El código sobrevive a los renombramientos y se puede
+        citar en tickets y correos.</td></tr>
+    <tr><td>Minúsculas y guiones</td>
+        <td>Sin espacios, sin tildes, sin mayúsculas en la parte descriptiva. Evita el infierno de las URL
+        codificadas de SharePoint.</td></tr>
+    <tr><td>Sufijo de estado, nunca en el nombre</td>
+        <td>El estado va en el front-matter, no en el archivo. Nada de <code>-FINAL-v2-definitivo</code>.</td></tr>
+  </table>
+
+  <h3>Qué NO va en el cerebro</h3>
+  <p>Tan importante como decidir qué entra es blindar lo que se queda fuera, porque la tentación de
+  convertir el cerebro en «el nuevo repositorio» aparece a las tres semanas y lo mata.</p>
+  <ul class="plain">
+    <li><strong>Copias de documentos.</strong> Nunca. Un PDF copiado es un PDF que se desincroniza. Siempre
+    puntero a la ubicación original.</li>
+    <li><strong>Datos personales o credenciales.</strong> Ni siquiera «temporalmente». El capítulo 9
+    desarrolla esto.</li>
+    <li><strong>Histórico completo.</strong> El cerebro documenta lo vigente y menciona lo histórico. Un
+    proyecto cerrado tiene tres líneas y un puntero, no una ficha completa.</li>
+    <li><strong>Contenido que cambia a diario.</strong> Estados de tickets, ocupación de discos, alertas.
+    Eso se consulta en vivo con una herramienta, no se documenta.</li>
+  </ul>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>El cerebro es el letrero de un pasillo de supermercado, no el producto. Dice «pasta, salsas, arroz» y
+  te lleva al pasillo 7. Si empiezas a poner productos en el letrero, deja de ser un letrero y se convierte
+  en otro pasillo, igual de difícil de recorrer que el original.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>El cerebro se organiza por tipo de pregunta, no imitando la estructura existente. Máximo tres niveles,
+  prefijos numéricos estables, códigos en las fichas y un <code>_indice.md</code> idéntico en cada dominio.
+  Fuera del cerebro: copias, credenciales, histórico completo y todo lo que cambie a diario.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 6 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 6</div>
+  <h2>Anatomía de una ficha en Markdown</h2>
+  <p class="epi">Si una ficha no cabe en una pantalla, no es una ficha: es un documento disfrazado.</p>
+
+  <p>La ficha es la unidad atómica del cerebro. Todo lo demás —índices, enrutamiento, carga progresiva—
+  existe para llevar al agente hasta una ficha. Su diseño responde a una pregunta única: <em>¿qué necesita
+  saber alguien que no conoce esto, para decidir si es lo que busca y qué hacer después?</em></p>
+
+  <figure>
+  <svg viewBox="0 0 640 350" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <rect x="150" y="15" width="330" height="320" rx="4" fill="#fff" stroke="#cdc5b4" stroke-width="1.4"/>
+
+      <rect x="150" y="15" width="330" height="78" fill="#f0e6d8"/>
+      <text x="165" y="34" font-family="DejaVu Sans Mono,monospace" font-size="9" fill="#5d3b18">---</text>
+      <text x="165" y="48" font-family="DejaVu Sans Mono,monospace" font-size="9" fill="#4a4a42">codigo: PRT-001</text>
+      <text x="165" y="61" font-family="DejaVu Sans Mono,monospace" font-size="9" fill="#4a4a42">estado: produccion</text>
+      <text x="165" y="74" font-family="DejaVu Sans Mono,monospace" font-size="9" fill="#4a4a42">dueno: analista-ti</text>
+      <text x="165" y="87" font-family="DejaVu Sans Mono,monospace" font-size="9" fill="#5d3b18">---</text>
+
+      <text x="165" y="112" font-size="11" font-weight="700" fill="#5d3b18"># Portal de Proveedores</text>
+      <text x="165" y="132" font-size="9.5" fill="#4a4a42">Qué es, en dos frases. Para quién.</text>
+      <text x="165" y="146" font-size="9.5" fill="#4a4a42">Qué problema resuelve.</text>
+
+      <text x="165" y="172" font-size="10.5" font-weight="700" fill="#5d3b18">## Datos técnicos</text>
+      <text x="165" y="188" font-size="9.5" fill="#4a4a42">stack · repositorio · entorno · BD</text>
+
+      <text x="165" y="214" font-size="10.5" font-weight="700" fill="#5d3b18">## Dónde está el detalle</text>
+      <text x="165" y="230" font-size="9.5" fill="#4a4a42">→ punteros a rutas y repos</text>
+
+      <text x="165" y="256" font-size="10.5" font-weight="700" fill="#5d3b18">## Preguntas frecuentes</text>
+      <text x="165" y="272" font-size="9.5" fill="#4a4a42">las 3–5 que de verdad hacen</text>
+
+      <text x="165" y="298" font-size="10.5" font-weight="700" fill="#5d3b18">## Relacionado</text>
+      <text x="165" y="314" font-size="9.5" fill="#4a4a42">[[INF-002]] · [[PRV-011]]</text>
+
+      <g font-size="9.5" fill="#8a5a2b">
+        <text x="20" y="55" text-anchor="start">Front-matter:</text>
+        <text x="20" y="68" text-anchor="start">metadatos que el</text>
+        <text x="20" y="81" text-anchor="start">agente filtra</text>
+        <path d="M120 62 L146 55" stroke="#8a5a2b" stroke-width="1.2" fill="none"/>
+
+        <text x="20" y="130" text-anchor="start">Resumen:</text>
+        <text x="20" y="143" text-anchor="start">lo único que se</text>
+        <text x="20" y="156" text-anchor="start">carga al principio</text>
+        <path d="M120 137 L146 125" stroke="#8a5a2b" stroke-width="1.2" fill="none"/>
+
+        <text x="500" y="182" text-anchor="start">Campos, no prosa:</text>
+        <text x="500" y="195" text-anchor="start">clave: valor</text>
+        <path d="M484 186 L497 186" stroke="#8a5a2b" stroke-width="1.2" fill="none"/>
+
+        <text x="500" y="224" text-anchor="start">Punteros, nunca</text>
+        <text x="500" y="237" text-anchor="start">copias</text>
+        <path d="M484 228 L497 228" stroke="#8a5a2b" stroke-width="1.2" fill="none"/>
+
+        <text x="500" y="308" text-anchor="start">Enlaces: el grafo</text>
+        <text x="500" y="321" text-anchor="start">que cruza dominios</text>
+        <path d="M484 312 L497 312" stroke="#8a5a2b" stroke-width="1.2" fill="none"/>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 6.1</b> · Las seis zonas de una ficha. El orden no es casual: metadatos, resumen,
+  datos duros, punteros, preguntas y enlaces.</figcaption>
+  </figure>
+
+  <h3>Una ficha de proyecto completa</h3>
+  <pre>---
+codigo: PRT-001
+nombre: Portal de Proveedores
+alias: ["el portal", "portal SGP"]
+dominio: proyectos
+estado: produccion
+criticidad: alta
+dueno: analista-proyectos-ti
+vigencia_revision: 2026-08-10
+clasificacion: interno
+---
+
+<span class="k"># Portal de Proveedores (PRT-001)</span>
+
+Plataforma web donde los proveedores registran documentación, facturas y
+certificados sin pasar por correo. Sustituyó el flujo manual de la mesa de
+partes. Usuarios: ~180 proveedores externos y 12 usuarios internos.
+
+<span class="k">## Datos técnicos</span>
+- **Stack:** Laravel 11 · PHP 8.2 · MySQL 8
+- **Repositorio:** `github.com/&lt;org&gt;/portal-proveedores`
+- **Entornos:** producción (servidor APP-02) · pruebas (APP-05)
+- **Autenticación:** cuenta corporativa (SSO)
+- **Integra con:** ERP (facturas), correo (notificaciones)
+
+<span class="k">## Dónde está el detalle</span>
+| Qué necesitas         | Dónde                                          |
+|-----------------------|------------------------------------------------|
+| Código fuente         | repositorio (rama `main`)                      |
+| Modelo de datos       | `/docs/modelo.md` dentro del repositorio       |
+| Manual de usuario     | SharePoint → Proyectos 2024 → Portal → Manual  |
+| Acta de decisiones    | SharePoint → Proyectos 2024 → Portal → Actas   |
+| Contrato del hosting  | ver ficha [[PRV-011]]                          |
+
+<span class="k">## Preguntas frecuentes</span>
+- *¿Cómo se da de alta un proveedor nuevo?* → procedimiento [[SOP-014]]
+- *¿Por qué no llega el correo de notificación?* → causa habitual: cuota SMTP; ver [[SOP-021]]
+- *¿Se puede exportar el histórico?* → sí, módulo Reportes, solo perfil administrador
+
+<span class="k">## Relacionado</span>
+[[INF-002]] servidor APP-02 · [[PRV-011]] proveedor de hosting · [[SOP-014]] alta de proveedor
+</pre>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Front-matter:</strong> bloque de metadatos en formato clave-valor al inicio de un archivo
+  Markdown, delimitado por tres guiones. Permite que un agente —o un script— filtre, ordene y valide fichas
+  sin leer su contenido. Es la diferencia entre un documento y un registro.</p></div>
+
+  <h3>Los campos que no pueden faltar</h3>
+  <table>
+    <tr><th style="width:22%">Campo</th><th>Por qué es obligatorio</th></tr>
+    <tr><td><code>codigo</code></td><td>Identificador estable, citable en tickets y correos. Sobrevive a
+    cualquier renombramiento.</td></tr>
+    <tr><td><code>alias</code></td><td>Cierra la brecha entre cómo se llama y cómo lo llaman. Es el campo
+    que más consultas salva.</td></tr>
+    <tr><td><code>estado</code></td><td>Evita que el agente responda con información de algo que ya no
+    existe.</td></tr>
+    <tr><td><code>dueno</code></td><td>Cuando el cerebro no sabe, tiene que saber a quién derivar.</td></tr>
+    <tr><td><code>vigencia_revision</code></td><td>Permite detectar automáticamente fichas podridas
+    (capítulo 10).</td></tr>
+    <tr><td><code>clasificacion</code></td><td>Gobierna qué puede exponer el agente (capítulo 9).</td></tr>
+  </table>
+
+  <h3>Variantes por dominio</h3>
+  <p>La estructura es la misma; cambian los campos duros. Una <strong>ficha de infraestructura</strong>
+  añade <code>hostname</code>, <code>ip</code>, <code>funcion</code>, <code>ventana_mantenimiento</code>,
+  <code>respaldo</code>. Una <strong>ficha de procedimiento de soporte</strong> añade <code>sintoma</code>,
+  <code>causa_raiz</code>, <code>tiempo_estimado</code> y los pasos numerados. Una <strong>ficha de
+  proveedor</strong> añade <code>vigencia_inicio</code>, <code>vigencia_fin</code>,
+  <code>renovacion_automatica</code>, <code>preaviso_dias</code> y <code>contacto</code>. Ese último grupo
+  de campos es el que permite la consulta que más agradece la gerencia: qué vence en los próximos noventa
+  días.</p>
+
+  <div class="box warn"><span class="lab">Error frecuente</span>
+  <p>Escribir fichas largas «para que estén completas». Una ficha de 4.000 palabras rompe el presupuesto de
+  contexto y, peor, oculta lo importante. La regla práctica: <strong>si no cabe en una pantalla, divide o
+  apunta</strong>. Lo que sobra casi siempre es histórico o detalle técnico que debería vivir en el
+  repositorio de código.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>La ficha tiene seis zonas: front-matter, resumen, datos técnicos en campos, punteros al detalle,
+  preguntas frecuentes y enlaces. Seis campos son obligatorios —código, alias, estado, dueño, revisión y
+  clasificación— y cada dominio añade los suyos. Máximo una pantalla; todo lo demás es puntero.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 7 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 7</div>
+  <h2>Carga progresiva: el patrón que lo hace posible</h2>
+  <p class="epi">La ardilla no desentierra el bosque entero para cenar. Va al tocón, luego a la raíz,
+  luego cava.</p>
+
+  <p>Este es el capítulo central del libro. Todo lo anterior —índice, taxonomía, fichas— existe para
+  habilitar un solo comportamiento: que el agente cargue <em>lo mínimo suficiente</em> y sepa cómo pedir
+  más si le hace falta. El patrón tiene nombre propio en el diseño de sistemas de conocimiento:
+  <strong>divulgación progresiva</strong>.</p>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Carga progresiva de contexto:</strong> estrategia en la que el agente accede al conocimiento
+  en niveles de creciente detalle, deteniéndose en cuanto tiene lo necesario para responder. Cada nivel
+  contiene punteros al siguiente, de modo que la profundidad se decide durante la consulta y no antes.</p></div>
+
+  <figure>
+  <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ar7" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0 0 L7 3.2 L0 6.4 z" fill="#8a5a2b"/>
+      </marker>
+    </defs>
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <g>
+        <rect x="30" y="30" width="230" height="52" rx="4" fill="#5d3b18"/>
+        <text x="45" y="52" font-size="12" font-weight="700" fill="#fff">Nivel 0 · Índice maestro</text>
+        <text x="45" y="70" font-size="10" fill="#f0e6d8">00-INDICE.md · siempre cargado · ~1.500 palabras</text>
+        <text x="285" y="60" font-size="10" fill="#4a4a42">responde: «¿quién es dueño de X?»</text>
+      </g>
+      <path d="M60 84 L60 104" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar7)"/>
+      <g>
+        <rect x="60" y="108" width="230" height="52" rx="4" fill="#8a5a2b"/>
+        <text x="75" y="130" font-size="12" font-weight="700" fill="#fff">Nivel 1 · Índice de dominio</text>
+        <text x="75" y="148" font-size="10" fill="#f0e6d8">_indice.md · bajo demanda · ~800 palabras</text>
+        <text x="310" y="138" font-size="10" fill="#4a4a42">responde: «¿qué sistemas hay?»</text>
+      </g>
+      <path d="M90 162 L90 182" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar7)"/>
+      <g>
+        <rect x="90" y="186" width="230" height="52" rx="4" fill="#b98a55"/>
+        <text x="105" y="208" font-size="12" font-weight="700" fill="#fff">Nivel 2 · Ficha</text>
+        <text x="105" y="226" font-size="10" fill="#fff">PRT-001.md · 1–2 fichas · ~600 palabras c/u</text>
+        <text x="340" y="216" font-size="10" fill="#4a4a42">responde: el 80 % de las consultas</text>
+      </g>
+      <path d="M120 240 L120 260" stroke="#8a5a2b" stroke-width="1.6" marker-end="url(#ar7)"/>
+      <g>
+        <rect x="120" y="264" width="230" height="46" rx="4" fill="#f0e6d8" stroke="#8a5a2b" stroke-width="1.5"/>
+        <text x="135" y="284" font-size="12" font-weight="700" fill="#5d3b18">Nivel 3 · Fuente viva</text>
+        <text x="135" y="300" font-size="10" fill="#4a4a42">repositorio, PDF, base de datos</text>
+        <text x="370" y="290" font-size="10" fill="#4a4a42">solo si la ficha no basta</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 7.1</b> · Los cuatro niveles. Cada escalón es más caro y más específico; la mayoría
+  de consultas se resuelven en el nivel 2.</figcaption>
+  </figure>
+
+  <h3>El presupuesto por consulta</h3>
+  <p>Poner números al patrón ayuda a defenderlo ante quien pregunta «¿y por qué no le damos todo?».</p>
+
+  <table>
+    <tr><th>Nivel</th><th style="width:18%">Palabras aprox.</th><th style="width:20%">% de consultas que
+    terminan aquí</th><th>Qué se está cargando</th></tr>
+    <tr><td>0 · Índice maestro</td><td>1.500</td><td>15 %</td><td>Mapa, alias, dueños, reglas</td></tr>
+    <tr><td>1 · Índice de dominio</td><td>+800</td><td>25 %</td><td>Listado de fichas del dominio con una
+    línea cada una</td></tr>
+    <tr><td>2 · Ficha(s)</td><td>+1.200</td><td>45 %</td><td>El detalle destilado del objeto concreto</td></tr>
+    <tr><td>3 · Fuente viva</td><td>variable</td><td>15 %</td><td>Código, contrato, log: lo que la ficha
+    apunta</td></tr>
+  </table>
+
+  <p>El total típico de una consulta que llega hasta el nivel 2 ronda las 3.500 palabras. Comparado con
+  volcar una carpeta entera, es una reducción de tres órdenes de magnitud, y —esto es lo importante— la
+  proporción de contenido relevante en el contexto pasa de ser marginal a ser casi total.</p>
+
+  <h3>Reglas de descenso y de parada</h3>
+  <p>El agente necesita criterios explícitos, escritos en el archivo maestro, sobre cuándo bajar un nivel y
+  cuándo detenerse. Sin ellos hace una de dos cosas malas: se queda corto y responde vagamente, o desciende
+  hasta el código fuente para responder «¿quién mantiene el portal?».</p>
+
+  <pre><span class="k">## Reglas de descenso</span>
+BAJA un nivel si:
+- la pregunta menciona un objeto concreto que aparece en el índice actual
+- necesitas un dato que el nivel actual declara pero no detalla
+- el usuario pide "el detalle", "el código", "el texto exacto"
+
+DETENTE y responde si:
+- ya tienes el dato exacto que se pidió
+- el siguiente nivel es una fuente viva y la ficha ya responde
+- llevas 3 saltos sin acercarte: entonces declara que no está documentado
+  y deriva al dueño indicado en el índice maestro
+
+NUNCA:
+- cargues más de 2 fichas del mismo nivel a la vez sin justificarlo
+- desciendas a nivel 3 para responder metadatos (dueño, estado, criticidad)</pre>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Es la diferencia entre un médico de cabecera y una resonancia magnética. El médico empieza por la
+  consulta de cinco minutos porque resuelve la mayoría de los casos; solo escala a la prueba cara cuando la
+  primera capa no basta. Un sistema que hiciera una resonancia a todo el que entra por la puerta sería a la
+  vez más lento, más caro y —contra la intuición— menos preciso, porque encontraría hallazgos irrelevantes
+  en todo el mundo.</p></div>
+
+  <h3>Anclas: hacer que el descenso sea barato</h3>
+  <p>Hay una técnica que multiplica la eficacia del patrón: que cada nivel describa el siguiente en una
+  línea. Un índice de dominio no debe listar solo los nombres de las fichas, sino nombre + una frase de qué
+  contiene. Así el agente decide con información, no por parecido de nombre.</p>
+
+  <pre><span class="c"># 01-PROYECTOS/_indice.md (extracto)</span>
+
+| Código  | Sistema               | Estado     | En una línea                              |
+|---------|-----------------------|------------|-------------------------------------------|
+| PRT-001 | Portal de Proveedores | producción | Laravel; registro documental de proveedores|
+| VAL-004 | Vales de Almacén      | producción | digitaliza vales de salida en sedes mineras|
+| FAC-002 | Validador de Facturas | piloto     | bot que valida facturas contra el ERP      |
+| CAP-007 | Capacitación en Video | cerrado    | pipeline PPT → video narrado; sin soporte  |</pre>
+
+  <p>Esa columna final —«en una línea»— es probablemente el mejor retorno por palabra escrita de todo el
+  sistema. Cuesta cinco minutos por dominio y elimina la mayoría de los descensos equivocados.</p>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Cuatro niveles: índice maestro, índice de dominio, ficha y fuente viva. El 85 % de las consultas se
+  resuelven antes del nivel 3, con unas 3.500 palabras de contexto. Escribe reglas explícitas de descenso y
+  de parada, y describe cada elemento del nivel siguiente en una línea: es lo que evita que el agente baje
+  por el camino equivocado.</p></div>
+</section>
+<!-- =================== PARTE III =================== -->
+<section class="partpage">
+  <div class="kicker">Parte III</div>
+  <h2>Operarlo de verdad</h2>
+  <div class="line"></div>
+  <p>Un cerebro que funciona en la máquina de quien lo construyó no sirve de nada. Aquí lo ponemos a
+  correr en tres herramientas distintas, bajo los permisos de la empresa, y sobre todo: lo mantenemos vivo.</p>
+</section>
+
+<!-- ============ CAPÍTULO 8 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 8</div>
+  <h2>Un cerebro, tres cabezas: Claude, GitHub y Gemini</h2>
+  <p class="epi">El conocimiento es de la empresa; el modelo es un proveedor. Diseña para poder cambiar de
+  proveedor sin reescribir el conocimiento.</p>
+
+  <p>Una de las decisiones más acertadas del caso que inspira este libro fue no atar el cerebro a una
+  herramienta. El contenido es Markdown plano en una carpeta compartida: lo puede leer cualquier asistente
+  que tenga acceso al sistema de archivos o al SharePoint. Lo único que cambia entre herramientas es el
+  <strong>adaptador de arranque</strong>: un archivo pequeño, específico de cada una, que dice «lee el
+  índice y compórtate según sus reglas».</p>
+
+  <figure>
+  <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ar8" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0 0 L7 3.2 L0 6.4 z" fill="#8a5a2b"/>
+      </marker>
+    </defs>
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <rect x="215" y="215" width="210" height="70" rx="6" fill="#5d3b18"/>
+      <text x="320" y="243" text-anchor="middle" font-size="13.5" font-weight="700" fill="#fff">SEGUNDO CEREBRO</text>
+      <text x="320" y="262" text-anchor="middle" font-size="10" fill="#f0e6d8">Markdown plano · SharePoint del área</text>
+      <text x="320" y="277" text-anchor="middle" font-size="10" fill="#f0e6d8">una sola fuente de verdad</text>
+
+      <g>
+        <rect x="20" y="45" width="170" height="62" rx="5" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="105" y="68" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5d3b18">Claude</text>
+        <text x="105" y="86" text-anchor="middle" font-size="9.5" fill="#4a4a42">conversación, análisis,</text>
+        <text x="105" y="99" text-anchor="middle" font-size="9.5" fill="#4a4a42">redacción, cruce de dominios</text>
+      </g>
+      <g>
+        <rect x="235" y="45" width="170" height="62" rx="5" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="320" y="68" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5d3b18">GitHub Copilot</text>
+        <text x="320" y="86" text-anchor="middle" font-size="9.5" fill="#4a4a42">dentro del editor,</text>
+        <text x="320" y="99" text-anchor="middle" font-size="9.5" fill="#4a4a42">contexto de código vivo</text>
+      </g>
+      <g>
+        <rect x="450" y="45" width="170" height="62" rx="5" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.6"/>
+        <text x="535" y="68" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5d3b18">Gemini</text>
+        <text x="535" y="86" text-anchor="middle" font-size="9.5" fill="#4a4a42">integrado al ecosistema</text>
+        <text x="535" y="99" text-anchor="middle" font-size="9.5" fill="#4a4a42">ofimático y documental</text>
+      </g>
+
+      <g font-size="9.5" fill="#8a5a2b" font-style="italic">
+        <rect x="45" y="130" width="120" height="26" rx="3" fill="#f0e6d8" stroke="#8a5a2b" stroke-width="1"/>
+        <text x="105" y="147" text-anchor="middle">adaptador Claude</text>
+        <rect x="260" y="130" width="120" height="26" rx="3" fill="#f0e6d8" stroke="#8a5a2b" stroke-width="1"/>
+        <text x="320" y="147" text-anchor="middle">adaptador Copilot</text>
+        <rect x="475" y="130" width="120" height="26" rx="3" fill="#f0e6d8" stroke="#8a5a2b" stroke-width="1"/>
+        <text x="535" y="147" text-anchor="middle">adaptador Gemini</text>
+      </g>
+
+      <path d="M105 109 L105 128" stroke="#8a5a2b" stroke-width="1.4"/>
+      <path d="M320 109 L320 128" stroke="#8a5a2b" stroke-width="1.4"/>
+      <path d="M535 109 L535 128" stroke="#8a5a2b" stroke-width="1.4"/>
+
+      <path d="M105 158 L105 190 L250 190 L280 212" stroke="#8a5a2b" stroke-width="1.5" fill="none" marker-end="url(#ar8)"/>
+      <path d="M320 158 L320 212" stroke="#8a5a2b" stroke-width="1.5" fill="none" marker-end="url(#ar8)"/>
+      <path d="M535 158 L535 190 L390 190 L360 212" stroke="#8a5a2b" stroke-width="1.5" fill="none" marker-end="url(#ar8)"/>
+
+      <text x="320" y="180" text-anchor="middle" font-size="10" fill="#77736a" font-style="italic">
+        el adaptador es lo único que cambia — 10 líneas por herramienta</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 8.1</b> · Arquitectura desacoplada. Tres consumidores, un mismo cuerpo de
+  conocimiento, tres adaptadores mínimos.</figcaption>
+  </figure>
+
+  <h3>Qué hace cada herramienta mejor</h3>
+  <p>Que las tres puedan leer el cerebro no significa que sirvan para lo mismo. En la práctica se produce
+  una especialización natural que conviene reconocer y hasta escribir en el índice maestro:</p>
+
+  <table>
+    <tr><th style="width:22%">Herramienta</th><th style="width:39%">Fortaleza en este contexto</th>
+        <th>Consulta típica que le corresponde</th></tr>
+    <tr><td><strong>Claude</strong></td>
+        <td>Razonamiento sobre varios documentos, redacción, cruce entre dominios, análisis de decisiones.</td>
+        <td>«Prepárame el resumen de estado de los cinco proyectos activos y qué contratos los afectan.»</td></tr>
+    <tr><td><strong>GitHub Copilot</strong></td>
+        <td>Vive dentro del repositorio: ve el código real, no la descripción del código.</td>
+        <td>«¿Dónde se valida el RUC en el portal y qué pasa si viene vacío?»</td></tr>
+    <tr><td><strong>Gemini</strong></td>
+        <td>Cercanía al ecosistema documental y ofimático del día a día.</td>
+        <td>«Resume este acta y dime si contradice la ficha del sistema.»</td></tr>
+  </table>
+
+  <h3>El adaptador, en concreto</h3>
+  <p>Cada herramienta tiene su propio mecanismo para cargar instrucciones al inicio de una sesión: un
+  archivo de instrucciones en la raíz del proyecto, un archivo de configuración del asistente, un prompt de
+  sistema guardado. Los detalles cambian y seguirán cambiando; el patrón no. El adaptador siempre dice lo
+  mismo en tres partes:</p>
+
+  <pre><span class="c"># Adaptador (mismo contenido, distinto archivo según la herramienta)</span>
+
+<span class="k">## 1. Identidad</span>
+Asistente del área de TI. Fuente de verdad única: la carpeta "Segundo Cerebro".
+
+<span class="k">## 2. Arranque obligatorio</span>
+Lee `.../SEGUNDO CEREBRO/00-INDICE.md` antes de responder cualquier consulta.
+Aplica sus reglas de operación como si fueran instrucciones de sistema.
+
+<span class="k">## 3. Especialización de esta herramienta</span>
+(solo en el adaptador de Copilot)
+Estás dentro del repositorio. Si la pregunta es sobre comportamiento del código,
+verifica en el código y contrasta con la ficha; si difieren, repórtalo.</pre>
+
+  <div class="box case"><span class="lab">Caso · El acceso directo</span>
+  <p>La pieza que hace que esto se use de verdad no es técnica: es un icono. Un acceso directo en el
+  escritorio de cada máquina de TI, con el logo del área, que al abrirse pregunta qué herramienta se usará
+  y lanza la sesión ya inicializada. Sin ese icono, el cerebro es una carpeta más que hay que recordar
+  abrir; con él, es la puerta por defecto.</p>
+  <p>La implementación puede ser tan simple como un script que abre la herramienta con el prompt de arranque
+  precargado y la ruta correcta según el usuario que inició sesión. La sofisticación no está en el script,
+  está en que reduce la fricción a un doble clic.</p></div>
+
+  <pre><span class="c">:: cerebro.bat — versión mínima, Windows</span>
+@echo off
+set CEREBRO=%OneDrive%\TI - Documentos\SEGUNDO CEREBRO
+echo  ¿Con qué herramienta trabajarás?
+echo    [1] Claude   [2] GitHub Copilot   [3] Gemini
+choice /c 123 /n
+if errorlevel 3 goto gemini
+if errorlevel 2 goto copilot
+if errorlevel 1 goto claude
+
+:claude
+start "" "https://claude.ai/new"
+type "%CEREBRO%\99-META\prompt-arranque.txt" | clip
+echo  Prompt de arranque copiado al portapapeles. Pégalo y adjunta 00-INDICE.md
+goto fin
+<span class="c">:: ... ramas análogas para las otras herramientas</span>
+:fin</pre>
+
+  <h3>Lo que sí conviene mantener idéntico</h3>
+  <p>Tres cosas deben ser exactamente iguales en las tres herramientas, o el cerebro empieza a dar
+  respuestas distintas según quién pregunte y con qué:</p>
+  <ul class="plain">
+    <li><strong>Las reglas de operación</strong> (sección 2 del índice maestro). Viven en el cerebro, no en
+    el adaptador. Si las duplicas por herramienta, divergen en un mes.</li>
+    <li><strong>La obligación de citar la ruta</strong> de donde salió cada respuesta. Es lo que hace
+    verificable el sistema y lo que permite detectar fichas malas.</li>
+    <li><strong>El comportamiento ante la ignorancia:</strong> decir «no está documentado, pregunta a X» en
+    lugar de improvisar. Es el hábito que sostiene la confianza en el sistema.</li>
+  </ul>
+
+  <div class="box warn"><span class="lab">Error frecuente</span>
+  <p>Personalizar demasiado cada adaptador «para aprovechar lo mejor de cada modelo». Acabas con tres
+  cerebros distintos y un problema de gobernanza. El adaptador debe ser aburrido: identidad, arranque y como
+  mucho una nota de especialización. Toda la inteligencia va en el cerebro, que es compartido.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>El conocimiento vive en Markdown plano, neutral respecto al proveedor; cada herramienta solo necesita
+  un adaptador de diez líneas. Claude para razonar y cruzar dominios, Copilot para verificar contra el
+  código, Gemini junto a los documentos ofimáticos. Reglas de operación, citación de rutas y conducta ante
+  la ignorancia deben ser idénticas en las tres.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 9 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 9</div>
+  <h2>Identidad, permisos y datos sensibles</h2>
+  <p class="epi">Un índice que enumera lo que no puedes ver ya te ha dicho demasiado.</p>
+
+  <p>Aquí es donde muchos proyectos de este tipo se detienen en el comité de seguridad, y con razón: un
+  sistema que hace fácil encontrar cualquier cosa hace fácil, también, encontrar lo que no debías ver. La
+  buena noticia es que la arquitectura correcta resuelve esto casi por construcción, siempre que se respete
+  un principio: <strong>el cerebro no crea permisos, los hereda</strong>.</p>
+
+  <div class="box def"><span class="lab">Definición</span>
+  <p><strong>Herencia de permisos:</strong> propiedad de diseño por la cual el acceso al conocimiento queda
+  determinado exclusivamente por los permisos que ya tiene la persona en el repositorio original. El cerebro
+  no implementa control de acceso propio: si el usuario no puede abrir el archivo destino, el puntero le
+  resulta inútil.</p></div>
+
+  <p>Este principio tiene una consecuencia enorme y liberadora: como el cerebro contiene punteros y no
+  copias, el control de acceso ya existente sigue haciendo su trabajo. Si un analista de soporte no tiene
+  permiso sobre la carpeta de contratos, la ficha puede decirle que el contrato existe y quién lo custodia,
+  pero al seguir el puntero se topará con el mismo muro de siempre.</p>
+
+  <h3>Las cuatro capas</h3>
+
+  <figure>
+  <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <ellipse cx="320" cy="140" rx="300" ry="125" fill="#faf8f3" stroke="#cdc5b4" stroke-width="1.4"/>
+      <ellipse cx="320" cy="140" rx="225" ry="98" fill="#f7f4ed" stroke="#b98a55" stroke-width="1.4"/>
+      <ellipse cx="320" cy="140" rx="148" ry="70" fill="#f0e6d8" stroke="#8a5a2b" stroke-width="1.6"/>
+      <ellipse cx="320" cy="140" rx="72" ry="40" fill="#5d3b18"/>
+
+      <text x="320" y="136" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">RESTRINGIDO</text>
+      <text x="320" y="151" text-anchor="middle" font-size="9" fill="#f0e6d8">no entra al cerebro</text>
+
+      <text x="320" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#5d3b18">CONFIDENCIAL</text>
+      <text x="320" y="210" text-anchor="middle" font-size="9" fill="#4a4a42">solo existencia + custodio</text>
+
+      <text x="320" y="228" text-anchor="middle" font-size="11" font-weight="700" fill="#8a5a2b">INTERNO</text>
+      <text x="320" y="242" text-anchor="middle" font-size="9" fill="#4a4a42">ficha completa, puntero al detalle</text>
+
+      <text x="320" y="258" text-anchor="middle" font-size="11" font-weight="700" fill="#77736a">PÚBLICO DEL ÁREA</text>
+
+      <g font-size="9.5" fill="#4a4a42">
+        <text x="20" y="60">Credenciales, claves,</text>
+        <text x="20" y="73">datos personales,</text>
+        <text x="20" y="86">expedientes laborales</text>
+        <path d="M120 78 C200 90 250 120 250 138" stroke="#b0512f" stroke-width="1.2" fill="none"/>
+
+        <text x="470" y="60">Procedimientos,</text>
+        <text x="470" y="73">fichas de sistemas,</text>
+        <text x="470" y="86">manuales, diagramas</text>
+        <path d="M520 92 C520 110 520 120 520 132" stroke="#8a5a2b" stroke-width="1.2" fill="none"/>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 9.1</b> · Capas de sensibilidad. Hacia el centro, menos entra al cerebro: del núcleo
+  restringido no se documenta ni la existencia detallada.</figcaption>
+  </figure>
+
+  <table>
+    <tr><th style="width:20%">Clasificación</th><th style="width:40%">Qué puede aparecer en el cerebro</th>
+        <th>Ejemplo</th></tr>
+    <tr><td><strong>Público del área</strong></td><td>Todo: ficha completa y contenido resumido.</td>
+        <td>Catálogo de sistemas, organigrama del área.</td></tr>
+    <tr><td><strong>Interno</strong></td><td>Ficha completa con datos técnicos; el documento fuente queda
+    tras su permiso original.</td><td>Ficha del portal, procedimientos de soporte.</td></tr>
+    <tr><td><strong>Confidencial</strong></td><td>Solo que existe, quién lo custodia y cómo solicitarlo.
+    Sin cifras, sin cláusulas.</td><td>Contratos con montos, evaluaciones de proveedores.</td></tr>
+    <tr><td><strong>Restringido</strong></td><td>Nada. Ni ficha, ni puntero, ni mención en el índice.</td>
+        <td>Credenciales, datos personales, procesos disciplinarios.</td></tr>
+  </table>
+
+  <h3>El problema del índice que revela</h3>
+  <p>Hay una sutileza que se pasa por alto: un índice completo es, en sí mismo, información. Saber que
+  existe un archivo llamado <code>evaluacion-reemplazo-proveedor-actual.md</code> ya comunica algo, aunque
+  nadie pueda abrirlo. Por eso el nivel restringido no aparece en absoluto, y el confidencial aparece con
+  nombres neutros.</p>
+
+  <div class="box warn"><span class="lab">Riesgo</span>
+  <p>La tentación más peligrosa de todo el proyecto es escribir credenciales, cadenas de conexión o rutas
+  con token en una ficha «porque es interno y facilita el trabajo». Un cerebro es, por diseño, el lugar más
+  indexado, más copiado y más consultado del área. Es el peor lugar posible para un secreto. La regla es
+  absoluta: <strong>el cerebro apunta al gestor de secretos, nunca lo sustituye.</strong></p></div>
+
+  <h3>Trazabilidad</h3>
+  <p>Como toda la navegación ocurre sobre archivos del repositorio corporativo, el registro de acceso ya
+  existe: quién abrió qué y cuándo queda en la plataforma documental. Conviene, además, dos hábitos
+  propios del cerebro:</p>
+  <ul class="plain">
+    <li><strong>Citación obligatoria de rutas</strong> en cada respuesta. Convierte cualquier conversación
+    en auditable a posteriori.</li>
+    <li><strong>Una nota de alcance</strong> en el índice maestro que diga explícitamente qué clases de
+    información nunca están en el cerebro. Sirve para el comité de seguridad y para el usuario que se
+    frustra buscando algo que no debe estar.</li>
+  </ul>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>El cerebro hereda permisos: como contiene punteros y no copias, el control de acceso del repositorio
+  sigue vigente. Cuatro clasificaciones —público, interno, confidencial, restringido— y una regla dura: lo
+  restringido no aparece ni mencionado, y los secretos nunca se escriben, se referencian. Citar rutas en
+  cada respuesta hace el sistema auditable.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 10 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 10</div>
+  <h2>Mantenimiento: cómo evitar que el cerebro se pudra</h2>
+  <p class="epi">Un cerebro desactualizado es peor que ningún cerebro, porque miente con la autoridad de
+  algo que parecía oficial.</p>
+
+  <p>Aquí muere la mayoría de estas iniciativas. No en la construcción —construir es divertido y se hace en
+  tres semanas— sino en el mes siete, cuando el 20 % de las fichas ya no refleja la realidad y alguien
+  recibe una respuesta equivocada. A partir de ese momento el equipo deja de confiar, y un cerebro en el que
+  no se confía deja de consultarse, con lo cual se desactualiza más rápido. Es una espiral.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <path d="M60 240 L600 240" stroke="#4a4a42" stroke-width="1.3"/>
+      <path d="M60 240 L60 30" stroke="#4a4a42" stroke-width="1.3"/>
+      <text x="330" y="268" text-anchor="middle" font-size="10.5" fill="#4a4a42">meses desde la creación</text>
+      <text x="24" y="135" text-anchor="middle" font-size="10.5" fill="#4a4a42" transform="rotate(-90 24 135)">% de fichas fiables</text>
+
+      <g font-size="9" fill="#77736a">
+        <text x="60" y="256">0</text><text x="195" y="256">6</text>
+        <text x="330" y="256">12</text><text x="465" y="256">18</text><text x="595" y="256">24</text>
+        <text x="46" y="44">100</text><text x="50" y="240">0</text>
+      </g>
+
+      <path d="M60 40 C150 60 230 130 330 185 C420 225 520 235 600 238"
+            fill="none" stroke="#b0512f" stroke-width="2.2"/>
+      <text x="430" y="205" font-size="10.5" fill="#8f3d22" font-weight="700">sin mantenimiento</text>
+
+      <path d="M60 40 C160 52 250 62 330 66 C430 71 520 74 600 76"
+            fill="none" stroke="#3f6b3f" stroke-width="2.2"/>
+      <text x="430" y="60" font-size="10.5" fill="#3f6b3f" font-weight="700">con revisión por dueño</text>
+
+      <path d="M60 40 C160 48 250 50 330 48 C430 46 520 44 600 42"
+            fill="none" stroke="#8a5a2b" stroke-width="2" stroke-dasharray="5 4"/>
+      <text x="380" y="36" font-size="10.5" fill="#8a5a2b" font-weight="700">+ detección automática de obsolescencia</text>
+
+      <path d="M330 185 L330 240" stroke="#cdc5b4" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle cx="330" cy="185" r="4" fill="#b0512f"/>
+      <text x="345" y="172" font-size="9.5" fill="#8f3d22" font-style="italic">punto de no retorno:</text>
+      <text x="345" y="185" font-size="9.5" fill="#8f3d22" font-style="italic">el equipo deja de consultarlo</text>
+    </g>
+  </svg>
+  <figcaption><b>Figura 10.1</b> · La curva de descomposición documental. La diferencia entre las tres
+  trayectorias no es el esfuerzo inicial: es quién revisa y con qué cadencia.</figcaption>
+  </figure>
+
+  <h3>Tres mecanismos, en orden de importancia</h3>
+
+  <h4>1. Un dueño por dominio, con nombre y apellido</h4>
+  <p>No un comité, no «el área»: una persona por dominio que responde por la vigencia de sus fichas. Su
+  trabajo no es escribirlas todas, sino revisarlas en la cadencia acordada y marcar la fecha. Si un dominio
+  no tiene dueño, ese dominio no debería existir en el cerebro todavía.</p>
+
+  <table>
+    <tr><th style="width:26%">Dominio</th><th style="width:22%">Cadencia</th><th>Disparador adicional</th></tr>
+    <tr><td>Proyectos</td><td>Mensual</td><td>Al pasar a producción y al cerrar el proyecto</td></tr>
+    <tr><td>Infraestructura</td><td>Trimestral</td><td>Tras cualquier cambio en el inventario o la red</td></tr>
+    <tr><td>Soporte</td><td>Mensual</td><td>Cuando un procedimiento falla en un caso real</td></tr>
+    <tr><td>Proveedores</td><td>Trimestral</td><td>90 días antes de cada vencimiento</td></tr>
+  </table>
+
+  <h4>2. El mantenimiento como subproducto del trabajo</h4>
+  <p>La revisión programada sola no basta, porque compite con el trabajo urgente y siempre pierde. El
+  truco es enganchar la actualización a algo que ya ocurre:</p>
+  <ul class="plain">
+    <li>El cierre de un ticket relevante incluye la pregunta «¿esto cambia algún procedimiento?».</li>
+    <li>El paso a producción de un proyecto no se firma sin la ficha actualizada. Es una casilla más del
+    checklist que ya existe.</li>
+    <li>Cuando el agente responde «no está documentado», eso se registra en
+    <code>99-META/pendientes.md</code>. Ese archivo es la mejor lista de tareas de documentación que vas a
+    tener, porque proviene de preguntas reales.</li>
+  </ul>
+
+  <h4>3. Detección automática de fichas podridas</h4>
+  <p>El front-matter que definimos en el capítulo 6 permite un script trivial que hace de conciencia del
+  sistema. Ejecutado semanalmente, publica un informe corto:</p>
+
+  <pre><span class="c"># revision.py — detecta fichas vencidas y campos faltantes</span>
+<span class="k">import</span> os, re, datetime, collections
+
+RAIZ = <span style="color:#3f6b3f">"./SEGUNDO CEREBRO"</span>
+LIMITE = {<span style="color:#3f6b3f">"proyectos"</span>: 30, <span style="color:#3f6b3f">"soporte"</span>: 30,
+          <span style="color:#3f6b3f">"infra"</span>: 90, <span style="color:#3f6b3f">"proveedores"</span>: 90}   <span class="c"># días</span>
+OBLIG = [<span style="color:#3f6b3f">"codigo"</span>, <span style="color:#3f6b3f">"estado"</span>, <span style="color:#3f6b3f">"dueno"</span>, <span style="color:#3f6b3f">"vigencia_revision"</span>, <span style="color:#3f6b3f">"clasificacion"</span>]
+hoy = datetime.date.today()
+alertas = collections.defaultdict(list)
+
+<span class="k">for</span> carpeta, _, archivos <span class="k">in</span> os.walk(RAIZ):
+    <span class="k">for</span> f <span class="k">in</span> [a <span class="k">for</span> a <span class="k">in</span> archivos <span class="k">if</span> a.endswith(<span style="color:#3f6b3f">".md"</span>)]:
+        ruta = os.path.join(carpeta, f)
+        texto = open(ruta, encoding=<span style="color:#3f6b3f">"utf-8"</span>).read()
+        fm = re.match(<span style="color:#3f6b3f">r"^---\n(.*?)\n---"</span>, texto, re.S)
+        <span class="k">if</span> <span class="k">not</span> fm:
+            alertas[<span style="color:#3f6b3f">"sin front-matter"</span>].append(ruta); <span class="k">continue</span>
+        campos = dict(re.findall(<span style="color:#3f6b3f">r"^(\w+):\s*(.+)$"</span>, fm.group(1), re.M))
+
+        <span class="k">for</span> c <span class="k">in</span> OBLIG:
+            <span class="k">if</span> c <span class="k">not</span> <span class="k">in</span> campos:
+                alertas[f<span style="color:#3f6b3f">"falta campo: {c}"</span>].append(ruta)
+
+        <span class="k">if</span> <span style="color:#3f6b3f">"vigencia_revision"</span> <span class="k">in</span> campos:
+            rev = datetime.date.fromisoformat(campos[<span style="color:#3f6b3f">"vigencia_revision"</span>].strip())
+            dominio = campos.get(<span style="color:#3f6b3f">"dominio"</span>, <span style="color:#3f6b3f">"proyectos"</span>).strip()
+            <span class="k">if</span> (hoy - rev).days &gt; LIMITE.get(dominio, 90):
+                alertas[<span style="color:#3f6b3f">"revisión vencida"</span>].append(f<span style="color:#3f6b3f">"{ruta} ({(hoy-rev).days} d)"</span>)
+
+<span class="k">for</span> motivo, items <span class="k">in</span> alertas.items():
+    print(f<span style="color:#3f6b3f">"\n## {motivo} ({len(items)})"</span>)
+    <span class="k">for</span> i <span class="k">in</span> items: print(<span style="color:#3f6b3f">" -"</span>, i)</pre>
+
+  <p>Treinta líneas que evitan la espiral. El informe va al canal del área todos los lunes; el dueño de cada
+  dominio ve solo lo suyo. Lo importante no es el script: es que la obsolescencia se vuelva
+  <em>visible</em> antes de que alguien se tropiece con ella.</p>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Es el mantenimiento preventivo de toda la vida. Nadie discute que un servidor necesita parches
+  periódicos, y sin embargo se asume que un documento, una vez escrito, es eterno. Un cerebro es
+  infraestructura: tiene un plan de mantenimiento o degrada, exactamente igual que un disco sin
+  monitoreo.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>El punto de fallo no es construir, es sostener. Tres mecanismos, en este orden: un dueño con nombre por
+  dominio y una cadencia escrita; el enganche de la actualización a eventos que ya ocurren (cierre de
+  ticket, paso a producción); y un script semanal que hace visible lo vencido. El archivo
+  <code>pendientes.md</code>, alimentado por las preguntas que el cerebro no supo responder, es tu mejor
+  backlog de documentación.</p></div>
+</section>
+<!-- =================== PARTE IV =================== -->
+<section class="partpage">
+  <div class="kicker">Parte IV</div>
+  <h2>Ampliar, medir y cuidar</h2>
+  <div class="line"></div>
+  <p>El primer caso de uso justifica el proyecto; los siguientes catorce lo vuelven indispensable. Aquí
+  abrimos el abanico, medimos si sirve de verdad y miramos de frente lo que puede salir mal.</p>
+</section>
+
+<!-- ============ CAPÍTULO 11 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 11</div>
+  <h2>Catorce casos de uso más allá del primero</h2>
+  <p class="epi">Se construye para responder «¿qué stack usa el portal?» y se termina descubriendo que
+  responde «¿qué se cae si apagamos el servidor APP-02?».</p>
+
+  <p>El caso fundacional casi siempre es el mismo: consultar la información técnica de un sistema concreto.
+  Es un buen primer caso porque es frecuente, verificable y de bajo riesgo. Pero una vez que existe la
+  estructura, el costo marginal de un caso nuevo es casi nulo —normalmente un puñado de fichas y una fila
+  en la tabla de enrutamiento—. Lo que sigue es un catálogo ordenado por relación entre valor y esfuerzo.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <rect x="70" y="20" width="540" height="270" fill="#faf8f3" stroke="#cdc5b4"/>
+      <path d="M340 20 L340 290" stroke="#cdc5b4" stroke-width="1"/>
+      <path d="M70 155 L610 155" stroke="#cdc5b4" stroke-width="1"/>
+
+      <text x="340" y="312" text-anchor="middle" font-size="10.5" fill="#4a4a42">esfuerzo de implementación →</text>
+      <text x="30" y="155" text-anchor="middle" font-size="10.5" fill="#4a4a42" transform="rotate(-90 30 155)">valor percibido →</text>
+
+      <text x="200" y="38" text-anchor="middle" font-size="10" fill="#3f6b3f" font-weight="700">EMPIEZA AQUÍ</text>
+      <text x="475" y="38" text-anchor="middle" font-size="10" fill="#8a5a2b" font-weight="700">PROYECTOS APARTE</text>
+      <text x="200" y="283" text-anchor="middle" font-size="10" fill="#77736a" font-weight="700">RELLENO ÚTIL</text>
+      <text x="475" y="283" text-anchor="middle" font-size="10" fill="#8f3d22" font-weight="700">EVITA POR AHORA</text>
+
+      <g font-size="9.5" fill="#23231f">
+        <circle cx="140" cy="70" r="4.5" fill="#5d3b18"/><text x="150" y="74">1 Consulta técnica de sistemas</text>
+        <circle cx="175" cy="98" r="4.5" fill="#5d3b18"/><text x="185" y="102">2 Onboarding de nuevo personal</text>
+        <circle cx="130" cy="126" r="4.5" fill="#5d3b18"/><text x="140" y="130">3 Vencimientos de contratos</text>
+        <circle cx="245" cy="62" r="4.5" fill="#5d3b18"/><text x="255" y="66">5 Análisis de impacto</text>
+        <circle cx="215" cy="140" r="4.5" fill="#5d3b18"/><text x="225" y="144">4 Procedimientos de soporte</text>
+
+        <circle cx="395" cy="72" r="4.5" fill="#8a5a2b"/><text x="405" y="76">10 Continuidad y plan de recuperación</text>
+        <circle cx="430" cy="110" r="4.5" fill="#8a5a2b"/><text x="440" y="114">11 Auditoría y cumplimiento</text>
+        <circle cx="380" cy="135" r="4.5" fill="#8a5a2b"/><text x="390" y="139">12 Presupuesto y costos de TI</text>
+
+        <circle cx="150" cy="185" r="4.5" fill="#b98a55"/><text x="160" y="189">6 Postmortem de incidentes</text>
+        <circle cx="200" cy="215" r="4.5" fill="#b98a55"/><text x="210" y="219">7 Inventario de licencias</text>
+        <circle cx="135" cy="245" r="4.5" fill="#b98a55"/><text x="145" y="249">8 Redacción de comunicados</text>
+        <circle cx="230" cy="258" r="4.5" fill="#b98a55"/><text x="240" y="262">9 Respuesta a encuestas de proveedor</text>
+
+        <circle cx="420" cy="200" r="4.5" fill="#b0512f"/><text x="430" y="204">13 Estado en tiempo real</text>
+        <circle cx="465" cy="240" r="4.5" fill="#b0512f"/><text x="475" y="244">14 Decisiones automatizadas</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 11.1</b> · Matriz valor / esfuerzo. Los casos 13 y 14 no son malos: son
+  <em>prematuros</em>, y explican por qué en el capítulo 13.</figcaption>
+  </figure>
+
+  <h3>El cuadrante de arranque</h3>
+
+  <p><strong>1 · Consulta técnica de sistemas.</strong> El caso fundacional. «¿Qué stack usa el portal?
+  ¿Dónde está el repositorio? ¿Quién lo mantiene?» Se resuelve en el nivel 2 y es el que enseña al equipo
+  que el sistema funciona.</p>
+
+  <p><strong>2 · Onboarding.</strong> Probablemente el caso de mayor retorno de todo el catálogo. Una
+  persona nueva en el área consume, en sus primeras dos semanas, entre veinte y cuarenta horas de tiempo de
+  sus compañeros solo en preguntas de orientación. El cerebro absorbe la mayoría. Se implementa con una
+  ficha adicional: <code>99-META/ruta-de-ingreso.md</code>, que es un plan de lectura de siete días con
+  punteros.</p>
+
+  <p><strong>3 · Vencimientos y renovaciones.</strong> Los campos <code>vigencia_fin</code>,
+  <code>renovacion_automatica</code> y <code>preaviso_dias</code> de las fichas de proveedor permiten la
+  consulta que la gerencia agradece cada trimestre: qué vence en noventa días, qué se renueva solo si nadie
+  hace nada, y cuál es el preaviso. Es también el caso que más fácil se automatiza con un script sobre el
+  front-matter.</p>
+
+  <p><strong>4 · Procedimientos de soporte.</strong> «Esto ya pasó, ¿cómo se resolvió?» El cerebro no
+  indexa los treinta mil tickets: indexa los cuarenta procedimientos destilados de ellos. La ficha de
+  procedimiento tiene síntoma, causa raíz, pasos y sistema afectado, lo que permite que un técnico de nivel
+  1 resuelva algo que antes escalaba.</p>
+
+  <p><strong>5 · Análisis de impacto.</strong> Este es el caso que sorprende a todo el mundo la primera vez.
+  Como las fichas se enlazan entre dominios —un sistema apunta a su servidor, el servidor a su proveedor de
+  hosting, el proveedor a su contrato—, el cerebro puede recorrer el grafo y responder «si apagamos APP-02,
+  se caen el portal y el validador de facturas; el portal tiene 180 usuarios externos y su SLA con
+  proveedores es de 8 horas». Ninguna persona tenía eso en la cabeza completo.</p>
+
+  <div class="box case"><span class="lab">Caso · El grafo que nadie había dibujado</span>
+  <p>En un área con 14 sistemas, 9 servidores y 22 contratos, nadie podía responder de memoria qué contratos
+  sostenían un sistema concreto. La información existía —dispersa en tres carpetas y dos hojas de cálculo—
+  pero el cruce nunca se había hecho porque costaba medio día.</p>
+  <p>Al enlazar las fichas con la sección <em>Relacionado</em>, ese cruce pasó a ser una pregunta. Y la
+  primera vez que se hizo, apareció un hallazgo incómodo y valioso: dos sistemas críticos dependían de un
+  contrato de soporte que había vencido cuatro meses antes sin que nadie lo notara. <strong>El cerebro no
+  generó información nueva: hizo visible una relación que ya existía.</strong></p></div>
+
+  <h3>Los casos de segunda ola</h3>
+
+  <p><strong>6 · Postmortem de incidentes.</strong> Cada incidente mayor produce una ficha corta: qué pasó,
+  impacto, causa raíz, acciones. Con veinte de ellas, el agente empieza a detectar patrones —«tres de los
+  últimos cinco incidentes involucran el mismo enlace de red»— que ningún informe mensual mostraba.</p>
+
+  <p><strong>7 · Inventario de licencias.</strong> Cuántas licencias hay, de qué, quién las usa, cuándo
+  vencen y cuánto cuestan. Es aburrido y es el caso que más veces se paga solo, porque las licencias
+  huérfanas son la fuga de presupuesto silenciosa clásica de TI.</p>
+
+  <p><strong>8 · Redacción de comunicados.</strong> Avisos de mantenimiento, correos de cambio de sistema,
+  notas de indisponibilidad. El agente, con la ficha del sistema cargada, redacta un comunicado que ya
+  contiene el nombre correcto, los usuarios afectados y la ventana real.</p>
+
+  <p><strong>9 · Respuesta a cuestionarios.</strong> Encuestas de proveedores, formularios de seguros,
+  cuestionarios de seguridad de clientes. Preguntas repetitivas cuya respuesta está en fichas de
+  infraestructura y proveedores. Pasa de medio día a media hora.</p>
+
+  <h3>Los casos que exigen madurez</h3>
+
+  <p><strong>10 · Continuidad y recuperación.</strong> El cerebro puede sostener la parte documental de un
+  plan de continuidad: qué es crítico, en qué orden se levanta, quién decide. Requiere que las fichas de
+  infraestructura sean impecables, porque aquí un dato viejo tiene consecuencias graves. No es un caso de
+  arranque.</p>
+
+  <p><strong>11 · Auditoría y cumplimiento.</strong> Responder a un auditor con trazabilidad: qué política
+  aplica, dónde está firmada, cuándo se revisó. El cerebro brilla porque cita rutas. Exige, eso sí, un
+  cuidado extra con las clasificaciones del capítulo 9.</p>
+
+  <p><strong>12 · Presupuesto y costos.</strong> Cruzar contratos, licencias y proyectos para responder
+  cuánto cuesta sostener un sistema. Requiere datos económicos, y por tanto una decisión explícita sobre
+  clasificación confidencial. Alto valor, alta sensibilidad.</p>
+
+  <h3>Y los dos que conviene aplazar</h3>
+  <p><strong>13 · Estado en tiempo real</strong> (ocupación de discos, tickets abiertos, alertas) no es un
+  caso de segundo cerebro: es un caso de integración con herramientas en vivo. Documentar estados que
+  cambian cada hora garantiza que el cerebro esté siempre equivocado. Cuando llegue el momento, la solución
+  no es escribirlo en una ficha, sino que la ficha indique <em>cómo consultarlo</em>.</p>
+  <p><strong>14 · Decisiones automatizadas</strong> —que el agente apruebe, ejecute o renueve algo por su
+  cuenta— es tentador y prematuro. El cerebro es una capa de conocimiento, no de autorización. Mientras la
+  confiabilidad medida (capítulo 12) no sea alta y estable, la salida del sistema debe seguir siendo una
+  recomendación que una persona valida.</p>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Una vez existe la estructura, cada caso nuevo cuesta unas pocas fichas y una fila de enrutamiento.
+  Arranca por consulta técnica, onboarding, vencimientos, procedimientos y análisis de impacto. Aplaza el
+  estado en tiempo real (se consulta, no se documenta) y las decisiones automatizadas (el cerebro informa,
+  no autoriza). El caso que más sorprende siempre es el análisis de impacto, porque revela relaciones que
+  ya existían y nadie había cruzado.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 12 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 12</div>
+  <h2>Medir si el cerebro sirve</h2>
+  <p class="epi">«Al equipo le gusta» no es una métrica. Sobre todo porque a los tres meses deja de
+  gustarles y nadie sabe decir cuándo empezó.</p>
+
+  <p>Medir aquí no es burocracia: es lo que permite detectar la descomposición antes de que el equipo pierda
+  la confianza. Y no hace falta un tablero elaborado —cuatro números y un set de preguntas de prueba
+  bastan.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <path d="M60 30 L580 30 L520 90 L120 90 Z" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.5"/>
+      <text x="320" y="58" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5d3b18">Preguntas que llegan al cerebro</text>
+      <text x="320" y="78" text-anchor="middle" font-size="10" fill="#4a4a42">↳ métrica: nº de consultas / semana (adopción)</text>
+
+      <path d="M120 100 L520 100 L470 160 L170 160 Z" fill="#f0e6d8" stroke="#8a5a2b" stroke-width="1.5"/>
+      <text x="320" y="128" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5d3b18">El cerebro encuentra la ruta</text>
+      <text x="320" y="148" text-anchor="middle" font-size="10" fill="#4a4a42">↳ métrica: <tspan font-weight="700">cobertura</tspan> = % de preguntas con respuesta encontrada</text>
+
+      <path d="M170 170 L470 170 L420 230 L220 230 Z" fill="#b98a55" stroke="#5d3b18" stroke-width="1.5"/>
+      <text x="320" y="198" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">La respuesta es correcta</text>
+      <text x="320" y="218" text-anchor="middle" font-size="10" fill="#fff">↳ métrica: <tspan font-weight="700">precisión</tspan> = % verificado como exacto</text>
+
+      <path d="M220 240 L420 240 L380 290 L260 290 Z" fill="#5d3b18"/>
+      <text x="320" y="266" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">Ahorró trabajo real</text>
+      <text x="320" y="284" text-anchor="middle" font-size="10" fill="#f0e6d8">↳ métrica: minutos evitados</text>
+
+      <g font-size="9.5" fill="#8f3d22">
+        <text x="540" y="112">fuga →</text>
+        <text x="490" y="182">fuga →</text>
+        <text x="440" y="252">fuga →</text>
+      </g>
+      <g font-size="9" fill="#77736a">
+        <text x="540" y="126">va a pendientes.md</text>
+        <text x="490" y="196">ficha mala: corregir</text>
+        <text x="440" y="266">respuesta trivial</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 12.1</b> · El embudo de valor. Cada escalón tiene su fuga, y cada fuga tiene una
+  acción correctiva distinta.</figcaption>
+  </figure>
+
+  <h3>Las cuatro métricas mínimas</h3>
+  <table>
+    <tr><th style="width:20%">Métrica</th><th style="width:32%">Cómo se calcula</th><th>Qué te dice cuando cae</th></tr>
+    <tr><td><strong>Cobertura</strong></td>
+        <td>Preguntas resueltas ÷ preguntas hechas. Se obtiene contando las entradas de
+        <code>pendientes.md</code>.</td>
+        <td>Falta documentación en un dominio concreto. Es un problema de <em>contenido</em>.</td></tr>
+    <tr><td><strong>Precisión</strong></td>
+        <td>Sobre el set de evaluación: respuestas correctas ÷ total. Se mide mensualmente.</td>
+        <td>Hay fichas desactualizadas o ambiguas. Es un problema de <em>mantenimiento</em>.</td></tr>
+    <tr><td><strong>Profundidad media</strong></td>
+        <td>Promedio de niveles recorridos por consulta (el agente lo declara al citar rutas).</td>
+        <td>Si sube, los índices están mal escritos y el agente busca de más. Problema de
+        <em>navegación</em>.</td></tr>
+    <tr><td><strong>Adopción</strong></td>
+        <td>Personas distintas que consultaron en la semana ÷ tamaño del área.</td>
+        <td>Si cae y la precisión sigue alta, es un problema de <em>fricción</em>: el acceso directo no
+        está a mano o el hábito no cuajó.</td></tr>
+  </table>
+
+  <h3>El set de evaluación</h3>
+  <p>Esta es la herramienta más valiosa del capítulo y cuesta una tarde construirla. Consiste en 25 o 30
+  preguntas reales con su respuesta correcta verificada por una persona. Se ejecutan una vez al mes contra
+  el cerebro y se cuenta cuántas acierta. Es el único modo de saber si el sistema mejoró o empeoró desde el
+  mes pasado.</p>
+
+  <pre><span class="c"># 99-META/evaluacion.md</span>
+
+| # | Pregunta                                          | Respuesta correcta        | Ficha esperada | ✔ jul | ✔ ago |
+|---|---------------------------------------------------|---------------------------|----------------|-------|-------|
+| 1 | ¿Qué framework usa el portal de proveedores?      | Laravel 11                | PRT-001        |  sí   |  sí   |
+| 2 | ¿Quién es dueño del dominio de infraestructura?   | Admin. de redes           | 00-INDICE      |  sí   |  sí   |
+| 3 | ¿Qué contratos vencen antes de diciembre?         | PRV-011, PRV-014          | 04-PROVEEDORES |  no   |  sí   |
+| 4 | ¿Qué sistemas dependen del servidor APP-02?       | PRT-001, FAC-002          | INF-002        |  sí   |  sí   |
+| 5 | ¿Cómo se da de alta un proveedor nuevo?           | procedimiento SOP-014     | SOP-014        |  sí   |  no ← revisar</pre>
+
+  <p>Dos detalles hacen que esto funcione. Primero: la columna <em>ficha esperada</em>, porque una respuesta
+  correcta obtenida desde la ficha equivocada es una alarma —significa que hay información duplicada y
+  divergirá—. Segundo: las preguntas deben venir de conversaciones reales, no inventarse; las inventadas
+  siempre son más fáciles de lo que la gente pregunta.</p>
+
+  <div class="box warn"><span class="lab">Señales de fallo</span>
+  <p>Tres síntomas que anticipan la espiral descrita en el capítulo 10, en orden de aparición:
+  (1) las entradas nuevas en <code>pendientes.md</code> dejan de aparecer —no porque todo esté documentado,
+  sino porque nadie consulta ya; (2) alguien del equipo dice «yo mejor le pregunto a Fulano»; (3) aparece
+  una segunda fuente paralela —un Excel, un canal de chat fijado— que compite con el cerebro. La tercera es
+  terminal si no se actúa: hay dos verdades y la gente elegirá la que responda más rápido.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Cuatro métricas: cobertura (problema de contenido), precisión (de mantenimiento), profundidad media
+  (de navegación) y adopción (de fricción). El set de 25–30 preguntas reales con respuesta verificada,
+  ejecutado mensualmente, es lo que convierte «creo que funciona» en un número comparable. Vigila la
+  aparición de fuentes paralelas: son el síntoma terminal.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 13 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 13</div>
+  <h2>Riesgos, ética y límites</h2>
+  <p class="epi">La pregunta no es si el cerebro se equivocará. Es si, cuando lo haga, alguien podrá
+  notarlo.</p>
+
+  <p>Un sistema que responde con fluidez y cita rutas genera una confianza que puede exceder su fiabilidad
+  real. Ese desajuste —no el error puntual— es el riesgo central. Los cinco que siguen merecen una decisión
+  explícita antes de ampliar el alcance.</p>
+
+  <figure>
+  <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <rect x="80" y="25" width="500" height="230" fill="#faf8f3" stroke="#cdc5b4"/>
+      <path d="M330 25 L330 255" stroke="#cdc5b4"/>
+      <path d="M80 140 L580 140" stroke="#cdc5b4"/>
+      <text x="330" y="278" text-anchor="middle" font-size="10.5" fill="#4a4a42">probabilidad →</text>
+      <text x="42" y="140" text-anchor="middle" font-size="10.5" fill="#4a4a42" transform="rotate(-90 42 140)">impacto →</text>
+
+      <g font-size="10">
+        <rect x="345" y="40" width="220" height="42" rx="4" fill="#fbf1ec" stroke="#b0512f" stroke-width="1.5"/>
+        <text x="355" y="58" font-weight="700" fill="#8f3d22">1 · Contexto obsoleto</text>
+        <text x="355" y="73" fill="#4a4a42" font-size="9">mitigación: vigencia + script semanal</text>
+
+        <rect x="95" y="40" width="220" height="42" rx="4" fill="#fbf1ec" stroke="#b0512f" stroke-width="1.5"/>
+        <text x="105" y="58" font-weight="700" fill="#8f3d22">2 · Fuga de información</text>
+        <text x="105" y="73" fill="#4a4a42" font-size="9">mitigación: clasificación + punteros</text>
+
+        <rect x="345" y="95" width="220" height="42" rx="4" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.4"/>
+        <text x="355" y="113" font-weight="700" fill="#5d3b18">3 · Confianza excesiva</text>
+        <text x="355" y="128" fill="#4a4a42" font-size="9">mitigación: citar ruta siempre</text>
+
+        <rect x="345" y="160" width="220" height="42" rx="4" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.4"/>
+        <text x="355" y="178" font-weight="700" fill="#5d3b18">4 · Sesgo del que documenta</text>
+        <text x="355" y="193" fill="#4a4a42" font-size="9">mitigación: revisión cruzada</text>
+
+        <rect x="95" y="195" width="220" height="42" rx="4" fill="#f7f4ed" stroke="#8a5a2b" stroke-width="1.4"/>
+        <text x="105" y="213" font-weight="700" fill="#5d3b18">5 · Atrofia del conocimiento</text>
+        <text x="105" y="228" fill="#4a4a42" font-size="9">mitigación: el cerebro explica, no solo responde</text>
+      </g>
+    </g>
+  </svg>
+  <figcaption><b>Figura 13.1</b> · Matriz de riesgos. Los dos del cuadrante superior son los que exigen
+  control técnico; los tres restantes son culturales.</figcaption>
+  </figure>
+
+  <h3>1 · Contexto obsoleto</h3>
+  <p>Es el riesgo más probable y el más caro, porque el error no se anuncia: la respuesta suena idéntica a
+  una correcta. Una IP que cambió, un procedimiento que ya no aplica, un dueño que dejó la empresa. Además
+  del script del capítulo 10, hay una mitigación conversacional barata: obligar al agente a declarar la
+  fecha de revisión de la ficha cuando el dato es operativo. «Según la ficha INF-002, revisada en mayo de
+  2026…» transfiere al lector la información que necesita para dudar.</p>
+
+  <h3>2 · Fuga de información</h3>
+  <p>Ya tratado en el capítulo 9, pero con un matiz que aparece al ampliar el alcance: el riesgo crece con
+  el <em>cruce</em>. Dos datos individualmente inocuos pueden ser sensibles juntos —el inventario de
+  servidores y el detalle de qué versiones no están parcheadas, por ejemplo—. Antes de añadir un dominio
+  nuevo, pregunta no solo si ese dato es sensible, sino qué se puede deducir combinándolo con lo que ya
+  hay.</p>
+
+  <h3>3 · Confianza excesiva</h3>
+  <p>El sistema respondió bien treinta veces; la persona deja de verificar la trigésimo primera. Es
+  comportamiento humano normal y no se corrige con advertencias genéricas. Se corrige haciendo que
+  verificar cueste un clic: la ruta citada debe ser exacta y abrible. Un cerebro que dice «según la
+  documentación del área» sin más está fabricando confianza no verificable.</p>
+
+  <h3>4 · Sesgo del que documenta</h3>
+  <p>Toda ficha refleja el criterio de quien la escribió: qué consideró importante, qué omitió, qué llamó
+  «temporal». Cuando esa ficha se convierte en la respuesta oficial que recibe todo el equipo, ese criterio
+  personal adquiere un peso que nunca tuvo. La mitigación es modesta pero real: que ninguna ficha crítica la
+  revise solo su autor, y que el campo <code>dueno</code> haga visible de quién es el criterio.</p>
+
+  <h3>5 · Atrofia del conocimiento</h3>
+  <p>Este es el riesgo de largo plazo y el más difícil de medir. Si el cerebro responde siempre, el equipo
+  deja de construir su propio mapa mental. Durante un año no se nota; el día que alguien tiene que decidir
+  bajo presión, sin herramienta, la diferencia aparece.</p>
+  <p>No hay una solución limpia, pero sí una elección de diseño que ayuda: pedir al agente que
+  <strong>explique el camino, no solo el resultado</strong>. «El dato está en la ficha del sistema, que
+  está en el dominio de proyectos porque…» enseña la estructura mientras responde. Un cerebro que enseña a
+  navegar produce equipos que saben navegar sin él.</p>
+
+  <div class="box ana"><span class="lab">Analogía</span>
+  <p>Es la diferencia entre un GPS que dice «gira a la derecha» y uno que muestra el mapa. Los dos te llevan.
+  Solo uno te deja, al cabo de un año, capaz de llegar sin él. Para un área de TI —donde la crisis siempre
+  llega el día que algo no funciona— esa diferencia no es filosófica.</p></div>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>El riesgo central no es el error, es la confianza que excede la fiabilidad. Dos riesgos exigen control
+  técnico —contexto obsoleto y fuga por cruce de datos— y tres son culturales: confianza excesiva, sesgo del
+  autor y atrofia. Haz que verificar cueste un clic, que ninguna ficha crítica la revise solo quien la
+  escribió, y que el agente explique el camino además del resultado.</p></div>
+</section>
+
+<!-- ============ CAPÍTULO 14 ============ -->
+<section class="chapter">
+  <div class="chapnum">Capítulo 14</div>
+  <h2>Hoja de ruta de 90 días</h2>
+  <p class="epi">El error más común no es empezar mal. Es empezar por todo.</p>
+
+  <p>Este capítulo condensa el libro en un plan ejecutable. Tres fases de un mes, cada una con un criterio
+  de salida claro. Si un criterio no se cumple, no se avanza: se repite. Casi todos los fracasos que he
+  visto descritos consisten en saltar de la fase 1 a la 3 porque «ya está montado».</p>
+
+  <figure>
+  <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+    <g font-family="Carlito,sans-serif" fill="#23231f">
+      <g font-size="9.5" fill="#77736a">
+        <text x="70" y="24">Semana 1</text><text x="205" y="24">4</text>
+        <text x="340" y="24">8</text><text x="475" y="24">12</text>
+      </g>
+      <path d="M60 32 L600 32" stroke="#cdc5b4"/>
+
+      <rect x="60" y="45" width="175" height="46" rx="4" fill="#5d3b18"/>
+      <text x="75" y="66" font-size="11.5" font-weight="700" fill="#fff">FASE 1 · Un dominio</text>
+      <text x="75" y="82" font-size="9.5" fill="#f0e6d8">índice maestro + proyectos</text>
+
+      <rect x="245" y="100" width="175" height="46" rx="4" fill="#8a5a2b"/>
+      <text x="260" y="121" font-size="11.5" font-weight="700" fill="#fff">FASE 2 · Los cuatro</text>
+      <text x="260" y="137" font-size="9.5" fill="#f0e6d8">infra, soporte, proveedores</text>
+
+      <rect x="430" y="155" width="175" height="46" rx="4" fill="#b98a55"/>
+      <text x="445" y="176" font-size="11.5" font-weight="700" fill="#fff">FASE 3 · Operación</text>
+      <text x="445" y="192" font-size="9.5" fill="#fff">3 herramientas + métricas</text>
+
+      <path d="M235 68 L245 68 L245 100" stroke="#8a5a2b" stroke-width="1.4" fill="none"/>
+      <path d="M420 123 L430 123 L430 155" stroke="#8a5a2b" stroke-width="1.4" fill="none"/>
+
+      <g font-size="9" fill="#3f6b3f">
+        <text x="60" y="228">salida: 10 fichas + 5 personas</text>
+        <text x="60" y="241">usándolo una vez por semana</text>
+        <text x="245" y="228">salida: cobertura ≥ 70 % del</text>
+        <text x="245" y="241">set de evaluación</text>
+        <text x="430" y="228">salida: precisión estable dos</text>
+        <text x="430" y="241">meses + dueños asignados</text>
+      </g>
+      <path d="M60 210 L235 210" stroke="#3f6b3f" stroke-width="1.2"/>
+      <path d="M245 210 L420 210" stroke="#3f6b3f" stroke-width="1.2"/>
+      <path d="M430 210 L605 210" stroke="#3f6b3f" stroke-width="1.2"/>
+    </g>
+  </svg>
+  <figcaption><b>Figura 14.1</b> · Tres fases, tres criterios de salida. Las fases se solapan una semana:
+  la anterior sigue corrigiéndose mientras arranca la siguiente.</figcaption>
+  </figure>
+
+  <h3>Fase 1 · Semanas 1 a 4: un solo dominio</h3>
+  <ul class="plain">
+    <li><strong>Semana 1.</strong> El ejercicio de las diez preguntas (capítulo 2). Crear la carpeta y
+    escribir el <code>00-INDICE.md</code> con las siete secciones, aunque tres estén casi vacías. Definir
+    convenciones de nombres.</li>
+    <li><strong>Semana 2.</strong> Diez fichas de proyecto, empezando por los sistemas más consultados. No
+    más de diez: el objetivo es validar el formato, no cubrir el catálogo.</li>
+    <li><strong>Semana 3.</strong> El adaptador de una sola herramienta y el acceso directo. Que cinco
+    personas lo usen de verdad.</li>
+    <li><strong>Semana 4.</strong> Recoger fallos, corregir el índice, escribir el primer set de evaluación
+    con las preguntas que fallaron.</li>
+  </ul>
+  <p><em>Criterio de salida:</em> diez fichas vivas y cinco personas que lo usan al menos una vez por semana
+  sin que nadie se lo recuerde. Si esto no ocurre, el problema es de formato o de fricción, y ampliar a
+  cuatro dominios solo multiplicará el problema.</p>
+
+  <h3>Fase 2 · Semanas 5 a 8: los cuatro dominios</h3>
+  <ul class="plain">
+    <li>Índice de dominio para infraestructura, soporte y proveedores, con la columna «en una línea».</li>
+    <li>Fichas de infraestructura de los servidores que sostienen los sistemas ya documentados —así aparecen
+    los primeros enlaces cruzados y con ellos el caso de análisis de impacto.</li>
+    <li>Los 15 procedimientos de soporte más repetidos. No los 40: los 15.</li>
+    <li>Fichas de proveedor solo con los campos de vigencia; los montos se dejan para después de decidir la
+    clasificación.</li>
+    <li>Asignar dueño por dominio, con nombre, y escribirlo en la sección 7 del índice maestro.</li>
+  </ul>
+  <p><em>Criterio de salida:</em> el set de evaluación —ya con 25 preguntas de los cuatro dominios— se
+  responde correctamente en al menos el 70 % de los casos.</p>
+
+  <h3>Fase 3 · Semanas 9 a 12: operación</h3>
+  <ul class="plain">
+    <li>Adaptadores para las tres herramientas y el acceso directo con selector.</li>
+    <li>Script de revisión semanal publicando en el canal del área.</li>
+    <li>Enganchar la actualización a dos eventos existentes: cierre de ticket relevante y paso a producción.</li>
+    <li>Primera medición formal de las cuatro métricas y presentación al área.</li>
+    <li>Documentar el propio cerebro en <code>99-META/convenciones.md</code>: cómo se crea una ficha nueva,
+    quién aprueba, qué no entra.</li>
+  </ul>
+  <p><em>Criterio de salida:</em> precisión estable durante dos mediciones consecutivas y cada dominio con
+  dueño activo. A partir de aquí, ampliar es rutina: un caso nuevo del capítulo 11 cada mes.</p>
+
+  <div class="box warn"><span class="lab">Los cinco errores que arruinan el plan</span>
+  <p>(1) Empezar por documentarlo todo en lugar de por diez fichas. (2) Escribir el índice maestro como
+  presentación en vez de como enrutador. (3) Copiar documentos al cerebro en lugar de apuntar a ellos.
+  (4) No asignar dueños porque «lo mantenemos entre todos». (5) Saltarse el set de evaluación, con lo que
+  seis meses después nadie puede decir si el sistema mejoró o empeoró.</p></div>
+
+  <h3>Cómo se ve el éxito</h3>
+  <p>No se ve como un tablero bonito. Se ve así: alguien nuevo entra al área un lunes y el miércoles ya está
+  resolviendo tickets sin interrumpir a nadie. Un analista responde en dos minutos qué sistemas dependen de
+  un servidor que hay que apagar. Nadie recuerda ya cómo se buscaban las cosas antes. Y el día que la
+  persona que más sabe del área se toma tres semanas de vacaciones, no pasa absolutamente nada.</p>
+  <p>Ese último punto es, en el fondo, el propósito entero del proyecto. Un segundo cerebro no existe para
+  que la IA sepa: existe para que el conocimiento del área deje de depender de que una persona concreta
+  conteste el teléfono.</p>
+
+  <div class="box recall"><span class="lab">Para recordar</span>
+  <p>Tres fases de cuatro semanas con criterios de salida duros: diez fichas y cinco usuarios reales;
+  cobertura del 70 % sobre el set de evaluación; precisión estable con dueños asignados. No se avanza de
+  fase sin cumplir el criterio. El éxito no se mide en documentos escritos, sino en preguntas que ya no
+  hace falta hacerle a nadie.</p></div>
+</section>
+<!-- =================== APÉNDICE A =================== -->
+<section class="chapter">
+  <div class="chapnum">Apéndice A</div>
+  <h2>Plantillas listas para copiar</h2>
+  <p>Cuatro archivos que puedes crear hoy. Sustituye lo que está entre corchetes angulares y borra lo que
+  no aplique. Todas asumen la estructura del capítulo 5.</p>
+
+  <h3>A.1 · Índice de dominio · <code>0X-DOMINIO/_indice.md</code></h3>
+  <pre>---
+dominio: [proyectos | infra | soporte | proveedores]
+dueno: [nombre o rol]
+vigencia_revision: [AAAA-MM-DD]
+---
+
+<span class="k"># Índice de [DOMINIO]</span>
+
+<span class="k">## Qué hay aquí</span>
+[Una frase: qué tipo de preguntas se responden en este dominio.]
+
+<span class="k">## Catálogo</span>
+| Código | Nombre | Estado | En una línea |
+|--------|--------|--------|--------------|
+| [COD-001] | [nombre] | [activo/producción/cerrado] | [qué es, en 8 palabras] |
+
+<span class="k">## Dónde buscar si no está aquí</span>
+- [Ruta del repositorio original y qué contiene]
+- Si no aparece en ninguna: registrar en `99-META/pendientes.md` y preguntar a [dueño].</pre>
+
+  <h3>A.2 · Ficha de proveedor · <code>04-PROVEEDORES/PRV-0XX-nombre.md</code></h3>
+  <pre>---
+codigo: PRV-0XX
+nombre: [razón social]
+alias: ["[como le dicen]"]
+dominio: proveedores
+servicio: [qué presta]
+estado: [vigente | en renovación | terminado]
+vigencia_inicio: [AAAA-MM-DD]
+vigencia_fin: [AAAA-MM-DD]
+renovacion_automatica: [si | no]
+preaviso_dias: [30 | 60 | 90]
+clasificacion: [interno | confidencial]
+dueno: [rol responsable]
+vigencia_revision: [AAAA-MM-DD]
+---
+
+<span class="k"># [Proveedor] (PRV-0XX)</span>
+
+[Qué presta, desde cuándo, a qué sistemas o servicios afecta.]
+
+<span class="k">## Alcance del servicio</span>
+- Incluye: [...]
+- No incluye: [...]
+- SLA comprometido: [tiempo de respuesta / disponibilidad]
+
+<span class="k">## Contacto</span>
+| Rol | Nombre | Canal |
+|-----|--------|-------|
+| Comercial | [ ] | [ ] |
+| Soporte técnico | [ ] | [ ] |
+| Escalamiento | [ ] | [ ] |
+
+<span class="k">## Dónde está el detalle</span>
+- Contrato firmado → [ruta; si es confidencial, indicar solo custodio]
+- Órdenes de servicio → [ruta]
+
+<span class="k">## Relacionado</span>
+[[SISTEMA-QUE-SOSTIENE]] · [[SERVIDOR-AFECTADO]]</pre>
+
+  <h3>A.3 · Ficha de procedimiento de soporte · <code>03-SOPORTE/procedimientos/SOP-0XX.md</code></h3>
+  <pre>---
+codigo: SOP-0XX
+nombre: [qué resuelve]
+dominio: soporte
+sintoma: "[cómo lo describe el usuario, con sus palabras]"
+sistema_afectado: [COD del sistema]
+nivel: [1 | 2 | 3]
+tiempo_estimado: [minutos]
+clasificacion: interno
+dueno: [rol]
+vigencia_revision: [AAAA-MM-DD]
+---
+
+<span class="k"># [Nombre del procedimiento] (SOP-0XX)</span>
+
+<span class="k">## Cómo se reporta</span>
+"[Frase literal típica del usuario. Esto es lo que permite que el agente
+lo encuentre aunque el título técnico sea otro.]"
+
+<span class="k">## Causa raíz habitual</span>
+[Una o dos frases.]
+
+<span class="k">## Pasos</span>
+1. [Verificación previa]
+2. [Acción]
+3. [Comprobación de que se resolvió]
+
+<span class="k">## Si no funciona</span>
+Escalar a [rol] con: [qué datos debe llevar el escalamiento].
+
+<span class="k">## Relacionado</span>
+[[SISTEMA]] · [[SOP-relacionado]]</pre>
+
+  <h3>A.4 · Prompt de arranque · <code>99-META/prompt-arranque.txt</code></h3>
+  <pre>Eres el asistente del área de TI de [ORGANIZACIÓN]. Tu única fuente de verdad
+es la carpeta "Segundo Cerebro" del SharePoint del área.
+
+ARRANQUE
+1. Lee completo el archivo 00-INDICE.md antes de responder nada.
+2. Aplica sus reglas de operación como instrucciones de sistema.
+
+EN CADA RESPUESTA
+- Di en una línea qué archivo consultaste antes de responder.
+- Cita la ruta exacta de donde salió cada dato.
+- Si la ficha tiene fecha de revisión y el dato es operativo, menciónala.
+- Desciende de nivel solo si la pregunta lo exige.
+
+CUANDO NO SEPAS
+- No improvises. Di "no está documentado" e indica el dueño del dominio.
+- Sugiere registrar la pregunta en 99-META/pendientes.md.
+
+NUNCA
+- Reproduzcas contenido de archivos con clasificacion: restringido.
+- Inventes rutas, códigos de sistema o nombres de archivo.
+- Tomes decisiones o autorices acciones: informas, la persona decide.</pre>
+</section>
+
+<!-- =================== APÉNDICE B · GLOSARIO =================== -->
+<section class="chapter">
+  <div class="chapnum">Apéndice B</div>
+  <h2>Glosario de terminología</h2>
+
+  <dl class="gloss">
+    <dt>Adaptador de arranque</dt>
+    <dd>Archivo pequeño y específico de cada herramienta de IA que le indica que lea el índice maestro y
+    adopte sus reglas. Es lo único que cambia entre Claude, Copilot y Gemini.</dd>
+
+    <dt>Alias</dt>
+    <dd>Nombre coloquial con el que el equipo se refiere a un sistema o servicio. Se declara en el
+    front-matter y en el índice maestro; resuelve buena parte de los fallos de recuperación.</dd>
+
+    <dt>Análisis de impacto</dt>
+    <dd>Consulta que recorre el grafo de fichas enlazadas para determinar qué se ve afectado por un cambio.
+    Es el caso de uso que revela relaciones existentes que nadie había cruzado.</dd>
+
+    <dt>Carga progresiva de contexto</dt>
+    <dd>Estrategia por la cual el agente accede al conocimiento en niveles de detalle creciente
+    (índice → dominio → ficha → fuente), deteniéndose en cuanto tiene lo necesario.</dd>
+
+    <dt>Cobertura</dt>
+    <dd>Proporción de preguntas para las que el cerebro encuentra una respuesta. Cuando baja, el problema
+    es de contenido, no de estructura.</dd>
+
+    <dt>Degradación por dilución</dt>
+    <dd>Pérdida de calidad en la respuesta cuando el documento correcto llega acompañado de mucho material
+    irrelevante. Explica por qué más contexto no es mejor contexto.</dd>
+
+    <dt>Destilar</dt>
+    <dd>Tercera de las cuatro operaciones: escribir un resumen corto y estructurado de algo que ya existe,
+    con punteros al detalle. Es el trabajo real de construir un cerebro y el paso que más se omite.</dd>
+
+    <dt>Enrutamiento por intención</dt>
+    <dd>Tabla que traduce el tipo de pregunta a un archivo de destino, en lugar de traducir palabras clave a
+    documentos. Corazón del índice maestro.</dd>
+
+    <dt>Ficha</dt>
+    <dd>Unidad atómica del cerebro: archivo Markdown de una pantalla con front-matter, resumen, datos duros,
+    punteros, preguntas frecuentes y enlaces.</dd>
+
+    <dt>Front-matter</dt>
+    <dd>Bloque de metadatos clave-valor al inicio de un archivo Markdown, delimitado por tres guiones.
+    Permite filtrar, validar y detectar obsolescencia sin leer el contenido.</dd>
+
+    <dt>Herencia de permisos</dt>
+    <dd>Principio por el cual el cerebro no implementa control de acceso propio: como contiene punteros y no
+    copias, los permisos del repositorio original siguen gobernando.</dd>
+
+    <dt>Índice maestro</dt>
+    <dd>Archivo raíz (<code>00-INDICE.md</code>) que el agente carga siempre. Contiene identidad, reglas de
+    operación, mapa de dominios, enrutamiento, alias, excepciones y dueños.</dd>
+
+    <dt>Nivel (0 a 3)</dt>
+    <dd>Escalón de la carga progresiva: 0 índice maestro, 1 índice de dominio, 2 ficha, 3 fuente viva
+    (código, contrato, base de datos).</dd>
+
+    <dt>Pendientes</dt>
+    <dd>Archivo donde se registran las preguntas que el cerebro no supo responder. Es el mejor backlog de
+    documentación posible porque proviene de necesidades reales.</dd>
+
+    <dt>Precisión</dt>
+    <dd>Proporción de respuestas correctas sobre el set de evaluación. Cuando baja, el problema es de
+    mantenimiento: hay fichas desactualizadas o ambiguas.</dd>
+
+    <dt>Presupuesto de contexto</dt>
+    <dd>Cantidad de información que tiene sentido cargar en una consulta. Se administra deliberadamente,
+    priorizando la proporción de contenido relevante sobre el volumen total.</dd>
+
+    <dt>Profundidad media</dt>
+    <dd>Promedio de niveles recorridos por consulta. Si sube, los índices están mal escritos.</dd>
+
+    <dt>Puntero</dt>
+    <dd>Referencia a la ubicación de un documento en su repositorio original. El cerebro apunta, nunca
+    copia: una copia es un documento que se desincroniza.</dd>
+
+    <dt>Regla de descenso</dt>
+    <dd>Criterio explícito, escrito en el índice maestro, sobre cuándo bajar un nivel y cuándo detenerse y
+    responder.</dd>
+
+    <dt>Segundo cerebro corporativo</dt>
+    <dd>Capa de conocimiento estructurado en texto plano que no almacena la información del área sino las
+    instrucciones para llegar a ella, diseñada para ser cargada progresivamente por un agente de IA.</dd>
+
+    <dt>Set de evaluación</dt>
+    <dd>Conjunto de 25 a 30 preguntas reales con respuesta verificada, ejecutado periódicamente para saber
+    si el cerebro mejoró o empeoró.</dd>
+
+    <dt>Vigencia de revisión</dt>
+    <dd>Campo del front-matter con la fecha de la última verificación de una ficha. Habilita la detección
+    automática de contenido podrido.</dd>
+  </dl>
+</section>
+
+<!-- =================== COLOFÓN =================== -->
+<section class="chapter">
+  <div class="chapnum">Colofón</div>
+  <h2>Sobre esta colección</h2>
+  <p>Este es el octavo volumen de una biblioteca sobre agentes de IA escrita e ilustrada íntegramente
+  desde cero: texto original, diagramas propios y una portada con un animal elegido como metáfora del tema
+  del libro.</p>
+
+  <table>
+    <tr><th style="width:8%">#</th><th style="width:40%">Título</th><th style="width:18%">Animal</th><th>Ángulo</th></tr>
+    <tr><td>I</td><td>De la idea a producción</td><td>Pulpo</td><td>Inteligencia distribuida</td></tr>
+    <tr><td>II</td><td>Construyendo multiagente</td><td>Hormiga</td><td>Enjambre emergente</td></tr>
+    <tr><td>III</td><td>Guía ilustrada</td><td>Cuervo</td><td>Uso de herramientas</td></tr>
+    <tr><td>IV</td><td>Patrones arquitectónicos</td><td>Abeja</td><td>Patrones probados</td></tr>
+    <tr><td>V</td><td>Agentes con MCP</td><td>Delfín</td><td>Comunicación y protocolo</td></tr>
+    <tr><td>VI</td><td>En acción</td><td>Zorro</td><td>Acción inteligente</td></tr>
+    <tr><td>VII</td><td>En la práctica</td><td>Castor</td><td>Ingeniería para producción</td></tr>
+    <tr><td><strong>VIII</strong></td><td><strong>El segundo cerebro corporativo</strong></td>
+        <td><strong>Ardilla</strong></td><td><strong>Conocimiento recuperable</strong></td></tr>
+  </table>
+
+  <p style="margin-top:8mm;">Escrito e ilustrado por Claude · Anthropic<br>
+  Edición de autor · Primera edición · 2026</p>
+</section>
+
+</body>
+</html>

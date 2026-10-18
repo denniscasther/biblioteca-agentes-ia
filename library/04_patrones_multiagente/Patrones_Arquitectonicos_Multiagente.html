@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Patrones Arquitectónicos para Sistemas Multiagente</title>
+<style>
+  :root{
+    --ink:#2b2a26; --ink-soft:#54514a;
+    --paper:#f5f0e2; --paper-deep:#ece3cc;
+    --accent:#c8901f; --accent-2:#7a6a4a; --gold:#d4a017;
+    --rule:#d2c39a; --code-bg:#26241d; --code-fg:#ece3cc;
+  }
+  @page{ size:15.6cm 23.4cm; margin:20mm 18mm 18mm 18mm;
+    @bottom-center{ content:counter(page); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:8.5pt; color:#9c9173; }
+    @top-center{ content:string(chaptertitle); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:7.5pt; letter-spacing:.12em; text-transform:uppercase; color:#b3a47e; } }
+  @page cover{ margin:0; @bottom-center{content:none;} @top-center{content:none;} }
+  @page plain{ @top-center{content:none;} }
+
+  html{ font-family:"Bitstream Charter","GFS Baskerville",serif; color:var(--ink); }
+  body{ margin:0; line-height:1.5; font-size:10.5pt; text-align:justify; hyphens:auto; }
+  h1,h2,h3,.display{ font-family:"GFS Baskerville","Bitstream Charter",serif; }
+
+  .cover{ page:cover; position:relative; height:23.4cm; width:15.6cm;
+    background:radial-gradient(125% 80% at 50% 8%, #423c2c 0%, #2f2b1f 55%, #1b1812 100%), #221f17;
+    color:var(--paper); overflow:hidden; display:flex; flex-direction:column; align-items:center; page-break-after:always; }
+  .cover .frame{ position:absolute; inset:8mm; border:1.2pt solid rgba(212,160,23,.45); }
+  .cover .frame::after{ content:""; position:absolute; inset:2.2mm; border:.5pt solid rgba(212,160,23,.3); }
+  .cover .hexbg{ position:absolute; inset:0; opacity:.10; z-index:0; }
+  .cover .kicker{ margin-top:14mm; font-family:"Carlito",sans-serif; font-size:8pt; letter-spacing:.32em; text-transform:uppercase; color:#e6c478; z-index:2; }
+  .cover h1{ z-index:2; text-align:center; font-size:23pt; line-height:1.08; margin:5mm 12mm 0; font-weight:700; }
+  .cover .sub{ z-index:2; text-align:center; font-family:"Carlito",sans-serif; font-size:9.5pt; color:#e4dcc4; margin:3.5mm 16mm 0; letter-spacing:.03em; }
+  .bee{ z-index:2; margin-top:5mm; width:84mm; height:84mm; }
+  .cover .author{ z-index:2; margin-top:auto; margin-bottom:16mm; text-align:center; font-family:"Carlito",sans-serif; }
+  .cover .author .by{ font-size:8pt; letter-spacing:.3em; text-transform:uppercase; color:#e6c478; }
+  .cover .author .name{ font-family:"GFS Baskerville",serif; font-size:13pt; margin-top:2mm; color:var(--paper); }
+
+  .titlepage{ page:plain; page-break-after:always; text-align:center; padding-top:30mm; }
+  .titlepage h1{ font-size:21pt; line-height:1.1; margin:0 6mm; }
+  .titlepage .sub{ font-family:"Carlito",sans-serif; color:var(--ink-soft); margin-top:5mm; font-size:10pt; }
+  .titlepage .rule{ width:42mm; height:1.4pt; background:var(--accent); margin:9mm auto; }
+  .titlepage .meta{ font-family:"Carlito",sans-serif; font-size:9pt; color:var(--ink-soft); }
+
+  .frontnote{ page:plain; page-break-after:always; }
+  .frontnote h2{ font-size:15pt; color:var(--accent); margin-bottom:4mm; }
+
+  .partpage{ page-break-before:always; page:plain; text-align:center; padding-top:42mm; }
+  .partpage .pk{ font-family:"Carlito",sans-serif; font-size:9pt; letter-spacing:.34em; text-transform:uppercase; color:var(--accent); }
+  .partpage h1{ font-size:24pt; margin:4mm 10mm 0; }
+  .partpage .pd{ font-family:"Carlito",sans-serif; color:var(--ink-soft); font-size:9.5pt; margin-top:5mm; }
+  .partpage svg{ margin-top:10mm; }
+
+  .toc{ page-break-after:always; }
+  .toc h2{ font-size:18pt; border-bottom:1.5pt solid var(--rule); padding-bottom:3mm; }
+  .toc .part{ font-family:"Carlito",sans-serif; font-size:8pt; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:5mm 0 1mm; }
+  .toc ol{ list-style:none; padding:0; margin:0; }
+  .toc li{ display:flex; align-items:baseline; margin:2.2mm 0; gap:3mm; }
+  .toc li .n{ font-family:"Carlito",sans-serif; color:var(--accent); font-weight:700; width:8mm; flex:none; }
+  .toc li .t{ font-weight:600; } .toc li .d{ font-family:"Carlito",sans-serif; font-size:7.5pt; color:var(--ink-soft); }
+
+  .chapter{ page-break-before:always; }
+  .chapter .chead{ margin-bottom:6mm; border-bottom:1.5pt solid var(--rule); padding-bottom:4mm; }
+  .chapter .cnum{ font-family:"Carlito",sans-serif; font-size:9pt; letter-spacing:.3em; text-transform:uppercase; color:var(--accent); }
+  .chapter h2{ string-set:chaptertitle content(); font-size:19pt; line-height:1.1; margin:2mm 0 0; }
+  .epigraph{ font-style:italic; color:var(--ink-soft); margin:0 0 5mm; padding-left:5mm; border-left:2pt solid var(--accent-2); font-size:9.8pt; }
+  .epigraph .who{ display:block; font-style:normal; font-family:"Carlito",sans-serif; font-size:8pt; margin-top:1.5mm; color:#9c9173; }
+  h3{ font-size:12.5pt; color:var(--ink); margin:6mm 0 2mm; }
+  p{ margin:0 0 3mm; } .lead{ font-size:11.3pt; color:var(--ink-soft); }
+  strong{ color:var(--ink); } em{ color:var(--ink-soft); }
+
+  .box{ break-inside:avoid; background:var(--paper-deep); border-left:3pt solid var(--accent); padding:4mm 5mm; margin:5mm 0; border-radius:0 2pt 2pt 0; }
+  .box .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:1.5mm; }
+  .box.note{ border-left-color:var(--accent-2); } .box.note .lab{ color:var(--accent-2); }
+  .box p:last-child{ margin-bottom:0; }
+  .analogy{ break-inside:avoid; background:#fbf7ec; border:.6pt solid var(--rule); padding:4mm 5mm; margin:5mm 0; border-radius:3pt; }
+  .analogy .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent-2); display:block; margin-bottom:1.5mm; }
+
+  /* ficha de patrón */
+  .pcard{ break-inside:avoid; border:.7pt solid var(--rule); border-top:3pt solid var(--accent); border-radius:3pt; padding:3.5mm 4.5mm; margin:4mm 0; background:#fcfaf3; }
+  .pcard h4{ font-family:"GFS Baskerville",serif; font-size:11.5pt; margin:0 0 1.5mm; color:var(--ink); }
+  .pcard .row{ font-size:9.6pt; margin:1mm 0; }
+  .pcard .k{ font-family:"Carlito",sans-serif; font-size:7.3pt; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-right:2mm; }
+
+  pre{ break-inside:avoid; background:var(--code-bg); color:var(--code-fg); font-family:"DejaVu Sans Mono",monospace; font-size:7.6pt; line-height:1.45; padding:4mm 4.5mm; border-radius:4pt; margin:4mm 0; white-space:pre-wrap; text-align:left; }
+  pre .c{ color:#9c947a; } pre .k{ color:#e0b06d; } pre .s{ color:#bcc98e; } pre .f{ color:#86b6c0; }
+  code.inline{ font-family:"DejaVu Sans Mono",monospace; font-size:8.3pt; background:var(--paper-deep); padding:.3mm 1.2mm; border-radius:2pt; }
+
+  figure{ break-inside:avoid; margin:5mm 0; text-align:center; }
+  figure svg{ width:100%; height:auto; }
+  figcaption{ font-family:"Carlito",sans-serif; font-size:8pt; color:var(--ink-soft); margin-top:2mm; text-align:center; }
+  .dlabel,.dwords{ font-family:"Carlito","DejaVu Sans",sans-serif; fill:var(--ink); }
+  ul.clean{ margin:3mm 0 4mm; padding-left:6mm; } ul.clean li{ margin:1.5mm 0; }
+  .endmark{ text-align:center; margin-top:7mm; }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PORTADA ===== -->
+<section class="cover">
+  <svg class="hexbg" viewBox="0 0 156 234" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#d4a017" stroke-width="0.8">
+      <!-- panal disperso -->
+      <polygon points="20,20 32,27 32,41 20,48 8,41 8,27"/>
+      <polygon points="44,20 56,27 56,41 44,48 32,41 32,27"/>
+      <polygon points="32,48 44,55 44,69 32,76 20,69 20,55"/>
+      <polygon points="124,40 136,47 136,61 124,68 112,61 112,47"/>
+      <polygon points="148,40 160,47 160,61 148,68 136,61 136,47"/>
+      <polygon points="136,68 148,75 148,89 136,96 124,89 124,75"/>
+      <polygon points="14,196 26,203 26,217 14,224 2,217 2,203"/>
+      <polygon points="38,196 50,203 50,217 38,224 26,217 26,203"/>
+      <polygon points="130,200 142,207 142,221 130,228 118,221 118,207"/>
+    </g>
+  </svg>
+  <div class="frame"></div>
+  <div class="kicker">Patrones de diseño probados · Edición de autor</div>
+  <h1>Patrones Arquitectónicos<br>para Sistemas Multiagente</h1>
+  <div class="sub">Diseñar, coordinar y endurecer agentes de IA en la empresa, patrón a patrón</div>
+
+  <svg class="bee" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- alas -->
+    <g fill="#f5f0e2" fill-opacity=".10" stroke="#f5f0e2" stroke-width="1.2">
+      <ellipse cx="0" cy="0" rx="30" ry="13" transform="translate(70,74) rotate(-38)"/>
+      <ellipse cx="0" cy="0" rx="30" ry="13" transform="translate(130,74) rotate(38)"/>
+      <ellipse cx="0" cy="0" rx="20" ry="9" transform="translate(76,94) rotate(-18)"/>
+      <ellipse cx="0" cy="0" rx="20" ry="9" transform="translate(124,94) rotate(18)"/>
+    </g>
+    <!-- antenas -->
+    <g fill="none" stroke="#f5f0e2" stroke-width="1.6" stroke-linecap="round">
+      <path d="M94 50 C88 40 84 34 78 32"/><circle cx="77" cy="31" r="2.4" fill="#f5f0e2"/>
+      <path d="M106 50 C112 40 116 34 122 32"/><circle cx="123" cy="31" r="2.4" fill="#f5f0e2"/>
+    </g>
+    <!-- cabeza -->
+    <circle cx="100" cy="60" r="12" fill="none" stroke="#f5f0e2" stroke-width="1.7"/>
+    <circle cx="95" cy="58" r="1.8" fill="#f5f0e2"/><circle cx="105" cy="58" r="1.8" fill="#f5f0e2"/>
+    <!-- torax -->
+    <ellipse cx="100" cy="84" rx="16" ry="14" fill="none" stroke="#f5f0e2" stroke-width="1.7"/>
+    <!-- abdomen con franjas -->
+    <ellipse cx="100" cy="130" rx="22" ry="32" fill="#d4a017" fill-opacity=".16" stroke="#f5f0e2" stroke-width="1.7"/>
+    <g fill="#d4a017">
+      <rect x="82" y="106" width="36" height="7" rx="3.5"/>
+      <rect x="78" y="122" width="44" height="8" rx="4"/>
+      <rect x="84" y="140" width="32" height="7" rx="3.5"/>
+    </g>
+    <!-- aguijon -->
+    <path d="M93 158 L100 170 L107 158" fill="none" stroke="#f5f0e2" stroke-width="1.6" stroke-linejoin="round"/>
+  </svg>
+
+  <div class="author">
+    <div class="by">Escrito e ilustrado por</div>
+    <div class="name">Claude</div>
+  </div>
+</section>
+
+<!-- ===== PORTADILLA ===== -->
+<section class="titlepage">
+  <h1>Patrones Arquitectónicos para Sistemas Multiagente</h1>
+  <div class="sub">Patrones de diseño probados para la empresa</div>
+  <div class="rule"></div>
+  <p class="meta">Del LLM al agente, del agente al sistema:<br>un catálogo de patrones para coordinar, explicar, endurecer y escalar.</p>
+  <p class="meta" style="margin-top:14mm;">Escrito e ilustrado por Claude · Anthropic<br>Edición de autor · Primera edición</p>
+</section>
+
+<!-- ===== SOBRE LA PORTADA ===== -->
+<section class="frontnote">
+  <h2>Sobre la portada</h2>
+  <p>El animal de esta portada es una <strong>abeja</strong>, sobre un fondo de panal. La elección no es decorativa: es la tesis del libro hecha imagen.</p>
+  <p>El hexágono del panal es <em>el patrón de diseño probado por excelencia</em> de la naturaleza. Frente al problema de almacenar la máxima miel con la mínima cera, la evolución no inventó una forma nueva cada vez: encontró una <strong>solución reutilizable</strong> —el hexágono— y la repitió millones de veces. Es la definición misma de un patrón de diseño: una respuesta probada a un problema recurrente.</p>
+  <p>Y la colmena es más: tiene roles especializados (reina, obreras, exploradoras), coordinación sin un jefe que microgestione, comunicación mediante la danza, y una resiliencia notable ante fallos. Si la hormiga de otro libro representaba el <em>enjambre emergente</em>, la abeja representa algo distinto y central aquí: la <strong>arquitectura</strong> —construir sistemas robustos componiendo patrones probados, celda a celda—. Eso es exactamente lo que hará en estas páginas: ensamblar su sistema multiagente como quien construye un panal.</p>
+</section>
+
+<!-- ===== PREFACIO ===== -->
+<section class="frontnote">
+  <h2>Prefacio</h2>
+  <p class="lead">Cuando los problemas se repiten, los buenos ingenieros dejan de improvisar y empiezan a coleccionar soluciones probadas. A esas soluciones las llamamos <strong>patrones</strong>. Este libro es un catálogo de patrones para construir sistemas de agentes de IA que funcionen en serio: en la empresa, en producción, bajo carga y bajo escrutinio.</p>
+  <p>La estructura sigue el viaje natural de un sistema agéntico. La <strong>Parte 1</strong> sienta las bases: qué es un agente, cómo elegir y adaptar el modelo que lo impulsa. La <strong>Parte 2</strong> es el corazón: un catálogo de patrones de arquitectura —cómo coordinar varios agentes, cómo hacerlos explicables y conformes a las reglas, cómo hacerlos robustos ante fallos y ataques, cómo integrarlos con humanos y prepararlos para producción—. La <strong>Parte 3</strong> baja a tierra: una hoja de ruta por madurez y un caso de uso —procesar solicitudes de préstamo— que recorremos primero con un agente, luego con varios, y luego con frameworks.</p>
+  <p>Cada patrón se presenta como una ficha breve: el <em>problema</em> que resuelve, la <em>solución</em> y <em>cuándo</em> usarlo. No hace falta memorizarlos todos; basta con saber que existen, para que cuando te topes con el problema, reconozcas la celda de panal que encaja.</p>
+  <div class="box note"><span class="lab">Cómo leer este libro</span><p>Lee las Partes 1 y 3 de corrido. La Parte 2 úsala como un recetario: hojéala una vez para conocer el repertorio y vuelve a la ficha que necesites cuando enfrentes el problema. Cada capítulo trae diagramas, analogías y una caja "Para recordar".</p></div>
+</section>
+
+<!-- ===== ÍNDICE ===== -->
+<section class="toc">
+  <h2>Contenido</h2>
+  <div class="part">Parte 1 · Fundamentos y conceptos núcleo</div>
+  <ol>
+    <li><span class="n">1</span><span><span class="t">GenAI en la empresa: panorama y madurez</span><br><span class="d">Potencial, aplicaciones, anatomía del agente, modelo de madurez, el stack agéntico</span></span></li>
+    <li><span class="n">2</span><span><span class="t">LLMs listos para agentes</span><br><span class="d">Selección, despliegue (nube/propio/edge), rendimiento, seguridad y AgentOps</span></span></li>
+    <li><span class="n">3</span><span><span class="t">Del LLM genérico al agente especializado</span><br><span class="d">RAG, fine-tuning (PEFT a completo), aprendizaje en contexto y grounding</span></span></li>
+  </ol>
+  <div class="part">Parte 2 · Arquitectura y patrones de diseño</div>
+  <ol start="4">
+    <li><span class="n">4</span><span><span class="t">Arquitectura de un sistema agéntico</span><br><span class="d">Agente vs workflow vs LLM, anatomía, almacenes de datos, modelos de interacción, A2A</span></span></li>
+    <li><span class="n">5</span><span><span class="t">Patrones de coordinación multiagente</span><br><span class="d">Router, Supervisor, Swarm, Pizarra, Contract-Net, consenso, negociación…</span></span></li>
+    <li><span class="n">6</span><span><span class="t">Patrones de explicabilidad y cumplimiento</span><br><span class="d">Auditoría de fidelidad, anclaje de instrucciones, memoria epistémica</span></span></li>
+    <li><span class="n">7</span><span><span class="t">Patrones de robustez y tolerancia a fallos</span><br><span class="d">Watchdog, reintentos, auto-sanación, checkpoints, voto mayoritario, defensa</span></span></li>
+    <li><span class="n">8</span><span><span class="t">Patrones de interacción humano-agente</span><br><span class="d">Confianza, control, escalado y supervisión humana</span></span></li>
+    <li><span class="n">9</span><span><span class="t">Patrones a nivel de agente</span><br><span class="d">El agente individual bien construido</span></span></li>
+    <li><span class="n">10</span><span><span class="t">Patrones a nivel de sistema para producción</span><br><span class="d">Observabilidad, despliegue, gobernanza operativa</span></span></li>
+    <li><span class="n">11</span><span><span class="t">Adaptación avanzada: agentes que aprenden</span><br><span class="d">Aprender de la experiencia y del feedback</span></span></li>
+  </ol>
+  <div class="part">Parte 3 · Ejecución: estrategia, casos y futuro</div>
+  <ol start="12">
+    <li><span class="n">12</span><span><span class="t">Hoja de ruta práctica por madurez</span><br><span class="d">Qué patrón adoptar en cada nivel</span></span></li>
+    <li><span class="n">13</span><span><span class="t">Caso: un agente único para préstamos</span></span></li>
+    <li><span class="n">14</span><span><span class="t">Caso: un sistema multiagente para préstamos</span></span></li>
+    <li><span class="n">15</span><span><span class="t">El mismo caso con frameworks</span></span></li>
+    <li><span class="n">16</span><span><span class="t">Conclusión: traza tu camino agéntico</span></span></li>
+  </ol>
+</section>
+
+<!-- ===== PARTE 1 ===== -->
+<section class="partpage">
+  <div class="pk">Parte uno</div>
+  <h1>Fundamentos y conceptos núcleo</h1>
+  <div class="pd">Antes de los patrones, las piezas: el agente, el modelo y cómo adaptarlo.</div>
+  <svg width="60" height="54" viewBox="0 0 60 54" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#c8901f" stroke-width="1.4"><polygon points="20,4 32,11 32,25 20,32 8,25 8,11"/><polygon points="44,4 56,11 56,25 44,32 32,25 32,11"/><polygon points="32,32 44,39 44,53 32,60 20,53 20,39"/></g></svg>
+</section>
+
+<!-- CAP 1 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo uno</div><h2>GenAI en la empresa: panorama y madurez</h2></div>
+  <p class="epigraph">Toda tecnología transformadora empieza siendo un juguete y termina siendo infraestructura.<span class="who">— Sobre el camino de la IA generativa en las organizaciones</span></p>
+  <p class="lead">La IA generativa dejó de ser una curiosidad para volverse una palanca de negocio. Pero entre "tenemos un chatbot" y "tenemos agentes que ejecutan procesos" hay un camino de madurez que conviene mapear antes de caminarlo.</p>
+
+  <h3>Dónde aporta valor</h3>
+  <p>Las aplicaciones se dividen en dos familias. Las <strong>horizontales</strong> cruzan toda la empresa (redactar, resumir, atender consultas, asistir a programadores). Las <strong>verticales</strong> son específicas de un dominio (analizar contratos legales, evaluar riesgo crediticio, monitorear cumplimiento). Las primeras dan victorias rápidas; las segundas, ventaja competitiva.</p>
+
+  <h3>La anatomía de un sistema agéntico</h3>
+  <p>Un sistema agéntico se compone de <strong>agentes</strong> (con su modelo, sus instrucciones y sus herramientas), <strong>almacenes de datos</strong> y un <strong>contexto de entorno</strong> del que perciben y sobre el que actúan. Sus rasgos arquitectónicos clave: autonomía, capacidad de usar herramientas, memoria y comunicación con otros agentes.</p>
+
+  <h3>El modelo de madurez agéntica</h3>
+  <p>Una empresa no salta de cero a agentes autónomos. Recorre niveles: de asistentes que solo responden, a copilotos que sugieren, a agentes que ejecutan tareas con supervisión, hasta sistemas multiagente que coordinan procesos completos. Ubicarte en este mapa evita dos errores: quedarte corto (un chatbot donde necesitas un agente) o pasarte (autonomía sin los controles para sostenerla).</p>
+
+  <figure>
+    <svg viewBox="0 0 460 120" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c8901f"/></marker></defs>
+      <g font-size="8" text-anchor="middle" class="dwords">
+        <rect x="6" y="64" width="78" height="26" rx="4" fill="#fff" stroke="#d2c39a"/><text x="45" y="80">1. Asistente</text>
+        <rect x="100" y="54" width="78" height="26" rx="4" fill="#fff" stroke="#d2c39a"/><text x="139" y="70">2. Copiloto</text>
+        <rect x="194" y="44" width="78" height="26" rx="4" fill="#fff" stroke="#c8901f" stroke-width="1.3"/><text x="233" y="60">3. Agente</text>
+        <rect x="288" y="34" width="78" height="26" rx="4" fill="#c8901f"/><text x="327" y="50" fill="#fff">4. Multiagente</text>
+        <rect x="382" y="24" width="74" height="26" rx="4" fill="#2b2a26"/><text x="419" y="40" fill="#f5f0e2">5–6. Auto-correctivo</text>
+      </g>
+      <path d="M30 96 C160 96 320 60 450 22" fill="none" stroke="#c8901f" stroke-width="1.4" stroke-dasharray="3 3" marker-end="url(#m1)"/>
+      <text x="40" y="112" font-size="7.5" fill="#9c9173" class="dlabel">más autonomía →  más valor, y más controles necesarios</text>
+    </svg>
+    <figcaption>Figura 1.1 — El modelo de madurez: cada nivel suma autonomía y exige más gobernanza.</figcaption>
+  </figure>
+
+  <h3>El nuevo "stack" agéntico y sus retos</h3>
+  <p>La pila moderna añade piezas nuevas: un <strong>servidor de agente</strong> que aloja la lógica, y servidores que exponen herramientas mediante estándares como <strong>MCP</strong>, permitiendo que los agentes pasen de usar herramientas a <em>colaborar</em>. Pero llevar esto a producción choca con retos reales: alucinaciones, costo, latencia, seguridad, y la dificultad de evaluar algo que no es determinista. El resto del libro es, en buena medida, un arsenal de patrones contra esos retos.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Mapea tu madurez antes de construir. Las apps horizontales dan velocidad; las verticales, ventaja. Un sistema agéntico = agentes + datos + entorno, con autonomía, herramientas, memoria y comunicación. Subir de nivel es subir autonomía <em>y</em> controles a la par.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 2 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo dos</div><h2>LLMs listos para agentes</h2></div>
+  <p class="epigraph">El motor no es el auto, pero ningún auto es mejor que su motor.<span class="who">— Sobre elegir el modelo correcto</span></p>
+  <p class="lead">El modelo de lenguaje es el motor del agente. Elegirlo, desplegarlo y operarlo bien decide gran parte del costo, la velocidad y la fiabilidad de todo el sistema.</p>
+
+  <h3>Cómo elegir el modelo</h3>
+  <p>No siempre gana el más grande. Los criterios que importan para agentes:</p>
+  <ul class="clean">
+    <li><strong>Ventana de contexto:</strong> ¿cuánta información cabe de una vez? Crítica para agentes con mucha memoria o herramientas.</li>
+    <li><strong>Tamaño y especialización:</strong> un modelo pequeño afinado a tu dominio puede superar a uno gigante genérico, y cuesta mucho menos.</li>
+    <li><strong>Soporte nativo de herramientas:</strong> ¿sabe pedir funciones de forma fiable? Es la habilidad más importante para un agente.</li>
+    <li><strong>Robustez y seguridad:</strong> ¿resiste entradas raras o maliciosas sin descarrilar?</li>
+    <li><strong>Adaptabilidad:</strong> ¿se puede afinar si lo necesitas más adelante?</li>
+  </ul>
+
+  <h3>Dónde desplegarlo</h3>
+  <p>Tres arquitecturas, tres compromisos: <strong>APIs en la nube</strong> (rápido de empezar, pagas por uso, dependes del proveedor); <strong>modelos autoalojados</strong> (control y privacidad totales, pero tú operas la infraestructura); y <strong>despliegue en el borde</strong> (baja latencia y datos que no salen del dispositivo, a costa de modelos más pequeños). La elección suele decidirse por privacidad y costo más que por capacidad pura.</p>
+
+  <h3>Optimizar el rendimiento</h3>
+  <p>En producción, tres palancas: reducir <strong>latencia</strong> (que responda rápido), maximizar <strong>throughput</strong> (que atienda a muchos) y bajar <strong>costo</strong> (usar el modelo pequeño cuando alcance, cachear, recortar contexto). Y un punto propio de agentes: optimizar la <em>interacción con herramientas</em>, que suele ser el cuello de botella real.</p>
+
+  <div class="box note"><span class="lab">AgentOps</span><p>Operar LLMs en sistemas agénticos es una disciplina propia —el <strong>AgentOps</strong>—: versionar prompts y modelos, vigilar costo y latencia en vivo, detectar degradación y poder revertir un cambio. Sin esto, cada despliegue es una apuesta.</p></div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Elige por contexto, soporte de herramientas y costo, no por tamaño. Decide el despliegue por privacidad y presupuesto. Y trata la operación del modelo como AgentOps: medible, versionado y reversible.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 3 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo tres</div><h2>Del LLM genérico al agente especializado</h2></div>
+  <p class="epigraph">Un genio que no conoce tu negocio sigue siendo un extraño. Hay que enseñarle tu mundo.<span class="who">— Sobre especializar un modelo</span></p>
+  <p class="lead">Un modelo genérico sabe de todo y de nada en particular. Convertirlo en un agente útil para <em>tu</em> empresa es un espectro de técnicas, de la más ligera a la más profunda.</p>
+
+  <h3>Enriquecer con RAG (lo primero que debes probar)</h3>
+  <p>La <strong>generación aumentada por recuperación</strong> no toca el modelo: le da acceso a tu conocimiento en el momento justo. Ante una consulta, recupera de tus documentos los fragmentos relevantes y se los pone delante. Es como darle a un asistente brillante acceso a tu intranet: de pronto responde con <em>tus</em> políticas, <em>tus</em> precios, <em>tus</em> datos. Tres ejemplos típicos: un agente de soporte que cita tu base de conocimiento, un analista financiero que consulta informes recientes, un agente de cumplimiento que verifica transacciones contra la normativa vigente.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 80" xmlns="http://www.w3.org/2000/svg">
+      <g font-size="8" text-anchor="middle" class="dwords">
+        <rect x="8" y="28" width="86" height="26" rx="4" fill="#fff" stroke="#d2c39a"/><text x="51" y="40">RAG</text><text x="51" y="49" font-size="6.8" fill="#7a6a4a">+ tu conocimiento</text>
+        <rect x="116" y="28" width="120" height="26" rx="4" fill="#fff" stroke="#c8901f" stroke-width="1.2"/><text x="176" y="40">Ajuste en contexto</text><text x="176" y="49" font-size="6.8" fill="#7a6a4a">ejemplos en el prompt</text>
+        <rect x="258" y="28" width="100" height="26" rx="4" fill="#c8901f"/><text x="308" y="40" fill="#fff">Fine-tuning</text><text x="308" y="49" fill="#f5f0e2" font-size="6.8">PEFT → completo</text>
+        <rect x="380" y="28" width="74" height="26" rx="4" fill="#2b2a26"/><text x="417" y="44" fill="#f5f0e2">+ esfuerzo</text>
+      </g>
+      <text x="40" y="20" font-size="7.5" fill="#9c9173" class="dlabel">ligero, rápido, reversible</text>
+      <text x="420" y="20" font-size="7.5" fill="#9c9173" class="dlabel" text-anchor="end">profundo, potente, costoso</text>
+    </svg>
+    <figcaption>Figura 3.1 — El espectro de adaptación: empieza por la izquierda, avanza solo si hace falta.</figcaption>
+  </figure>
+
+  <h3>Aprendizaje en contexto</h3>
+  <p>Aún más ligero que RAG: incluir en el prompt unos pocos <strong>ejemplos</strong> de la tarea bien hecha. El modelo imita el patrón sin entrenarse. Útil para dar forma a las respuestas (por ejemplo, un agente que analiza opiniones de productos siguiendo un formato fijo).</p>
+
+  <h3>Fine-tuning: cuando lo anterior no basta</h3>
+  <p>Reentrenar el modelo con tus datos. Va de lo eficiente (<strong>PEFT</strong>, que ajusta solo una fracción de los pesos, barato y rápido) a lo <strong>completo</strong> (más potente y caro). Reserva el fine-tuning para cuando tengas muchos datos de calidad y un problema estable; es un compromiso, no un experimento.</p>
+
+  <h3>Anclar la salida en la realidad (grounding)</h3>
+  <p>Especializar no sirve si el agente inventa. El <strong>grounding</strong> ata cada afirmación a una fuente verificable —el documento del que salió, el dato real—, para que el agente pueda mostrar <em>de dónde</em> sacó cada cosa. Es el cimiento de la confianza en entornos serios.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Adapta de lo ligero a lo profundo: ejemplos en contexto → RAG → fine-tuning. Empieza siempre por RAG (barato y sin tocar el modelo) y ancla las respuestas en fuentes verificables. Entrena solo cuando el resto se quede corto.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- ===== PARTE 2 ===== -->
+<section class="partpage">
+  <div class="pk">Parte dos</div>
+  <h1>Arquitectura y patrones de diseño</h1>
+  <div class="pd">El corazón del libro: un catálogo de patrones probados para construir, coordinar y endurecer sistemas de agentes.</div>
+  <svg width="86" height="54" viewBox="0 0 86 54" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#c8901f" stroke-width="1.4"><polygon points="14,4 26,11 26,25 14,32 2,25 2,11"/><polygon points="38,4 50,11 50,25 38,32 26,25 26,11"/><polygon points="62,4 74,11 74,25 62,32 50,25 50,11"/><polygon points="26,32 38,39 38,53 26,60 14,53 14,39"/><polygon points="50,32 62,39 62,53 50,60 38,53 38,39"/></g></svg>
+</section>
+
+<!-- CAP 4 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cuatro</div><h2>Arquitectura de un sistema agéntico</h2></div>
+  <p class="epigraph">Define bien tus piezas y la mitad del diseño está hecho.<span class="who">— Sobre los componentes y sus relaciones</span></p>
+  <p class="lead">Antes del catálogo de patrones, fijemos el vocabulario: qué es exactamente un agente, de qué está hecho y cómo se relaciona con otros.</p>
+
+  <h3>Tres cosas que se confunden</h3>
+  <p>Un <strong>LLM</strong> completa texto. Un <strong>workflow automatizado</strong> ejecuta pasos fijos que tú definiste. Un <strong>agente</strong> decide por sí mismo qué paso dar para lograr un objetivo. La frontera está en quién toma las decisiones: en el workflow, tú; en el agente, el modelo dentro de un bucle.</p>
+
+  <h3>La anatomía del agente</h3>
+  <p>Un agente tiene un <strong>modelo</strong> (razona), <strong>instrucciones</strong> (su rol y reglas), <strong>herramientas</strong> (sus manos), <strong>memoria</strong> (contexto y largo plazo) y un <strong>bucle de control</strong> (orquesta los pasos). Dos casos lo ilustran: un agente de planificación de viajes (busca, compara, reserva) y un sistema de procesamiento de préstamos (recibe la solicitud, verifica datos, evalúa riesgo, decide), que recorreremos a fondo en la Parte 3.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
+      <rect x="170" y="48" width="120" height="40" rx="6" fill="#2b2a26"/><text x="230" y="66" text-anchor="middle" fill="#f5f0e2" font-size="9.5" class="dlabel">Agente</text><text x="230" y="80" text-anchor="middle" fill="#bcc98e" font-size="7" class="dlabel">modelo + bucle</text>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="20" y="14" width="110" height="28" rx="5" fill="#fff" stroke="#c8901f" stroke-width="1.2"/><text x="75" y="31">Instrucciones</text>
+        <rect x="330" y="14" width="110" height="28" rx="5" fill="#fff" stroke="#c8901f" stroke-width="1.2"/><text x="385" y="31">Herramientas</text>
+        <rect x="20" y="94" width="110" height="28" rx="5" fill="#fff" stroke="#7a6a4a" stroke-width="1.2"/><text x="75" y="111">Memoria</text>
+        <rect x="330" y="94" width="110" height="28" rx="5" fill="#fff" stroke="#7a6a4a" stroke-width="1.2"/><text x="385" y="108">Almacenes de</text><text x="385" y="118" font-size="7" fill="#7a6a4a">datos / entorno</text>
+      </g>
+      <g stroke="#b3a47e" stroke-width="1.2" fill="none"><path d="M130 30 L172 52"/><path d="M330 30 L288 52"/><path d="M130 106 L172 82"/><path d="M330 106 L288 82"/></g>
+    </svg>
+    <figcaption>Figura 4.1 — Anatomía de un agente y su entorno.</figcaption>
+  </figure>
+
+  <h3>Modelos de interacción y A2A</h3>
+  <p>Los agentes se relacionan de varias formas: con el usuario, con herramientas, y —clave para este libro— <strong>entre ellos</strong>. La comunicación agente-a-agente (<strong>A2A</strong>) es lo que convierte una colección de agentes en un sistema. Cómo estructurar esa comunicación es, precisamente, lo que resuelven los patrones de los siguientes capítulos.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>LLM (completa) ≠ workflow (pasos fijos) ≠ agente (decide). Un agente es modelo + instrucciones + herramientas + memoria + bucle, inmerso en datos y entorno. Y A2A —que los agentes se hablen— es lo que vuelve un sistema a un montón de agentes.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 5 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cinco</div><h2>Patrones de coordinación multiagente</h2></div>
+  <p class="epigraph">Coordinar no es mandar a todos: es decidir quién decide.<span class="who">— El problema central del trabajo en equipo</span></p>
+  <p class="lead">Aquí empieza el catálogo. Cuando varios agentes deben colaborar, surge la pregunta de <em>cómo</em> se reparten el trabajo y resuelven sus diferencias. Estos son los patrones probados, con su problema, su solución y cuándo usarlos.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 120" xmlns="http://www.w3.org/2000/svg">
+      <g text-anchor="middle" font-size="8" class="dwords">
+        <text x="76" y="14" fill="#c8901f">Supervisor</text>
+        <circle cx="76" cy="34" r="11" fill="#2b2a26"/><circle cx="48" cy="72" r="8" fill="#fff" stroke="#7a6a4a"/><circle cx="76" cy="72" r="8" fill="#fff" stroke="#7a6a4a"/><circle cx="104" cy="72" r="8" fill="#fff" stroke="#7a6a4a"/>
+        <g stroke="#b3a47e"><line x1="76" y1="45" x2="48" y2="64"/><line x1="76" y1="45" x2="76" y2="64"/><line x1="76" y1="45" x2="104" y2="64"/></g>
+        <text x="76" y="96" font-size="7" fill="#7a6a4a">centralizado</text>
+
+        <text x="230" y="14" fill="#c8901f">Swarm</text>
+        <circle cx="205" cy="40" r="8" fill="#fff" stroke="#7a6a4a"/><circle cx="255" cy="40" r="8" fill="#fff" stroke="#7a6a4a"/><circle cx="205" cy="78" r="8" fill="#fff" stroke="#7a6a4a"/><circle cx="255" cy="78" r="8" fill="#fff" stroke="#7a6a4a"/>
+        <g stroke="#b3a47e"><line x1="205" y1="40" x2="255" y2="40"/><line x1="205" y1="78" x2="255" y2="78"/><line x1="205" y1="40" x2="255" y2="78"/><line x1="255" y1="40" x2="205" y2="78"/></g>
+        <text x="230" y="96" font-size="7" fill="#7a6a4a">descentralizado</text>
+
+        <text x="384" y="14" fill="#c8901f">Pizarra</text>
+        <rect x="354" y="30" width="60" height="22" rx="3" fill="#fff" stroke="#c8901f" stroke-width="1.2"/><text x="384" y="44" font-size="7">conocimiento</text>
+        <circle cx="356" cy="80" r="8" fill="#fff" stroke="#7a6a4a"/><circle cx="384" cy="84" r="8" fill="#fff" stroke="#7a6a4a"/><circle cx="412" cy="80" r="8" fill="#fff" stroke="#7a6a4a"/>
+        <g stroke="#b3a47e"><line x1="360" y1="72" x2="370" y2="52"/><line x1="384" y1="76" x2="384" y2="52"/><line x1="408" y1="72" x2="398" y2="52"/></g>
+        <text x="384" y="100" font-size="7" fill="#7a6a4a">memoria común</text>
+      </g>
+    </svg>
+    <figcaption>Figura 5.1 — Tres formas de organizar la colaboración: jefe central, pares libres, o pizarra compartida.</figcaption>
+  </figure>
+
+  <div class="pcard"><h4>Agent Router (enrutamiento por intención)</h4>
+    <div class="row"><span class="k">Problema</span>Una entrada puede necesitar a distintos especialistas y no sabes a cuál enviarla.</div>
+    <div class="row"><span class="k">Solución</span>Un agente "recepcionista" clasifica la intención y deriva al agente adecuado.</div>
+    <div class="row"><span class="k">Cuándo</span>Tienes varios agentes especializados y consultas variadas (p. ej., enrutar una solicitud de cumplimiento).</div>
+  </div>
+  <div class="pcard"><h4>Supervisor (orquestación centralizada)</h4>
+    <div class="row"><span class="k">Problema</span>Necesitas control y trazabilidad sobre un proceso de varios pasos.</div>
+    <div class="row"><span class="k">Solución</span>Un supervisor reparte sub-tareas a trabajadores y reúne los resultados.</div>
+    <div class="row"><span class="k">Cuándo</span>Procesos claros y auditables (p. ej., procesar un préstamo de forma centralizada).</div>
+  </div>
+  <div class="pcard"><h4>Swarm (coordinación descentralizada emergente)</h4>
+    <div class="row"><span class="k">Problema</span>Un control central es un cuello de botella o un punto único de fallo.</div>
+    <div class="row"><span class="k">Solución</span>Agentes con reglas locales que coordinan sin jefe; el orden emerge.</div>
+    <div class="row"><span class="k">Cuándo</span>Exploración masiva o tareas paralelas sin orden estricto (p. ej., creación de contenido distribuida).</div>
+  </div>
+  <div class="pcard"><h4>Pizarra (Blackboard) — centro de conocimiento</h4>
+    <div class="row"><span class="k">Problema</span>Varios especialistas deben aportar a un problema común sin pisarse.</div>
+    <div class="row"><span class="k">Solución</span>Una "pizarra" compartida donde cada agente lee y escribe su aporte.</div>
+    <div class="row"><span class="k">Cuándo</span>Problemas que requieren múltiples expertises (p. ej., diagnóstico médico colaborativo).</div>
+  </div>
+  <div class="pcard"><h4>Contract-Net (mercado de contratos)</h4>
+    <div class="row"><span class="k">Problema</span>¿Qué agente es el mejor para una tarea concreta, aquí y ahora?</div>
+    <div class="row"><span class="k">Solución</span>Un mediador publica la tarea; los agentes "ofertan" y gana el más apto.</div>
+    <div class="row"><span class="k">Cuándo</span>Asignación dinámica según capacidad o carga (p. ej., elegir un proveedor de nube).</div>
+  </div>
+  <div class="pcard"><h4>Otros patrones de coordinación</h4>
+    <div class="row"><span class="k">Árbol de supervisión</span>jerarquía con capacidades acotadas y resiliencia (p. ej., un scraper robusto).</div>
+    <div class="row"><span class="k">Planificación multiagente</span>varios agentes construyen un plan conjunto (informe de mercado).</div>
+    <div class="row"><span class="k">Compartir conocimiento</span>reutilizar soluciones halladas por otros agentes.</div>
+    <div class="row"><span class="k">Enrutamiento de herramientas</span>dirigir cada llamada a la herramienta correcta entre muchas.</div>
+    <div class="row"><span class="k">Consenso</span>los agentes debaten y convergen en una decisión (pronóstico financiero).</div>
+    <div class="row"><span class="k">Negociación</span>acordar el reparto de un recurso compartido.</div>
+    <div class="row"><span class="k">Asignación de recursos</span>repartir recursos escasos (robots en una fábrica).</div>
+    <div class="row"><span class="k">Resolución de conflictos</span>jerárquica, por política, por negociación o teoría de juegos — siempre con detección, auditoría y escalado a humano.</div>
+    <div class="row"><span class="k">Control de formación</span>mantener una estructura coordinada en movimiento (enjambre de drones agrícolas).</div>
+  </div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>La coordinación es un dial entre <em>centralizado</em> (Supervisor: control y trazabilidad) y <em>descentralizado</em> (Swarm: robustez y escala). Entre medias hay piezas para repartir tareas (Router, Contract-Net), compartir (Pizarra) y resolver diferencias (Consenso, Negociación, Conflictos). Elige por el grado de control que el proceso exige.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 6 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo seis</div><h2>Patrones de explicabilidad y cumplimiento</h2></div>
+  <p class="epigraph">En la empresa no basta con acertar: hay que poder demostrar por qué se acertó.<span class="who">— Sobre la diferencia entre listo y confiable</span></p>
+  <p class="lead">En entornos regulados —banca, salud, legal— un agente debe ser <strong>explicable</strong> (poder mostrar su razonamiento) y <strong>conforme</strong> (respetar reglas que no puede saltarse). Estos patrones lo logran.</p>
+
+  <div class="pcard"><h4>Auditoría de fidelidad a las instrucciones</h4>
+    <div class="row"><span class="k">Problema</span>¿Cómo saber si el agente realmente siguió las reglas que le diste?</div>
+    <div class="row"><span class="k">Solución</span>Un mecanismo que verifica, paso a paso, que la salida respeta las instrucciones.</div>
+    <div class="row"><span class="k">Cuándo</span>Reglas que no se pueden violar (p. ej., auditar la aplicación de un descuento en e-commerce).</div>
+  </div>
+  <div class="pcard"><h4>Cadena de pensamiento fractal (embebida)</h4>
+    <div class="row"><span class="k">Problema</span>El razonamiento de tareas complejas se vuelve opaco y difícil de auditar.</div>
+    <div class="row"><span class="k">Solución</span>Estructurar el razonamiento en niveles anidados, cada uno explicable por sí mismo.</div>
+    <div class="row"><span class="k">Cuándo</span>Síntesis o investigación colaborativa donde hay que rastrear cada conclusión.</div>
+  </div>
+  <div class="pcard"><h4>Anclaje persistente de instrucciones</h4>
+    <div class="row"><span class="k">Problema</span>En conversaciones largas, el agente "olvida" restricciones críticas dadas al inicio.</div>
+    <div class="row"><span class="k">Solución</span>Re-inyectar las restricciones clave de forma constante para que nunca se diluyan.</div>
+    <div class="row"><span class="k">Cuándo</span>Restricciones que deben mantenerse siempre (p. ej., reglas en un reporte financiero).</div>
+  </div>
+  <div class="pcard"><h4>Memoria epistémica compartida</h4>
+    <div class="row"><span class="k">Problema</span>Varios agentes deben coincidir en <em>qué se sabe y con qué certeza</em>.</div>
+    <div class="row"><span class="k">Solución</span>Una memoria común que registra hechos, su fuente y su nivel de confianza.</div>
+    <div class="row"><span class="k">Cuándo</span>Decisiones colectivas sobre datos cambiantes (p. ej., una disrupción en la cadena de suministro).</div>
+  </div>
+
+  <h3>Componer patrones para fiabilidad sistémica</h3>
+  <p>Como en el panal, estos patrones rara vez van solos: se <strong>componen</strong>. Auditar la fidelidad + anclar las instrucciones + una memoria epistémica común producen un sistema que no solo decide bien, sino que puede <em>demostrar</em> por qué decidió así. Esa demostrabilidad es, en la empresa, tan valiosa como el acierto.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Explicabilidad = poder mostrar el razonamiento; cumplimiento = no poder saltarse las reglas. Se logran anclando instrucciones, auditando la fidelidad y compartiendo lo que se sabe y con qué certeza. En entornos regulados, "no puedo explicarlo" equivale a "no puedo usarlo".</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 7 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo siete</div><h2>Patrones de robustez y tolerancia a fallos</h2></div>
+  <p class="epigraph">No preguntes si tu agente fallará, sino qué pasará cuando lo haga.<span class="who">— La mentalidad de producción</span></p>
+  <p class="lead">Las herramientas caen, las redes se cortan, los modelos se confunden. Un sistema serio no evita los fallos —imposible—, sino que los <strong>sobrevive</strong>. La robustez es un espectro de niveles, y estos patrones te suben por él.</p>
+
+  <div class="pcard"><h4>Consenso por ejecución paralela</h4>
+    <div class="row"><span class="k">Problema</span>Una sola respuesta del modelo puede ser un error puntual.</div>
+    <div class="row"><span class="k">Solución</span>Ejecutar la tarea varias veces en paralelo y comparar; la coincidencia da confianza.</div>
+    <div class="row"><span class="k">Cuándo</span>Decisiones críticas (p. ej., validar una evaluación de riesgo crediticio).</div>
+  </div>
+  <div class="pcard"><h4>Voto mayoritario entre agentes</h4>
+    <div class="row"><span class="k">Problema</span>Necesitas una decisión final fiable a partir de juicios que pueden discrepar.</div>
+    <div class="row"><span class="k">Solución</span>Varios agentes deciden; gana la mayoría.</div>
+    <div class="row"><span class="k">Cuándo</span>Decisiones de alto impacto (p. ej., aprobar o no un préstamo).</div>
+  </div>
+  <div class="pcard"><h4>Watchdog (supervisor de tiempos)</h4>
+    <div class="row"><span class="k">Problema</span>Un agente se queda colgado y bloquea todo el proceso.</div>
+    <div class="row"><span class="k">Solución</span>Un temporizador vigilante que corta y reintenta si algo tarda demasiado.</div>
+    <div class="row"><span class="k">Cuándo</span>Cualquier paso que pueda colgarse (p. ej., un análisis que no responde).</div>
+  </div>
+  <div class="pcard"><h4>Reintento adaptativo con mutación del prompt</h4>
+    <div class="row"><span class="k">Problema</span>Reintentar igual da el mismo error.</div>
+    <div class="row"><span class="k">Solución</span>Al reintentar, ajustar el prompt o el enfoque según por qué falló.</div>
+    <div class="row"><span class="k">Cuándo</span>Tareas frágiles como extracción de datos de formatos variables.</div>
+  </div>
+  <div class="pcard"><h4>Auto-sanación y checkpoints</h4>
+    <div class="row"><span class="k">Problema</span>Un agente se cae a mitad de un proceso largo y se pierde todo el avance.</div>
+    <div class="row"><span class="k">Solución</span><strong>Auto-sanación</strong>: detectar la caída y reiniciar el agente. <strong>Checkpoints</strong>: guardar el progreso por etapas para reanudar desde el último punto bueno.</div>
+    <div class="row"><span class="k">Cuándo</span>Pipelines largos de varias etapas (p. ej., procesar documentos por fases).</div>
+  </div>
+  <div class="pcard"><h4>Escalado diferido y grafo de dependencias causales</h4>
+    <div class="row"><span class="k">Problema</span>Escalar al humano demasiado pronto lo satura; demasiado tarde, falla el caso.</div>
+    <div class="row"><span class="k">Solución</span>El <strong>escalado diferido</strong> agota primero las opciones automáticas y escala solo si la confianza es baja. El <strong>grafo causal</strong> registra qué decisión dependió de qué, para auditar y rastrear el origen de un fallo.</div>
+    <div class="row"><span class="k">Cuándo</span>Verificaciones de confianza variable (p. ej., un control de cumplimiento dudoso).</div>
+  </div>
+  <div class="pcard"><h4>Defensa del agente y malla de defensa</h4>
+    <div class="row"><span class="k">Problema</span>Un atacante intenta manipular al agente (p. ej., con inyección de prompts).</div>
+    <div class="row"><span class="k">Solución</span><strong>Auto-defensa</strong>: el agente detecta y neutraliza entradas maliciosas. <strong>Malla de defensa</strong>: los agentes se protegen mutuamente, sin un único punto débil.</div>
+    <div class="row"><span class="k">Cuándo</span>Agentes expuestos a contenido externo no confiable.</div>
+  </div>
+
+  <div class="box note"><span class="lab">Encadenar patrones</span><p>En producción rara vez usas uno solo. Un préstamo real podría: validar con consenso paralelo → vigilar con watchdog → reintentar con mutación si falla → hacer checkpoint de cada etapa → decidir por voto mayoritario → registrar todo en un grafo causal. Los patrones se encadenan como celdas del panal.</p></div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>La robustez no evita fallos: los sobrevive. Vigila (watchdog), reintenta con inteligencia, guarda el progreso (checkpoints), decide por consenso o mayoría, y defiéndete de ataques. Mide tu nivel de robustez y sube un patrón a la vez.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 8 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo ocho</div><h2>Patrones de interacción humano-agente</h2></div>
+  <p class="epigraph">El mejor sistema no reemplaza al humano: sabe exactamente cuándo llamarlo.<span class="who">— Sobre el trabajo en equipo persona–agente</span></p>
+  <p class="lead">Por más autónomo que sea, un agente empresarial vive entrelazado con personas que lo dirigen, lo revisan y responden por él. Estos patrones diseñan esa relación.</p>
+
+  <h3>El humano en el bucle</h3>
+  <p>El patrón fundamental: para acciones de alto impacto o decisiones inciertas, el agente <strong>prepara</strong> la acción y una persona la <strong>aprueba</strong>. No es desconfianza; es repartir bien el trabajo —velocidad de máquina, criterio humano—. La clave de diseño es <em>cuándo</em> involucrar a la persona: ni en todo (la satura) ni en nada (pierdes el control).</p>
+
+  <figure>
+    <svg viewBox="0 0 460 90" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m8" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c8901f"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="14" y="34" width="90" height="28" rx="5" fill="#2b2a26"/><text x="59" y="51" fill="#f5f0e2">Agente actúa</text>
+        <polygon points="170,30 210,48 170,66 130,48" fill="#fff" stroke="#c8901f" stroke-width="1.3"/><text x="170" y="51" font-size="7.5">¿confianza alta?</text>
+        <rect x="250" y="14" width="100" height="24" rx="5" fill="#fff" stroke="#7a6a4a"/><text x="300" y="30">sí → ejecuta</text>
+        <rect x="250" y="58" width="100" height="24" rx="5" fill="#fff" stroke="#c8901f" stroke-width="1.3"/><text x="300" y="74">no → escala a humano</text>
+        <rect x="372" y="58" width="78" height="24" rx="5" fill="#fff" stroke="#7a6a4a"/><text x="411" y="74">humano decide</text>
+      </g>
+      <g stroke="#c8901f" stroke-width="1.2" fill="none" marker-end="url(#m8)"><path d="M104 48 L128 48"/><path d="M210 42 C230 32 240 28 248 26"/><path d="M210 54 C230 64 240 68 248 70"/><path d="M350 70 L370 70"/></g>
+    </svg>
+    <figcaption>Figura 8.1 — Escalado por confianza: el agente resuelve lo seguro y pasa al humano lo dudoso.</figcaption>
+  </figure>
+
+  <h3>Comunicar confianza y rendir cuentas</h3>
+  <p>Un buen agente dice <strong>cuán seguro está</strong>: distingue "esto es seguro" de "esto es mi mejor estimación". Y el sistema define con claridad <strong>quién responde</strong> cuando algo sale mal, con un rastro auditable de qué decidió el agente y qué decidió la persona. La confianza del negocio se construye sobre esa transparencia.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Diseña el <em>cuándo</em> del humano: que el agente resuelva lo rutinario y escale lo incierto o lo grave. Que comunique su nivel de confianza y que siempre quede claro quién rinde cuentas. El objetivo no es autonomía máxima, sino el mejor equipo persona–agente.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 9 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo nueve</div><h2>Patrones a nivel de agente</h2></div>
+  <p class="epigraph">Un buen equipo empieza por un buen jugador. Antes de coordinar agentes, construye uno que valga la pena coordinar.<span class="who">— Sobre la calidad individual</span></p>
+  <p class="lead">Antes de pensar en sistemas, conviene que <em>cada</em> agente esté bien hecho. Estos patrones aplican a la pieza individual, sea que trabaje sola o en equipo.</p>
+
+  <h3>El agente individual bien construido</h3>
+  <ul class="clean">
+    <li><strong>Instrucciones claras y un rol único:</strong> un agente que hace una cosa y la hace bien es más fiable que uno que intenta todo. La especialización es una virtud, no una limitación.</li>
+    <li><strong>Razonar antes de actuar:</strong> que piense por pasos (cadena de pensamiento) antes de usar una herramienta reduce errores notablemente.</li>
+    <li><strong>Reflexión:</strong> que revise su propio trabajo antes de entregarlo —releer el correo antes de enviarlo—.</li>
+    <li><strong>Manejo de incertidumbre:</strong> que sepa decir "no estoy seguro" y pedir datos en vez de inventar.</li>
+    <li><strong>Herramientas bien descritas y validadas:</strong> el agente acierta en la medida en que sus herramientas están bien explicadas y sus entradas, verificadas.</li>
+  </ul>
+
+  <div class="analogy"><span class="lab">Analogía</span><p>Un agente a nivel individual es como un buen empleado: rol claro, piensa antes de actuar, revisa su trabajo, sabe cuándo pedir ayuda y usa bien sus herramientas. Ningún organigrama salva a una empresa de empleados que no dominan su puesto.</p></div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Antes de orquestar, perfecciona la pieza: rol único, razonamiento por pasos, auto-revisión, honestidad ante la duda y herramientas bien descritas. Un sistema multiagente amplifica la calidad de sus agentes —y también sus defectos.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 10 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo diez</div><h2>Patrones a nivel de sistema para producción</h2></div>
+  <p class="epigraph">Funciona en mi laptop no es una arquitectura.<span class="who">— Sobre lo que separa una demo de un producto</span></p>
+  <p class="lead">Los patrones anteriores construyen agentes y los coordinan. Estos los preparan para vivir en producción: observados, gobernados y listos para escalar.</p>
+
+  <h3>Observabilidad</h3>
+  <p>No puedes operar lo que no ves. Cada agente debe dejar <strong>trazas</strong>: qué recibió, qué razonó, qué herramienta usó, qué devolvió, cuánto tardó y costó. Con eso construyes tableros y alertas que te avisan de un problema antes que tus usuarios. La traza es la caja negra del sistema.</p>
+
+  <h3>Despliegue seguro</h3>
+  <p>Cambia con red de seguridad: el <strong>modo sombra</strong> corre la versión nueva en paralelo sin afectar a nadie, para comparar; el <strong>despliegue canario</strong> la libera a un pequeño porcentaje de usuarios antes de extenderla. Así un cambio malo se detecta con poco daño.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 80" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m10" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2b2a26"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="8" y="28" width="86" height="28" rx="5" fill="#2b2a26"/><text x="51" y="46" fill="#f5f0e2">Agentes</text>
+        <rect x="124" y="28" width="92" height="28" rx="5" fill="#fff" stroke="#c8901f" stroke-width="1.2"/><text x="170" y="46">trazas</text>
+        <rect x="246" y="28" width="92" height="28" rx="5" fill="#fff" stroke="#7a6a4a" stroke-width="1.2"/><text x="292" y="42">tableros</text><text x="292" y="52" font-size="7" fill="#7a6a4a">+ alertas</text>
+        <rect x="368" y="28" width="84" height="28" rx="5" fill="#fff" stroke="#7a6a4a"/><text x="410" y="46">gobernanza</text>
+      </g>
+      <g stroke="#2b2a26" stroke-width="1.2" fill="none" marker-end="url(#m10)"><path d="M94 42 L122 42"/><path d="M216 42 L244 42"/><path d="M338 42 L366 42"/></g>
+    </svg>
+    <figcaption>Figura 10.1 — La cadena de producción: instrumentar, visualizar, alertar, gobernar.</figcaption>
+  </figure>
+
+  <h3>Gobernanza operativa</h3>
+  <p>A escala, alguien debe ser <strong>dueño</strong> de cada métrica y de cada agente. Sin responsables, los problemas no se arreglan. Define cuotas de costo, límites de acción por agente y un proceso claro para revisar y aprobar cambios. La gobernanza no frena la innovación: la hace sostenible.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Producción = observabilidad (trazas, tableros, alertas) + despliegue con red (sombra y canario) + gobernanza (dueños, cuotas, límites). Construye estos cimientos antes de subir la autonomía, no después del primer incidente.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 11 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo once</div><h2>Adaptación avanzada: agentes que aprenden</h2></div>
+  <p class="epigraph">El sistema que no aprende de sus errores está condenado a repetirlos en producción.<span class="who">— Sobre la mejora continua</span></p>
+  <p class="lead">Un agente estático envejece: el mundo cambia y él se queda. Los agentes avanzados <strong>aprenden</strong> —de su experiencia y del feedback— para mejorar con el tiempo.</p>
+
+  <h3>Aprender de la experiencia (sin reentrenar)</h3>
+  <p>La forma más práctica y barata. El agente guarda un registro de <strong>qué funcionó y qué no</strong> en casos pasados, y lo consulta ante uno nuevo parecido. Tras un fallo, escribe una nota —"esto salió mal porque…"— y la tiene presente la próxima vez. Mejora sin tocar el modelo, de forma rápida y auditable.</p>
+
+  <h3>Aprender del feedback</h3>
+  <p>Cada corrección de un usuario, cada pulgar abajo, es oro. Un buen sistema recoge ese feedback en un canal ordenado, encuentra la <strong>causa raíz</strong> con las trazas, prioriza por impacto y <strong>cierra el ciclo</strong>: cada fallo corregido se convierte en un nuevo caso de prueba, para que no vuelva a ocurrir sin que el sistema lo note.</p>
+
+  <h3>Aprender en los pesos (cuando vale la pena)</h3>
+  <p>Cuando acumulas muchos datos de calidad, puedes dar el paso de <strong>afinar el modelo</strong> para incorporar de forma permanente lo aprendido. Es potente pero costoso; resérvalo para problemas estables donde el volumen de datos lo justifique.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Aprender es la diferencia entre un sistema que envejece y uno que mejora. Empieza por lo barato y reversible (experiencia y feedback con ciclo cerrado) y reserva el reentrenamiento para cuando los datos lo justifiquen. Un fallo aprovechado vale más que un acierto olvidado.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- ===== PARTE 3 ===== -->
+<section class="partpage">
+  <div class="pk">Parte tres</div>
+  <h1>Ejecución: estrategia, casos y futuro</h1>
+  <div class="pd">De la teoría a la práctica: una hoja de ruta y un caso real recorrido tres veces.</div>
+  <svg width="60" height="54" viewBox="0 0 60 54" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#c8901f" stroke-width="1.4"><polygon points="20,4 32,11 32,25 20,32 8,25 8,11"/><polygon points="44,4 56,11 56,25 44,32 32,25 32,11"/><polygon points="32,32 44,39 44,53 32,60 20,53 20,39"/></g></svg>
+</section>
+
+<!-- CAP 12 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo doce</div><h2>Hoja de ruta práctica por madurez</h2></div>
+  <p class="epigraph">No adoptes todos los patrones; adopta el siguiente.<span class="who">— Sobre crecer sin ahogarse</span></p>
+  <p class="lead">Con un catálogo tan grande, el riesgo es quererlo todo de golpe. Esta hoja de ruta te dice qué patrón conviene en cada nivel de madurez, para que crezcas paso a paso.</p>
+
+  <h3>Patrones por nivel</h3>
+  <ul class="clean">
+    <li><strong>Nivel 1–2 (asistente, copiloto):</strong> empieza con un agente único bien hecho (cap. 9) y RAG (cap. 3). Aún no necesitas coordinación.</li>
+    <li><strong>Nivel 3 (agente que ejecuta):</strong> añade herramientas, observabilidad básica (cap. 10) y el humano en el bucle (cap. 8) para las acciones de impacto.</li>
+    <li><strong>Nivel 4 (multiagente):</strong> introduce coordinación —empieza por el Supervisor, el más controlable (cap. 5)— y los primeros patrones de robustez (watchdog, reintentos).</li>
+    <li><strong>Nivel 5–6 (auto-correctivo):</strong> suma consenso, voto mayoritario, auto-sanación, defensa, explicabilidad y aprendizaje. Aquí el sistema se vigila y se repara a sí mismo.</li>
+  </ul>
+
+  <div class="box note"><span class="lab">La regla de oro de la hoja de ruta</span><p>Cada patrón resuelve un dolor concreto. No adoptes un patrón hasta sentir el dolor que cura. Añadir robustez avanzada a un prototipo que nadie usa es como reforzar los cimientos de una casa que aún no decides construir.</p></div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Crece por niveles: agente único + RAG → herramientas + supervisión humana → coordinación (Supervisor) + robustez básica → consenso, defensa y aprendizaje. Adopta el siguiente patrón cuando sientas el problema que resuelve, no antes.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 13 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo trece</div><h2>Caso: un agente único para préstamos</h2></div>
+  <p class="epigraph">Empieza con lo más simple que funcione. Casi siempre es más de lo que crees.<span class="who">— Sobre el primer agente</span></p>
+  <p class="lead">Bajemos a tierra con un caso real que recorreremos tres veces, cada vez más sofisticado. Empezamos por lo mínimo: <strong>un solo agente</strong> que procesa solicitudes de préstamo.</p>
+
+  <h3>El flujo de un agente</h3>
+  <p>El agente recibe una solicitud y, en un solo bucle, hace todo: extrae los datos del solicitante, los verifica, consulta el historial crediticio (una herramienta), evalúa el riesgo según las reglas del banco y emite una recomendación. Una sola pieza, un solo cerebro, un solo flujo.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 80" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m13" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c8901f"/></marker></defs>
+      <g font-size="8" text-anchor="middle" class="dwords">
+        <rect x="8" y="30" width="74" height="24" rx="4" fill="#fff" stroke="#d2c39a"/><text x="45" y="45">Solicitud</text>
+        <rect x="104" y="30" width="74" height="24" rx="4" fill="#fff" stroke="#7a6a4a"/><text x="141" y="45">Verificar</text>
+        <rect x="200" y="30" width="74" height="24" rx="4" fill="#fff" stroke="#7a6a4a"/><text x="237" y="45">Historial</text>
+        <rect x="296" y="30" width="74" height="24" rx="4" fill="#fff" stroke="#7a6a4a"/><text x="333" y="45">Evaluar</text>
+        <rect x="392" y="30" width="62" height="24" rx="4" fill="#c8901f"/><text x="423" y="45" fill="#fff">Decisión</text>
+      </g>
+      <g stroke="#c8901f" stroke-width="1.2" fill="none" marker-end="url(#m13)"><path d="M82 42 L102 42"/><path d="M178 42 L198 42"/><path d="M274 42 L294 42"/><path d="M370 42 L390 42"/></g>
+    </svg>
+    <figcaption>Figura 13.1 — Un agente único hace todo el flujo de principio a fin.</figcaption>
+  </figure>
+
+  <h3>Sus virtudes y sus límites</h3>
+  <p>Lo bueno: es <strong>simple</strong> de construir, depurar y entender. Para volúmenes modestos y reglas claras, es perfecto y no necesitas más. Lo malo: cuando crece la complejidad —muchos tipos de préstamo, regulaciones distintas, picos de carga— un solo agente se vuelve un cuello de botella y un cerebro sobrecargado que mezcla demasiadas responsabilidades. Ese límite es lo que nos llevará, en el siguiente capítulo, a repartir el trabajo.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>El agente único es el punto de partida correcto: simple, claro y suficiente para muchos casos. Construye este primero, mídelo, y solo divídelo cuando su simplicidad empiece a costarte más de lo que te ahorra.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 14 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo catorce</div><h2>Caso: un sistema multiagente para préstamos</h2></div>
+  <p class="epigraph">Lo que un genio hace despacio, un equipo bien organizado lo hace rápido y mejor.<span class="who">— Sobre repartir el trabajo</span></p>
+  <p class="lead">Tomamos el mismo caso del préstamo y lo rediseñamos como <strong>varios agentes especializados</strong> coordinados por un supervisor. Aquí vemos los patrones de la Parte 2 trabajando juntos.</p>
+
+  <h3>El sistema en acción</h3>
+  <p>Un <strong>supervisor</strong> (patrón del cap. 5) recibe la solicitud y la reparte: un agente <em>verificador</em> comprueba la identidad y los documentos; un agente <em>de riesgo</em> evalúa el historial crediticio; un agente <em>de cumplimiento</em> revisa que todo respete la normativa (con RAG, cap. 3). Para la decisión final crítica, varios agentes votan (<strong>voto mayoritario</strong>, cap. 7). Si la confianza es baja, se <strong>escala a un humano</strong> (cap. 8). Y todo el proceso queda en un <strong>grafo causal</strong> auditable (cap. 7).</p>
+
+  <figure>
+    <svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m14" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b3a47e"/></marker></defs>
+      <g text-anchor="middle" font-size="8" class="dwords">
+        <circle cx="230" cy="30" r="24" fill="#2b2a26"/><text x="230" y="28" fill="#f5f0e2" font-size="8">Supervisor</text><text x="230" y="40" fill="#bcc98e" font-size="6.5">reparte y reúne</text>
+        <rect x="40" y="92" width="100" height="40" rx="7" fill="#fff" stroke="#c8901f" stroke-width="1.2"/><text x="90" y="110">Verificador</text><text x="90" y="122" font-size="6.5" fill="#7a6a4a">identidad/docs</text>
+        <rect x="180" y="92" width="100" height="40" rx="7" fill="#fff" stroke="#c8901f" stroke-width="1.2"/><text x="230" y="110">Riesgo</text><text x="230" y="122" font-size="6.5" fill="#7a6a4a">historial</text>
+        <rect x="320" y="92" width="100" height="40" rx="7" fill="#fff" stroke="#c8901f" stroke-width="1.2"/><text x="370" y="110">Cumplimiento</text><text x="370" y="122" font-size="6.5" fill="#7a6a4a">normativa + RAG</text>
+      </g>
+      <g stroke="#b3a47e" stroke-width="1.2" fill="none" marker-end="url(#m14)"><path d="M208 46 C160 66 120 80 92 90"/><path d="M230 54 L230 90"/><path d="M252 46 C300 66 340 80 368 90"/></g>
+      <text x="120" y="74" font-size="7" fill="#9c9173" class="dlabel">reparte</text>
+    </svg>
+    <figcaption>Figura 14.1 — El mismo caso, ahora como equipo de especialistas bajo un supervisor.</figcaption>
+  </figure>
+
+  <h3>Qué ganamos y qué cuesta</h3>
+  <p>Ganamos <strong>especialización</strong> (cada agente experto en lo suyo), <strong>paralelismo</strong> (verificación y riesgo a la vez), <strong>robustez</strong> (si uno falla, el sistema lo maneja) y <strong>escalabilidad</strong>. El costo: más llamadas al modelo, más complejidad, más cosas que coordinar y vigilar. Por eso este diseño se justifica cuando el volumen y la complejidad lo piden —no para tres solicitudes al día—.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>El sistema multiagente convierte un cerebro sobrecargado en un equipo de especialistas coordinados. Aquí los patrones se componen como celdas de panal: supervisor + RAG + voto mayoritario + escalado humano + grafo causal. Más poder y robustez, a cambio de más costo y coordinación.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 15 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo quince</div><h2>El mismo caso con frameworks</h2></div>
+  <p class="epigraph">El framework correcto te ahorra el trabajo aburrido; no te ahorra el diseño.<span class="who">— Sobre las herramientas del oficio</span></p>
+  <p class="lead">Construir todo a mano enseña, pero en producción conviene apoyarse en frameworks que resuelven lo repetitivo. Veamos nuestro sistema de préstamos apoyado en ellos.</p>
+
+  <h3>Qué aporta un framework</h3>
+  <p>Un framework de agentes te da andamios listos: el bucle de control, la gestión del estado, la comunicación entre agentes, la integración de herramientas, la observabilidad. En vez de programar la fontanería, describes <em>qué</em> agentes quieres y <em>cómo</em> se coordinan. Herramientas como las de orquestación de grafos, las de equipos de agentes o los SDKs de los propios proveedores cubren buena parte de los patrones de este libro de fábrica.</p>
+
+<pre><span class="c">// Idea de cómo se ve definir el sistema con un framework (pseudocódigo)</span>
+<span class="k">const</span> verificador  = <span class="f">crearAgente</span>({ rol: <span class="s">"verifica identidad y documentos"</span>, tools:[docs] });
+<span class="k">const</span> riesgo      = <span class="f">crearAgente</span>({ rol: <span class="s">"evalúa riesgo crediticio"</span>, tools:[buroCredito] });
+<span class="k">const</span> cumplimiento = <span class="f">crearAgente</span>({ rol: <span class="s">"revisa normativa"</span>, tools:[ragNormas] });
+
+<span class="k">const</span> supervisor = <span class="f">crearSupervisor</span>({
+  trabajadores: [verificador, riesgo, cumplimiento],
+  decision: <span class="s">"voto_mayoritario"</span>,
+  escalado: <span class="s">"a_humano_si_confianza_baja"</span>
+});
+
+<span class="k">await</span> supervisor.<span class="f">procesar</span>(solicitudDePrestamo);  <span class="c">// el framework orquesta todo</span></pre>
+
+  <h3>La advertencia importante</h3>
+  <p>Un framework acelera, pero <strong>no piensa por ti</strong>. Las decisiones de diseño —qué agentes, cómo se coordinan, qué patrones de robustez, dónde entra el humano— siguen siendo tuyas. El framework es la cera; el panal lo diseñas tú. Por eso aprendimos los patrones <em>antes</em> de hablar de frameworks: para usarlos con criterio y no quedar atrapados en lo que cada uno hace fácil.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Los frameworks te ahorran la fontanería (bucle, estado, comunicación, observabilidad) y traen muchos patrones de fábrica. Pero el diseño —qué patrones, cómo se componen— sigue siendo decisión humana. Entiende los patrones primero; el framework, después.</p></div>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+<!-- CAP 16 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo dieciséis</div><h2>Conclusión: traza tu camino agéntico</h2></div>
+  <p class="epigraph">No construyas el panal entero de golpe. Construye una celda perfecta, y luego la siguiente.<span class="who">— La lección de la abeja</span></p>
+  <p class="lead">Hemos recorrido el viaje completo: del modelo al agente, del agente al sistema, y del sistema a la producción. Cerremos con la brújula para tu propio camino.</p>
+
+  <h3>Lo esencial en cinco ideas</h3>
+  <ul class="clean">
+    <li><strong>Mapea tu madurez</strong> y crece por niveles; no adoptes patrones que no necesitas aún.</li>
+    <li><strong>Empieza por un agente único bien hecho</strong> y RAG; divide solo cuando la complejidad lo pida.</li>
+    <li><strong>Los patrones se componen</strong> como celdas de panal: coordinación + explicabilidad + robustez juntos hacen un sistema confiable.</li>
+    <li><strong>Producción es observabilidad, gobernanza y el humano en el bucle</strong>, no solo más agentes.</li>
+    <li><strong>Diseña tú; deja que el framework ejecute.</strong> La cera la pone la herramienta; la forma, tú.</li>
+  </ul>
+
+  <h3>La lección de la abeja</h3>
+  <p>Vuelve a la portada. La colmena no se construye de una vez ni por un arquitecto genial: se levanta celda a celda, cada una con la misma forma probada, hasta formar una estructura asombrosamente fuerte y eficiente. Tu sistema de agentes se construye igual. No necesitas todos los patrones de este libro hoy; necesitas reconocer, cuando aparezca el problema, qué celda encaja. Empieza con una celda perfecta —un agente que de verdad funcione— y construye desde ahí. El resto es saber qué patrón añadir, y cuándo.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Tienes el catálogo completo. Ahora la disciplina: madurez antes que ambición, una celda antes que el panal entero, composición antes que complejidad, y diseño humano antes que framework. Traza tu camino una celda a la vez.</p></div>
+
+  <h2 style="margin-top:12mm;">Glosario</h2>
+  <ul class="clean">
+    <li><strong>Patrón de diseño:</strong> solución probada y reutilizable a un problema recurrente.</li>
+    <li><strong>Agente vs workflow:</strong> el agente decide los pasos; el workflow los tiene fijos.</li>
+    <li><strong>A2A:</strong> comunicación agente-a-agente, lo que vuelve un sistema a un grupo de agentes.</li>
+    <li><strong>RAG / fine-tuning / ICL:</strong> formas de adaptar el modelo, de ligera a profunda.</li>
+    <li><strong>AgentOps:</strong> operar LLMs agénticos de forma medible, versionada y reversible.</li>
+    <li><strong>Supervisor / Swarm:</strong> coordinación centralizada vs descentralizada.</li>
+    <li><strong>Pizarra / Contract-Net:</strong> conocimiento compartido vs asignación por ofertas.</li>
+    <li><strong>Consenso / voto mayoritario:</strong> robustez por acuerdo entre varios agentes.</li>
+    <li><strong>Watchdog / checkpoints / auto-sanación:</strong> sobrevivir a cuelgues y caídas.</li>
+    <li><strong>Grafo causal:</strong> registro auditable de qué decisión dependió de qué.</li>
+    <li><strong>Human-in-the-loop:</strong> la persona aprueba o decide lo de alto impacto.</li>
+    <li><strong>Modo sombra / canario:</strong> probar cambios en producción con poco riesgo.</li>
+    <li><strong>Grounding:</strong> atar cada afirmación a una fuente verificable.</li>
+  </ul>
+
+  <p style="text-align:center; margin-top:12mm; font-family:'Carlito',sans-serif; font-size:8pt; color:#9c9173;">Fin · Patrones Arquitectónicos para Sistemas Multiagente · Edición de autor</p>
+  <div class="endmark"><svg width="15" height="15" viewBox="0 0 20 20"><polygon points="10,2 17,6 17,14 10,18 3,14 3,6" fill="none" stroke="#c8901f" stroke-width="1.6"/></svg></div>
+</section>
+
+</body>
+</html>

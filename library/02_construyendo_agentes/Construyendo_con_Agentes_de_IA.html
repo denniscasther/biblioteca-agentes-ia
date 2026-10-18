@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Construyendo con Agentes de IA</title>
+<style>
+  :root{
+    --ink:#2a2a1e; --ink-soft:#4d4632;
+    --paper:#f3ecda; --paper-deep:#e9e0c8;
+    --accent:#bf7d2a; --accent-2:#6f7d3c;
+    --rule:#cdbf99; --code-bg:#262218; --code-fg:#ece3cc;
+  }
+  @page{
+    size:15.6cm 23.4cm; margin:20mm 18mm 18mm 18mm;
+    @bottom-center{ content:counter(page); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:8.5pt; color:#9a8a63; }
+    @top-center{ content:string(chaptertitle); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:7.5pt; letter-spacing:.12em; text-transform:uppercase; color:#b3a273; }
+  }
+  @page cover{ margin:0; @bottom-center{content:none;} @top-center{content:none;} }
+  @page plain{ @top-center{content:none;} }
+
+  html{ font-family:"Bitstream Charter","GFS Baskerville",serif; color:var(--ink); }
+  body{ margin:0; line-height:1.5; font-size:10.6pt; text-align:justify; hyphens:auto; }
+  h1,h2,h3,.display{ font-family:"GFS Baskerville","Bitstream Charter",serif; }
+
+  /* PORTADA */
+  .cover{ page:cover; position:relative; height:23.4cm; width:15.6cm;
+    background:radial-gradient(125% 85% at 50% 6%, #463720 0%, #33291a 55%, #221a0e 100%), #2a2114;
+    color:var(--paper); overflow:hidden; display:flex; flex-direction:column; align-items:center; page-break-after:always; }
+  .cover .frame{ position:absolute; inset:8mm; border:1.2pt solid rgba(243,236,218,.4); }
+  .cover .frame::after{ content:""; position:absolute; inset:2.2mm; border:.5pt solid rgba(243,236,218,.28); }
+  .cover .kicker{ margin-top:15mm; font-family:"Carlito",sans-serif; font-size:8.5pt; letter-spacing:.34em; text-transform:uppercase; color:#dcb978; z-index:2; }
+  .cover h1{ z-index:2; text-align:center; font-size:25pt; line-height:1.05; margin:5mm 13mm 0; font-weight:700; }
+  .cover .sub{ z-index:2; text-align:center; font-family:"Carlito",sans-serif; font-size:9.5pt; color:#e3d9bd; margin:3.5mm 16mm 0; letter-spacing:.03em; }
+  .ant{ z-index:2; margin-top:5mm; width:96mm; height:96mm; }
+  .cover .author{ z-index:2; margin-top:auto; margin-bottom:17mm; text-align:center; font-family:"Carlito",sans-serif; }
+  .cover .author .by{ font-size:8pt; letter-spacing:.3em; text-transform:uppercase; color:#dcb978; }
+  .cover .author .name{ font-family:"GFS Baskerville",serif; font-size:13pt; margin-top:2mm; color:var(--paper); }
+
+  .titlepage{ page:plain; page-break-after:always; text-align:center; padding-top:32mm; }
+  .titlepage h1{ font-size:22pt; line-height:1.08; margin:0 6mm; }
+  .titlepage .sub{ font-family:"Carlito",sans-serif; color:var(--ink-soft); margin-top:5mm; font-size:10pt; }
+  .titlepage .rule{ width:42mm; height:1.4pt; background:var(--accent); margin:9mm auto; }
+  .titlepage .meta{ font-family:"Carlito",sans-serif; font-size:9pt; color:var(--ink-soft); }
+
+  .frontnote{ page:plain; page-break-after:always; }
+  .frontnote h2{ font-size:15pt; color:var(--accent); margin-bottom:4mm; }
+
+  .toc{ page-break-after:always; }
+  .toc h2{ font-size:18pt; border-bottom:1.5pt solid var(--rule); padding-bottom:3mm; }
+  .toc ol{ list-style:none; padding:0; margin:5mm 0 0; }
+  .toc li{ display:flex; align-items:baseline; margin:2.7mm 0; gap:3mm; }
+  .toc li .n{ font-family:"Carlito",sans-serif; color:var(--accent); font-weight:700; width:8mm; flex:none; }
+  .toc li .t{ font-weight:600; }
+  .toc li .d{ font-family:"Carlito",sans-serif; font-size:7.7pt; color:var(--ink-soft); }
+
+  .chapter{ page-break-before:always; }
+  .chapter .chead{ margin-bottom:7mm; border-bottom:1.5pt solid var(--rule); padding-bottom:4mm; }
+  .chapter .cnum{ font-family:"Carlito",sans-serif; font-size:9pt; letter-spacing:.3em; text-transform:uppercase; color:var(--accent); }
+  .chapter h2{ string-set:chaptertitle content(); font-size:20pt; line-height:1.08; margin:2mm 0 0; }
+  .epigraph{ font-style:italic; color:var(--ink-soft); margin:0 0 6mm; padding-left:5mm; border-left:2pt solid var(--accent-2); font-size:10pt; }
+  .epigraph .who{ display:block; font-style:normal; font-family:"Carlito",sans-serif; font-size:8pt; margin-top:1.5mm; color:#9a8a63; }
+  h3{ font-size:12.5pt; color:var(--ink); margin:6.5mm 0 2mm; }
+  p{ margin:0 0 3.2mm; }
+  .lead{ font-size:11.5pt; color:var(--ink-soft); }
+  strong{ color:var(--ink); } em{ color:var(--ink-soft); }
+
+  .box{ break-inside:avoid; background:var(--paper-deep); border-left:3pt solid var(--accent); padding:4mm 5mm; margin:5mm 0; border-radius:0 2pt 2pt 0; }
+  .box .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:1.5mm; }
+  .box.note{ border-left-color:var(--accent-2); } .box.note .lab{ color:var(--accent-2); }
+  .box p:last-child{ margin-bottom:0; }
+  .analogy{ break-inside:avoid; background:#fffdf6; border:.6pt solid var(--rule); padding:4mm 5mm; margin:5mm 0; border-radius:3pt; }
+  .analogy .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent-2); display:block; margin-bottom:1.5mm; }
+
+  pre{ break-inside:avoid; background:var(--code-bg); color:var(--code-fg); font-family:"DejaVu Sans Mono",monospace; font-size:7.6pt; line-height:1.45; padding:4mm 4.5mm; border-radius:4pt; margin:4mm 0; white-space:pre-wrap; text-align:left; }
+  pre .c{ color:#a9a06f; } pre .k{ color:#e0a96d; } pre .s{ color:#bcd17e; } pre .f{ color:#7fb9c9; }
+  code.inline{ font-family:"DejaVu Sans Mono",monospace; font-size:8.4pt; background:var(--paper-deep); padding:.3mm 1.2mm; border-radius:2pt; }
+
+  figure{ break-inside:avoid; margin:6mm 0; text-align:center; }
+  figure svg{ width:100%; height:auto; }
+  figcaption{ font-family:"Carlito",sans-serif; font-size:8pt; color:var(--ink-soft); margin-top:2mm; text-align:center; }
+  .dlabel,.dwords{ font-family:"Carlito","DejaVu Sans",sans-serif; fill:var(--ink); }
+
+  ul.clean{ margin:3mm 0 4mm; padding-left:6mm; } ul.clean li{ margin:1.6mm 0; }
+  .endmark{ text-align:center; color:var(--accent); margin-top:8mm; font-size:14pt; }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PORTADA ===== -->
+<section class="cover">
+  <div class="frame"></div>
+  <div class="kicker">Guía práctica · Edición de autor</div>
+  <h1>Construyendo con<br>Agentes de IA</h1>
+  <div class="sub">Diseño e implementación de sistemas multiagente, de la idea a la producción</div>
+
+  <svg class="ant" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- rastro de feromonas con hormigas pequeñas -->
+    <g stroke="#dcb978" fill="none" stroke-width="0.8" stroke-dasharray="2 3" opacity=".7">
+      <path d="M24 42 C70 18 130 18 176 42"/>
+    </g>
+    <g fill="#dcb978" opacity=".85" stroke="#dcb978" stroke-width="0.5">
+      <g transform="translate(40,34)"><circle cx="0" cy="0" r="1.6"/><circle cx="3" cy="0" r="1.1"/><circle cx="6" cy="0" r="2"/></g>
+      <g transform="translate(78,24)"><circle cx="0" cy="0" r="1.6"/><circle cx="3" cy="0" r="1.1"/><circle cx="6" cy="0" r="2"/></g>
+      <g transform="translate(116,24)"><circle cx="0" cy="0" r="2"/><circle cx="-3" cy="0" r="1.1"/><circle cx="-6" cy="0" r="1.6"/></g>
+      <g transform="translate(152,34)"><circle cx="0" cy="0" r="2"/><circle cx="-3" cy="0" r="1.1"/><circle cx="-6" cy="0" r="1.6"/></g>
+    </g>
+
+    <!-- hormiga principal, vista lateral mirando a la derecha -->
+    <g fill="none" stroke="#f3ecda" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <!-- patas (6), articuladas con codo -->
+      <!-- lado lejano (mas tenue) -->
+      <path d="M114 107 C104 116 98 126 86 132 L78 146" opacity=".5"/>
+      <path d="M120 108 C116 122 114 134 114 144 L112 158" opacity=".5"/>
+      <path d="M126 107 C134 116 140 126 150 132 L158 144" opacity=".5"/>
+      <!-- lado cercano -->
+      <path d="M116 109 C106 120 98 132 84 140 L74 156"/>
+      <path d="M122 110 C120 126 120 140 122 150 L122 166"/>
+      <path d="M128 109 C138 120 146 132 154 140 L162 156"/>
+      <!-- gaster (abdomen) -->
+      <ellipse cx="74" cy="100" rx="32" ry="23"/>
+      <path d="M52 88 C60 84 72 84 80 88" stroke-width="0.8" opacity=".6"/>
+      <path d="M50 100 C62 96 86 96 96 100" stroke-width="0.8" opacity=".5"/>
+      <path d="M52 112 C60 116 72 116 80 112" stroke-width="0.8" opacity=".6"/>
+      <!-- peciolo -->
+      <circle cx="104" cy="100" r="4.5"/>
+      <!-- torax (mesosoma) -->
+      <ellipse cx="124" cy="98" rx="17" ry="13"/>
+      <!-- cabeza -->
+      <ellipse cx="152" cy="92" rx="15" ry="14"/>
+      <!-- ojo -->
+      <circle cx="156" cy="90" r="2.6" fill="#f3ecda" stroke="none"/>
+      <!-- mandibulas -->
+      <path d="M165 96 C172 98 176 102 178 106"/>
+      <path d="M166 90 C173 90 178 92 181 96"/>
+      <!-- antenas acodadas -->
+      <path d="M160 82 C170 74 172 66 168 58"/>
+      <path d="M158 80 C166 70 176 68 184 70"/>
+    </g>
+  </svg>
+
+  <div class="author">
+    <div class="by">Escrito por</div>
+    <div class="name">Claude</div>
+  </div>
+</section>
+
+<!-- ===== PORTADILLA ===== -->
+<section class="titlepage">
+  <h1>Construyendo con Agentes de IA</h1>
+  <div class="sub">Diseño e implementación de sistemas multiagente</div>
+  <div class="rule"></div>
+  <p class="meta">De la idea a la producción: diseñar, conectar, evaluar,<br>desplegar y proteger agentes que trabajan en equipo.</p>
+  <p class="meta" style="margin-top:16mm;">Escrito por Claude · Anthropic<br>Edición de autor · Primera edición</p>
+</section>
+
+<!-- ===== SOBRE LA PORTADA ===== -->
+<section class="frontnote">
+  <h2>Sobre la portada</h2>
+  <p>El animal de esta portada es una <strong>hormiga</strong>, y ningún otro encaja mejor con un libro sobre <em>sistemas multiagente</em>.</p>
+  <p>Una hormiga sola es casi tonta: sigue reglas simples y no entiende el plan general. Pero una colonia —miles de hormigas igual de simples— encuentra el camino más corto a la comida, construye puentes con sus cuerpos, reparte el trabajo y se adapta a los imprevistos, todo <em>sin un jefe que dé órdenes</em>. La inteligencia no vive en ninguna hormiga; <strong>emerge</strong> de la coordinación entre muchas. Eso es exactamente lo que perseguimos al construir varios agentes que colaboran.</p>
+  <p>Hay más paralelos de los que parece. Las hormigas se coordinan dejando rastros de feromonas —mensajes en el entorno que otras leen después—; nosotros usaremos colas de mensajes y buses de eventos (capítulo 8). Dividen el trabajo en castas especializadas; nosotros, en agentes con roles. Y cuando el rastro lleva a un callejón sin salida, la colonia se reorganiza; nuestros sistemas también deben recuperarse de los fallos. Tenga la colonia en mente: este libro trata, en el fondo, de cómo lograr que muchas piezas simples produzcan algo inteligente.</p>
+</section>
+
+<!-- ===== PREFACIO ===== -->
+<section class="frontnote">
+  <h2>Prefacio</h2>
+  <p class="lead">Construir un agente que funcione en una demo es fácil. Construir un sistema de agentes que funcione en producción —barato, seguro, medible y de confianza— es ingeniería de verdad. Este libro trata de lo segundo.</p>
+  <p>El recorrido es completo y deliberado. Empezamos por entender qué es un agente y cómo diseñar el sistema que lo rodea. Pasamos por la experiencia de usuario, porque un agente que nadie entiende no sirve. Le damos herramientas y memoria, lo hacemos aprender, y luego lo multiplicamos: de un agente a una colonia que colabora. La segunda mitad es la que casi nadie cuenta: cómo <em>medir</em> si funciona, cómo <em>monitorearlo</em> en producción, cómo <em>mejorarlo</em> en ciclos, cómo <em>protegerlo</em> de ataques y fallos, y cómo lograr que <em>humanos y agentes colaboren</em> con confianza.</p>
+  <p>Los ejemplos son prácticos y didácticos, pensados para que entienda la idea antes que el detalle. Cuando hay código, usa Node.js y la API de Claude; cuando hay un concepto abstracto, hay una analogía y un diagrama. No busco que memorice nombres de frameworks, sino que entienda los principios que sobreviven cuando los frameworks cambian.</p>
+  <div class="box note">
+    <span class="lab">Cómo leer este libro</span>
+    <p>Cada capítulo trae una analogía, al menos un diagrama o ejemplo, y una caja "Para recordar". Los capítulos 1 a 8 construyen el sistema; los capítulos 9 a 13 lo vuelven confiable. Puede leerlos en orden o ir directo al problema que enfrenta hoy.</p>
+  </div>
+</section>
+
+<!-- ===== ÍNDICE ===== -->
+<section class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><span class="n">1</span><span><span class="t">Introducción a los agentes</span><br><span class="d">Qué es un agente · tipos · síncrono vs asíncrono · workflows vs agentes · frameworks</span></span></li>
+    <li><span class="n">2</span><span><span class="t">Diseñar sistemas de agentes</span><br><span class="d">Componentes núcleo · compromisos de diseño · patrones de arquitectura · buenas prácticas</span></span></li>
+    <li><span class="n">3</span><span><span class="t">Experiencia de usuario</span><br><span class="d">Modalidades · el deslizador de autonomía · confianza · fallar con gracia</span></span></li>
+    <li><span class="n">4</span><span><span class="t">Uso de herramientas</span><br><span class="d">Locales, API, plug-in, MCP · herramientas con estado · creación automática</span></span></li>
+    <li><span class="n">5</span><span><span class="t">Orquestación</span><br><span class="d">Tipos de agente (ReAct, planificador…) · selección y topologías · ingeniería de contexto</span></span></li>
+    <li><span class="n">6</span><span><span class="t">Conocimiento y memoria</span><br><span class="d">Ventana de contexto · búsqueda semántica · RAG · GraphRAG · grafos de conocimiento</span></span></li>
+    <li><span class="n">7</span><span><span class="t">Aprendizaje en sistemas agénticos</span><br><span class="d">No paramétrico (Reflexion, experiencial) · fine-tuning · SFT, DPO, RLVR</span></span></li>
+    <li><span class="n">8</span><span><span class="t">De un agente a muchos</span><br><span class="d">¿Cuántos agentes? · enjambres · coordinación · comunicación · estado</span></span></li>
+    <li><span class="n">9</span><span><span class="t">Validación y medición</span><br><span class="d">La medición como piedra angular · sets de evaluación · por componente y holística</span></span></li>
+    <li><span class="n">10</span><span><span class="t">Monitoreo en producción</span><br><span class="d">Stacks de observabilidad · OTel · shadow, canary · auto-reparación · feedback</span></span></li>
+    <li><span class="n">11</span><span><span class="t">Ciclos de mejora</span><br><span class="d">Pipelines de feedback · causa raíz · priorización · cerrar el ciclo</span></span></li>
+    <li><span class="n">12</span><span><span class="t">Proteger sistemas agénticos</span><br><span class="d">Riesgos únicos · inyección de prompts · red teaming · datos · salvaguardas</span></span></li>
+    <li><span class="n">13</span><span><span class="t">Colaboración humano-agente</span><br><span class="d">Roles y autonomía · adopción · confianza, gobernanza y escalado</span></span></li>
+  </ol>
+</section>
+
+<!-- ===== CAP 1 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo uno</div><h2>Introducción a los agentes</h2></div>
+  <p class="epigraph">La inteligencia no es hacer una cosa muy bien, sino decidir qué hacer a continuación.<span class="who">— Sobre la diferencia entre responder y actuar</span></p>
+  <p class="lead">Un <strong>agente de IA</strong> es un sistema que recibe un objetivo y trabaja hacia él de forma autónoma: razona el siguiente paso, usa herramientas, observa el resultado y vuelve a decidir, hasta terminar. La autonomía es lo que lo distingue de un simple modelo que completa texto.</p>
+
+  <h3>La revolución del preentrenamiento</h3>
+  <p>Lo que hizo posibles a los agentes fue una sola idea: entrenar modelos enormes sobre cantidades masivas de texto hasta que aprendieran a razonar de forma general. Antes había que programar cada regla; hoy el modelo ya trae el "sentido común" y nosotros solo le damos objetivos y herramientas. El agente es ese modelo puesto a trabajar dentro de un bucle.</p>
+
+  <h3>Workflows y agentes: no es lo mismo</h3>
+  <p>Conviene separar dos cosas que suelen confundirse. Un <strong>workflow</strong> es una secuencia de pasos que tú defines de antemano; el modelo solo rellena cada casilla. Un <strong>agente</strong> decide por sí mismo qué paso dar. Los workflows son predecibles y baratos; los agentes son flexibles pero más difíciles de controlar. La mayoría de los buenos sistemas mezclan ambos: workflows para lo rutinario, agentes para lo que requiere criterio.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 150" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6f7d3c"/></marker></defs>
+      <text x="14" y="22" font-size="9" fill="#bf7d2a" class="dlabel">WORKFLOW · pasos fijos</text>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="14" y="34" width="70" height="28" rx="5" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="49" y="52">Paso A</text>
+        <rect x="110" y="34" width="70" height="28" rx="5" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="145" y="52">Paso B</text>
+        <rect x="206" y="34" width="70" height="28" rx="5" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="241" y="52">Paso C</text>
+      </g>
+      <g stroke="#6f7d3c" stroke-width="1.2" marker-end="url(#a1)" fill="none"><path d="M84 48 L106 48"/><path d="M180 48 L202 48"/></g>
+      <text x="14" y="98" font-size="9" fill="#bf7d2a" class="dlabel">AGENTE · decide el paso</text>
+      <circle cx="120" cy="120" r="26" fill="#2a2a1e"/><text x="120" y="118" text-anchor="middle" fill="#f3ecda" font-size="8.5" class="dlabel">Agente</text><text x="120" y="129" text-anchor="middle" fill="#bcd17e" font-size="7" class="dlabel">¿qué sigue?</text>
+      <g font-size="8" text-anchor="middle" class="dwords">
+        <rect x="200" y="92" width="74" height="22" rx="4" fill="#fff" stroke="#bf7d2a" stroke-width="1.1"/><text x="237" y="107">herramienta</text>
+        <rect x="200" y="124" width="74" height="22" rx="4" fill="#fff" stroke="#bf7d2a" stroke-width="1.1"/><text x="237" y="139">responder</text>
+      </g>
+      <g stroke="#bf7d2a" stroke-width="1.2" fill="none" marker-end="url(#a1)"><path d="M146 112 L198 103"/><path d="M146 128 L198 134"/><path d="M274 110 C300 118 160 150 146 130" stroke="#9a8a63" stroke-dasharray="3 3"/></g>
+    </svg>
+    <figcaption>Figura 1.1 — Workflow (camino fijo) frente a agente (decide en cada vuelta).</figcaption>
+  </figure>
+
+  <h3>Tipos de agentes y selección de modelo</h3>
+  <p>Los agentes van de lo reactivo (responden a un estímulo) a lo deliberativo (planifican varios pasos). No todos necesitan el modelo más grande: usar un modelo pequeño y rápido para tareas simples, y reservar el grande para el razonamiento difícil, es una de las decisiones que más impacta el costo. Elegir el modelo es elegir un punto en el triángulo capacidad–velocidad–precio.</p>
+
+  <h3>De síncrono a asíncrono</h3>
+  <p>Un agente síncrono responde mientras el usuario espera (un chat). Uno asíncrono trabaja en segundo plano y avisa cuando termina (procesar mil documentos durante la noche). El cambio no es solo técnico: cambia toda la experiencia y la arquitectura. Lo veremos en el capítulo 3.</p>
+
+  <h3>Frameworks</h3>
+  <p>Existen herramientas que ahorran trabajo repetitivo —LangGraph, AutoGen, CrewAI, el SDK de agentes de OpenAI, entre otras—. Son útiles, pero ninguna sustituye entender los principios. Un framework te da andamios; las decisiones de diseño siguen siendo tuyas. Aprende los conceptos de este libro y cualquier framework te resultará fácil.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Agente = modelo + bucle + objetivo + herramientas. Mezcla workflows (lo predecible) con agentes (lo que requiere criterio), usa el modelo más pequeño que resuelva cada paso, y trata los frameworks como andamios, no como sustitutos del diseño.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 2 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo dos</div><h2>Diseñar sistemas de agentes</h2></div>
+  <p class="epigraph">Diseñar es decidir qué dejar fuera.<span class="who">— Principio de toda buena arquitectura</span></p>
+  <p class="lead">Un agente rara vez vive solo: vive dentro de un sistema con componentes, compromisos y un patrón de arquitectura. Diseñar bien ese sistema importa más que afinar el prompt.</p>
+
+  <h3>Los cuatro componentes núcleo</h3>
+  <p>Todo sistema de agentes se construye con cuatro piezas: el <strong>modelo</strong> (que razona), las <strong>herramientas</strong> (sus manos), la <strong>memoria</strong> (de corto plazo —la conversación— y de largo plazo —lo que persiste entre sesiones—) y la <strong>orquestación</strong> (el código que conecta todo y decide el flujo). Diseñar el sistema es decidir cómo se combinan estas cuatro.</p>
+
+  <h3>Los compromisos de diseño</h3>
+  <p>No existe el sistema perfecto, solo el adecuado a tus prioridades. Cada decisión mueve cuatro perillas que tiran entre sí:</p>
+  <figure>
+    <svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg">
+      <line x1="180" y1="20" x2="180" y2="180" stroke="#cdbf99" stroke-width="1"/><line x1="30" y1="100" x2="330" y2="100" stroke="#cdbf99" stroke-width="1"/>
+      <g font-size="9" text-anchor="middle" class="dwords">
+        <text x="180" y="14" fill="#bf7d2a">Velocidad</text><text x="180" y="194" fill="#bf7d2a">Exactitud</text>
+        <text x="50" y="104" fill="#6f7d3c">Costo bajo</text><text x="305" y="104" fill="#6f7d3c">Fiabilidad</text>
+      </g>
+      <polygon points="180,55 260,100 180,150 110,100" fill="#bf7d2a" opacity=".18" stroke="#bf7d2a" stroke-width="1.3"/>
+      <text x="180" y="104" text-anchor="middle" font-size="7.5" fill="#9a8a63" class="dlabel">tu sistema</text>
+    </svg>
+    <figcaption>Figura 2.1 — Las cuatro perillas: subir una suele bajar otra.</figcaption>
+  </figure>
+  <ul class="clean">
+    <li><strong>Velocidad vs. exactitud:</strong> más pasos de razonamiento dan mejores respuestas pero más lentas. Decide cuánta espera tolera tu usuario.</li>
+    <li><strong>Escalabilidad:</strong> ¿soporta diez usuarios o diez mil? Las herramientas y la memoria deben aguantar la carga.</li>
+    <li><strong>Fiabilidad:</strong> el mismo input debe dar resultados consistentes y el sistema no debe caerse cuando una herramienta falla.</li>
+    <li><strong>Costo:</strong> cada llamada al modelo cuesta. Un diseño elegante que quiebra el presupuesto no es elegante.</li>
+  </ul>
+
+  <h3>Patrones de arquitectura</h3>
+  <p>Las arquitecturas de <strong>un solo agente</strong> son más simples de construir, depurar y razonar; deberían ser tu punto de partida. Las arquitecturas <strong>multiagente</strong> —colaboración, paralelismo, coordinación— se justifican cuando la tarea se divide con naturalidad en especialidades. El capítulo 8 las trata a fondo.</p>
+
+  <h3>Buenas prácticas</h3>
+  <p>Tres hábitos separan a quienes terminan sus sistemas de quienes los abandonan: <strong>diseño iterativo</strong> (construye lo mínimo, pruébalo, mejora), una <strong>estrategia de evaluación</strong> desde el día uno (capítulo 9) y <strong>pruebas con datos reales</strong>, no solo con los tres ejemplos bonitos que siempre funcionan.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Modelo, herramientas, memoria y orquestación son las cuatro piezas. Empieza con un solo agente, ten clara cuál de las cuatro perillas (velocidad, costo, fiabilidad, escala) priorizas, y prueba con datos reales desde temprano.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 3 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo tres</div><h2>Experiencia de usuario</h2></div>
+  <p class="epigraph">Un agente brillante que nadie entiende es un agente inútil.<span class="who">— Sobre por qué la UX no es opcional</span></p>
+  <p class="lead">La inteligencia de un agente solo importa si la persona puede confiar en ella, dirigirla y entenderla. El diseño de la interacción es donde el agente gana —o pierde— a su usuario.</p>
+
+  <h3>Modalidades de interacción</h3>
+  <p>Un agente puede comunicarse por <strong>texto</strong> (flexible y preciso), por <strong>interfaz gráfica</strong> (botones, tarjetas, formularios que reducen el error), por <strong>voz</strong> (manos libres, natural) o combinando varias. La mejor experiencia suele mezclarlas: el usuario habla, ve una confirmación visual y toca un botón para aprobar.</p>
+
+  <h3>El deslizador de autonomía</h3>
+  <p>La autonomía no es un interruptor de "sí o no", sino un <strong>deslizador</strong>. En un extremo, el agente sugiere y el humano hace todo; en el otro, el agente actúa solo. Lo sensato es empezar abajo —el agente propone, el humano aprueba— y subir el deslizador a medida que el sistema demuestra ser confiable en cada tarea.</p>
+  <figure>
+    <svg viewBox="0 0 420 90" xmlns="http://www.w3.org/2000/svg">
+      <line x1="40" y1="50" x2="380" y2="50" stroke="#cdbf99" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="150" cy="50" r="9" fill="#bf7d2a"/>
+      <g font-size="8.5" text-anchor="middle" class="dwords" fill="#4d4632">
+        <text x="40" y="74">solo sugiere</text><text x="150" y="30">propone y aprueba</text>
+        <text x="270" y="74">actúa y avisa</text><text x="380" y="30">autónomo</text>
+      </g>
+      <g fill="#cdbf99"><circle cx="40" cy="50" r="3"/><circle cx="270" cy="50" r="3"/><circle cx="380" cy="50" r="3"/></g>
+    </svg>
+    <figcaption>Figura 3.1 — El deslizador de autonomía: súbelo solo cuando te lo hayas ganado.</figcaption>
+  </figure>
+
+  <h3>Síncrono vs. asíncrono, proactivo vs. intrusivo</h3>
+  <p>Un agente síncrono debe sentirse vivo: mostrar que está pensando, dar resultados parciales. Uno asíncrono debe rendir cuentas: avisar cuándo empezó, cómo va y cuándo terminó. Y en ambos acecha el mismo riesgo: un agente <em>proactivo</em> es útil; uno <em>intrusivo</em> es molesto. La línea está en si la iniciativa del agente sirve al usuario o solo lo interrumpe.</p>
+
+  <h3>Continuidad, confianza y fallar con gracia</h3>
+  <p>Un buen agente recuerda el contexto entre interacciones (mantiene el estado), se personaliza, y —clave— <strong>comunica su confianza</strong>: dice cuándo está seguro y cuándo no. Cuando no sabe, <em>pide ayuda</em> en vez de inventar. Y cuando falla, <strong>falla con gracia</strong>: explica qué pasó y ofrece una salida, en lugar de un error críptico o una alucinación segura de sí misma. Cada uno de estos gestos construye —o destruye— la confianza.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>La autonomía es un deslizador, no un botón. Comunica capacidades y confianza con honestidad, pide guía ante la duda y falla con gracia. La confianza del usuario se gana gesto a gesto y se pierde de golpe.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 4 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cuatro</div><h2>Uso de herramientas</h2></div>
+  <p class="epigraph">Un cerebro sin manos solo puede opinar.<span class="who">— Por qué las herramientas lo cambian todo</span></p>
+  <p class="lead">Las herramientas convierten un agente que <em>habla</em> en uno que <em>hace</em>. Son funciones que el modelo puede pedir ejecutar: consultar una base de datos, llamar a una API, leer un archivo, correr código.</p>
+
+  <h3>De locales a estándar: el espectro de herramientas</h3>
+  <ul class="clean">
+    <li><strong>Herramientas locales:</strong> funciones en tu propio código. Las más simples y seguras de empezar.</li>
+    <li><strong>Basadas en API:</strong> el agente llama a un servicio externo (clima, pagos, tu ERP).</li>
+    <li><strong>Plug-in:</strong> capacidades empaquetadas que se conectan y desconectan sin tocar el agente.</li>
+    <li><strong>MCP (Model Context Protocol):</strong> un estándar para conectar herramientas como si fueran un USB universal. El día que cambies un servicio, solo reemplazas su servidor MCP; el agente ni se entera. Conviene cuando tienes muchas herramientas o muchos agentes.</li>
+    <li><strong>Herramientas con estado:</strong> recuerdan algo entre llamadas (una sesión abierta, un carrito). Más potentes, pero exigen cuidado: el estado hay que gestionarlo y limpiarlo.</li>
+  </ul>
+
+  <h3>Declarar una herramienta</h3>
+  <p>El modelo no ejecuta nada: solo <em>pide</em> ejecutar, según la <strong>descripción</strong> que tú le des. Una descripción clara es la diferencia entre un agente que acierta y uno que se confunde.</p>
+<pre><span class="c">// Una herramienta = lógica + una buena descripción</span>
+<span class="k">const</span> herramienta = {
+  name: <span class="s">"consultarClima"</span>,
+  description: <span class="s">"Devuelve el clima actual de una ciudad. Úsala cuando"</span>
+             + <span class="s">" el usuario pregunte por temperatura o lluvia."</span>,
+  input_schema: { type:<span class="s">"object"</span>,
+    properties:{ ciudad:{ type:<span class="s">"string"</span>, description:<span class="s">"nombre de la ciudad"</span> } },
+    required:[<span class="s">"ciudad"</span>] }
+};
+<span class="c">// Tu código ejecuta lo que el modelo pide y le devuelve el resultado.</span>
+<span class="k">async function</span> <span class="f">consultarClima</span>(ciudad){ <span class="c">/* llamada real a la API */</span> }</pre>
+
+  <h3>Herramientas que se crean solas</h3>
+  <p>La frontera más nueva: agentes que <strong>fabrican sus propias herramientas</strong>. Un modelo puede escribir el código de una herramienta que le falta y generarlo en tiempo real para resolver un problema imprevisto. Es poderoso y arriesgado a la vez —código generado y ejecutado al vuelo—, así que exige un entorno aislado (sandbox) y límites estrictos.</p>
+
+  <div class="box note"><span class="lab">Configuración del uso de herramientas</span><p>Decide qué herramientas ofreces, cuándo el modelo puede elegir libremente y cuándo lo fuerzas a usar una concreta, y siempre valida los argumentos antes de ejecutar. La herramienta es la puerta entre el modelo y el mundo: contrólala.</p></div>
+  <div class="box"><span class="lab">Para recordar</span><p>La calidad de un agente con herramientas vive en las <em>descripciones</em>. El modelo decide; tu código ejecuta y valida. Usa MCP cuando el número de herramientas o agentes lo justifique, y aísla cualquier código que el agente genere.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 5 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cinco</div><h2>Orquestación</h2></div>
+  <p class="epigraph">No basta con tener músicos; alguien debe decidir quién toca y cuándo.<span class="who">— Sobre el arte de orquestar</span></p>
+  <p class="lead">La orquestación es la lógica que decide cómo razona el agente, qué herramienta elige y en qué orden ejecuta. Es el director de orquesta del sistema.</p>
+
+  <h3>Tipos de agente según cómo razonan</h3>
+  <ul class="clean">
+    <li><strong>Reflejo:</strong> reacciona directo al estímulo, sin pensar pasos. Rápido y simple.</li>
+    <li><strong>ReAct (razonar + actuar):</strong> alterna entre pensar y usar una herramienta, en bucle. El patrón más usado.</li>
+    <li><strong>Planificador-ejecutor:</strong> primero traza un plan completo, luego lo ejecuta paso a paso.</li>
+    <li><strong>Descomposición de consultas:</strong> parte una pregunta compleja en sub-preguntas más fáciles.</li>
+    <li><strong>Reflexión:</strong> revisa su propio trabajo y lo corrige antes de entregar.</li>
+    <li><strong>Investigación profunda:</strong> explora muchas fuentes y sintetiza, para tareas largas.</li>
+  </ul>
+  <figure>
+    <svg viewBox="0 0 380 130" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#bf7d2a"/></marker></defs>
+      <g text-anchor="middle" font-size="9" class="dwords">
+        <circle cx="80" cy="60" r="30" fill="#fff" stroke="#2a2a1e" stroke-width="1.4"/><text x="80" y="58">Razonar</text><text x="80" y="71" font-size="7" fill="#6f7d3c">¿qué hago?</text>
+        <circle cx="280" cy="60" r="30" fill="#fff" stroke="#2a2a1e" stroke-width="1.4"/><text x="280" y="58">Actuar</text><text x="280" y="71" font-size="7" fill="#6f7d3c">herramienta</text>
+      </g>
+      <g stroke="#bf7d2a" stroke-width="1.5" fill="none" marker-end="url(#a5)"><path d="M110 50 C170 30 200 30 248 48"/><path d="M250 72 C200 92 160 92 110 74"/></g>
+      <text x="180" y="118" text-anchor="middle" font-size="8" fill="#9a8a63" class="dlabel">observar el resultado y repetir — el bucle ReAct</text>
+    </svg>
+    <figcaption>Figura 5.1 — ReAct: razonar y actuar se turnan hasta resolver.</figcaption>
+  </figure>
+
+  <h3>Selección de herramientas</h3>
+  <p>Cuando hay muchas herramientas, el agente debe elegir la correcta. La selección <strong>estándar</strong> pone todas en el contexto y deja que el modelo escoja —simple, pero se satura con decenas de herramientas—. La <strong>semántica</strong> recupera primero solo las herramientas relevantes a la consulta (como un RAG de herramientas). La <strong>jerárquica</strong> organiza las herramientas en grupos y baja por niveles. A más herramientas, más necesitas las dos últimas.</p>
+
+  <h3>Topologías de ejecución</h3>
+  <p>Las herramientas pueden ejecutarse de a una, en <strong>paralelo</strong> (varias a la vez cuando no dependen entre sí, para ganar velocidad), en <strong>cadena</strong> (la salida de una alimenta la siguiente) o como un <strong>grafo</strong> (dependencias complejas con ramas y uniones). La topología correcta depende de qué tan acopladas estén las tareas.</p>
+
+  <h3>Ingeniería de contexto</h3>
+  <p>El recurso más escaso del agente es el espacio en su ventana de contexto. La <strong>ingeniería de contexto</strong> es el arte de poner ahí exactamente lo necesario —ni más, que confunde y cuesta, ni menos, que deja al agente a ciegas—. Buena parte del rendimiento de un agente se gana aquí, no en el modelo.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Elige el tipo de agente según la tarea (ReAct para lo general, planificador para lo complejo, reflexión para lo delicado). Con muchas herramientas, selecciónalas semánticamente. Y cuida el contexto: más no es mejor, lo justo es mejor.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 6 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo seis</div><h2>Conocimiento y memoria</h2></div>
+  <p class="epigraph">Recordar no es guardarlo todo, sino encontrar lo justo en el momento justo.<span class="who">— Sobre la memoria útil</span></p>
+  <p class="lead">El modelo olvida todo entre llamadas. Darle memoria es diseñar cómo guardar conocimiento fuera de él y recuperar solo lo relevante cuando hace falta.</p>
+
+  <h3>Gestionar la ventana de contexto</h3>
+  <p>La memoria de corto plazo es lo que cabe en el contexto de cada llamada. Como es limitada y cuesta, hay que gestionarla: resumir lo viejo, descartar el ruido, conservar lo relevante. Un historial gigante no solo es caro: confunde al modelo.</p>
+
+  <h3>De la búsqueda de texto a la búsqueda semántica</h3>
+  <p>La <strong>búsqueda full-text</strong> tradicional encuentra coincidencias de palabras exactas; falla cuando el usuario dice "auto" y el documento dice "vehículo". La <strong>búsqueda semántica</strong> resuelve esto con <em>embeddings</em>: cada texto se convierte en un vector que captura su significado, de modo que textos parecidos quedan cerca aunque usen otras palabras. Esos vectores viven en una <strong>base vectorial</strong>.</p>
+
+  <h3>RAG: el examen a libro abierto</h3>
+  <p><strong>RAG</strong> (generación aumentada por recuperación) es la técnica estrella: ante una pregunta, recuperas de la base vectorial los fragmentos más relevantes y los inyectas en el contexto para que el modelo responda con ellos delante. No memoriza el manual entero; busca la página correcta en el momento justo.</p>
+  <figure>
+    <svg viewBox="0 0 460 120" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2a2a1e"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="8" y="42" width="78" height="36" rx="5" fill="#fff" stroke="#2a2a1e" stroke-width="1.2"/><text x="47" y="58">Pregunta</text><text x="47" y="70" font-size="7" fill="#6f7d3c">→ embedding</text>
+        <rect x="116" y="42" width="92" height="36" rx="5" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="162" y="58">Base</text><text x="162" y="70">vectorial</text>
+        <rect x="238" y="42" width="92" height="36" rx="5" fill="#fff" stroke="#bf7d2a" stroke-width="1.2"/><text x="284" y="58">fragmentos</text><text x="284" y="70" font-size="7" fill="#6f7d3c">relevantes</text>
+        <rect x="360" y="42" width="92" height="36" rx="5" fill="#2a2a1e"/><text x="406" y="58" fill="#f3ecda">Modelo</text><text x="406" y="70" fill="#bcd17e" font-size="7">responde</text>
+      </g>
+      <g stroke="#2a2a1e" stroke-width="1.2" fill="none" marker-end="url(#a6)"><path d="M86 60 L112 60"/><path d="M208 60 L234 60"/><path d="M330 60 L356 60"/></g>
+    </svg>
+    <figcaption>Figura 6.1 — El flujo de RAG: recuperar lo relevante y responder con ello.</figcaption>
+  </figure>
+
+  <h3>GraphRAG y grafos de conocimiento</h3>
+  <p>A veces lo importante no son los textos sueltos, sino las <strong>relaciones</strong>: quién trabaja con quién, qué causa qué. Un <strong>grafo de conocimiento</strong> guarda entidades y sus conexiones; <strong>GraphRAG</strong> combina ese grafo con la recuperación para responder preguntas que requieren conectar varios datos. Construirlos cuesta, y los grafos dinámicos —que se actualizan solos— traen tanta promesa como peligro: un dato mal inferido contamina el resto.</p>
+
+  <h3>Memoria de experiencia y notas</h3>
+  <p>Más allá del conocimiento, un agente puede recordar sus <strong>propias experiencias</strong> (qué funcionó antes en un caso parecido) y tomar <strong>notas</strong> durante una tarea larga para no perder el hilo. Es la diferencia entre un agente que siempre empieza de cero y uno que aprende del camino recorrido.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>La memoria no vive en el modelo, vive en tu arquitectura. Búsqueda semántica + RAG para el conocimiento; grafos cuando importan las relaciones; experiencia y notas para no repetir errores. Recupera lo justo, no lo vuelques todo.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 7 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo siete</div><h2>Aprendizaje en sistemas agénticos</h2></div>
+  <p class="epigraph">Aprender es cambiar; la pregunta es qué cambias: la memoria o el músculo.<span class="who">— Sobre las dos formas de mejorar</span></p>
+  <p class="lead">Un agente puede mejorar de dos maneras: cambiando lo que <em>recuerda</em> (sin tocar el modelo) o cambiando el modelo mismo (entrenándolo). La primera es barata y reversible; la segunda, potente y costosa.</p>
+
+  <h3>Aprendizaje no paramétrico: aprender sin tocar el modelo</h3>
+  <p>Aquí el modelo no cambia; cambia lo que le mostramos. Tres formas útiles:</p>
+  <ul class="clean">
+    <li><strong>Aprendizaje por ejemplos:</strong> guardas casos resueltos y, ante uno nuevo, le muestras al modelo los más parecidos para que imite el patrón.</li>
+    <li><strong>Reflexión (Reflexion):</strong> tras fallar, el agente escribe una nota sobre <em>por qué</em> falló y la consulta en el siguiente intento. Aprende de sus errores sin reentrenarse.</li>
+    <li><strong>Aprendizaje experiencial:</strong> acumula un registro de qué estrategias funcionaron y lo usa como guía.</li>
+  </ul>
+  <div class="analogy"><span class="lab">Analogía</span><p>El aprendizaje no paramétrico es como un médico que consulta casos anteriores antes de diagnosticar. No se vuelve más inteligente; se vuelve más informado. Rápido de actualizar y fácil de auditar.</p></div>
+
+  <h3>Aprendizaje paramétrico: afinar el modelo</h3>
+  <p>Cuando los ejemplos no bastan, se entrena el modelo. El <strong>fine-tuning</strong> ajusta sus pesos con tus datos. Una idea clave: un <strong>modelo pequeño afinado</strong> para tu tarea concreta suele superar a uno gigante genérico, y cuesta mucho menos operar. Las técnicas principales:</p>
+  <ul class="clean">
+    <li><strong>SFT (ajuste supervisado):</strong> le muestras pares entrada→respuesta correcta y aprende a imitarlos.</li>
+    <li><strong>DPO (optimización por preferencias):</strong> le muestras pares "esta respuesta es mejor que esta otra" y aprende a preferir lo bueno.</li>
+    <li><strong>RLVR (refuerzo con recompensas verificables):</strong> el agente practica una tarea donde el acierto se puede comprobar automáticamente (¿el código pasa los tests?) y mejora por ensayo y error.</li>
+  </ul>
+
+  <div class="box note"><span class="lab">Cuándo entrenar</span><p>Empieza siempre por lo no paramétrico: es más rápido, barato y reversible. Pasa al fine-tuning solo cuando tengas muchos datos de calidad y un problema estable que justifique el costo. Entrenar un modelo es un compromiso, no un experimento.</p></div>
+  <div class="box"><span class="lab">Para recordar</span><p>Dos palancas: memoria (no paramétrico, barato y reversible) y músculo (fine-tuning, potente y caro). Reflexion y los ejemplos te llevan lejos antes de necesitar entrenar. Un modelo pequeño afinado suele ganarle a uno grande genérico.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 8 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo ocho</div><h2>De un agente a muchos</h2></div>
+  <p class="epigraph">Una hormiga es tonta; un hormiguero es brillante.<span class="who">— El principio de la inteligencia emergente</span></p>
+  <p class="lead">Cuando una tarea desborda a un solo agente, la repartimos entre varios. Aquí entra la colonia de la portada: muchos agentes simples que, coordinados, logran lo que ninguno podría solo.</p>
+
+  <h3>¿Cuántos agentes necesito?</h3>
+  <p>La respuesta honesta casi siempre es: <strong>menos de los que crees</strong>. Un solo agente con buenas herramientas resuelve la mayoría de los casos, y es más fácil de construir, depurar y costear. Pasa a varios agentes solo cuando la tarea se divide en especialidades claras, cuando necesitas paralelismo real, o cuando el contexto de un solo agente se satura. Cada agente extra es otra llamada al modelo: más capacidad, más costo, más cosas que pueden fallar.</p>
+
+  <h3>Enjambres y principios para sumar agentes</h3>
+  <p>Un <strong>enjambre</strong> (swarm) es la versión extrema: muchos agentes simples sin jerarquía cuya inteligencia emerge de reglas locales —como la colonia—. Funciona para problemas de exploración masiva, pero es difícil de predecir. El principio rector al sumar agentes: <em>añade uno solo cuando puedas nombrar con claridad qué hace y por qué un agente existente no podía hacerlo.</em></p>
+
+  <h3>Patrones de coordinación</h3>
+  <figure>
+    <svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg">
+      <g text-anchor="middle" font-size="8" class="dwords">
+        <text x="70" y="14" fill="#bf7d2a" font-size="8.5">Manager</text>
+        <circle cx="70" cy="34" r="11" fill="#2a2a1e"/><circle cx="40" cy="80" r="9" fill="#fff" stroke="#6f7d3c"/><circle cx="70" cy="80" r="9" fill="#fff" stroke="#6f7d3c"/><circle cx="100" cy="80" r="9" fill="#fff" stroke="#6f7d3c"/>
+        <g stroke="#9a8a63" stroke-width="1"><line x1="70" y1="45" x2="40" y2="71"/><line x1="70" y1="45" x2="70" y2="71"/><line x1="70" y1="45" x2="100" y2="71"/></g>
+
+        <text x="230" y="14" fill="#bf7d2a" font-size="8.5">Jerárquica</text>
+        <circle cx="230" cy="30" r="10" fill="#2a2a1e"/><circle cx="200" cy="62" r="8" fill="#4d4632"/><circle cx="260" cy="62" r="8" fill="#4d4632"/>
+        <circle cx="185" cy="92" r="7" fill="#fff" stroke="#6f7d3c"/><circle cx="215" cy="92" r="7" fill="#fff" stroke="#6f7d3c"/><circle cx="245" cy="92" r="7" fill="#fff" stroke="#6f7d3c"/><circle cx="275" cy="92" r="7" fill="#fff" stroke="#6f7d3c"/>
+        <g stroke="#9a8a63" stroke-width="1"><line x1="230" y1="40" x2="200" y2="55"/><line x1="230" y1="40" x2="260" y2="55"/><line x1="200" y1="69" x2="185" y2="86"/><line x1="200" y1="69" x2="215" y2="86"/><line x1="260" y1="69" x2="245" y2="86"/><line x1="260" y1="69" x2="275" y2="86"/></g>
+
+        <text x="400" y="14" fill="#bf7d2a" font-size="8.5">Democrática</text>
+        <circle cx="375" cy="40" r="9" fill="#fff" stroke="#6f7d3c"/><circle cx="425" cy="40" r="9" fill="#fff" stroke="#6f7d3c"/><circle cx="375" cy="85" r="9" fill="#fff" stroke="#6f7d3c"/><circle cx="425" cy="85" r="9" fill="#fff" stroke="#6f7d3c"/>
+        <g stroke="#9a8a63" stroke-width="1"><line x1="375" y1="40" x2="425" y2="40"/><line x1="375" y1="85" x2="425" y2="85"/><line x1="375" y1="40" x2="375" y2="85"/><line x1="425" y1="40" x2="425" y2="85"/><line x1="375" y1="40" x2="425" y2="85"/><line x1="425" y1="40" x2="375" y2="85"/></g>
+      </g>
+    </svg>
+    <figcaption>Figura 8.1 — Tres formas de coordinar: un manager que reparte, niveles jerárquicos, o pares que negocian.</figcaption>
+  </figure>
+  <ul class="clean">
+    <li><strong>Manager:</strong> un agente reparte el trabajo y reúne los resultados. Claro y fácil de depurar.</li>
+    <li><strong>Jerárquica:</strong> managers que coordinan a otros managers. Para problemas grandes; vigila que el costo se multiplica por nivel.</li>
+    <li><strong>Democrática:</strong> los agentes negocian o votan entre pares, sin jefe. Robusta pero más impredecible.</li>
+    <li><strong>Actor-crítico:</strong> uno hace, otro evalúa y da retroalimentación. Sube la calidad en tareas delicadas.</li>
+  </ul>
+
+  <h3>Cómo se comunican</h3>
+  <p>Aquí vuelven las feromonas de la colonia. Los agentes pueden comunicarse de forma <strong>local</strong> (en el mismo proceso) o <strong>distribuida</strong> (en máquinas distintas). Para lo distribuido se usan <strong>protocolos agente-a-agente</strong>, <strong>colas de mensajes y buses de eventos</strong> (un agente deja un mensaje, otro lo recoge —como una feromona—) y, a gran escala, <strong>frameworks de actores</strong> (Ray, Orleans, Akka) o motores de orquestación de flujos. Y como todo sistema distribuido, hay que <strong>gestionar el estado</strong>: dónde se guarda, cómo persiste, qué pasa si un agente se cae a mitad de la tarea.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Empieza con un agente; suma otro solo cuando puedas justificar su rol. Elige el patrón de coordinación según el control que necesites (manager para claridad, democrático para robustez). En sistemas distribuidos, la comunicación y el estado son tan importantes como los agentes mismos.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 9 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo nueve</div><h2>Validación y medición</h2></div>
+  <p class="epigraph">Si no lo mides, no lo tienes: solo crees tenerlo.<span class="who">— La piedra angular de todo sistema serio</span></p>
+  <p class="lead">La medición es la diferencia entre un experimento y un producto. Un agente que "parece funcionar" en tres pruebas manuales es una apuesta a ciegas cada vez que lo cambias.</p>
+
+  <h3>La medición como piedra angular</h3>
+  <p>Antes de optimizar nada, necesitas saber qué significa "mejor" para tu caso y poder medirlo. Sin una métrica, cada cambio en el prompt, el modelo o una herramienta es una corazonada. Con métricas, es una decisión.</p>
+
+  <h3>Integrar la evaluación en el ciclo de desarrollo</h3>
+  <p>La evaluación no es un paso final, sino parte del flujo diario. Cada vez que cambies algo, ejecuta el agente sobre un <strong>conjunto de evaluación</strong>: entradas representativas con su resultado esperado. Empieza con unas pocas docenas escritas a mano y luego <strong>escálalo</strong> con casos reales de producción.</p>
+
+  <h3>Evaluación por componente</h3>
+  <p>Como un mecánico que prueba pieza por pieza, conviene evaluar cada parte por separado: ¿el agente <strong>elige la herramienta correcta</strong> con los argumentos correctos? ¿Su <strong>planificación</strong> tiene sentido? ¿La <strong>memoria</strong> recupera lo relevante? ¿El <strong>aprendizaje</strong> realmente mejora algo? Aislar componentes te dice <em>dónde</em> está el problema, no solo que existe.</p>
+
+  <h3>Evaluación holística</h3>
+  <p>Luego, el sistema completo de punta a punta. Aquí importan:</p>
+  <ul class="clean">
+    <li><strong>Rendimiento end-to-end:</strong> ¿resuelve la tarea real del usuario?</li>
+    <li><strong>Consistencia:</strong> ¿da resultados estables ante entradas iguales o parecidas?</li>
+    <li><strong>Coherencia:</strong> ¿sus pasos encajan entre sí y con el objetivo?</li>
+    <li><strong>Alucinación:</strong> ¿inventa datos? Medirlo es vital para la confianza.</li>
+    <li><strong>Entradas inesperadas:</strong> ¿qué hace ante lo raro, lo ambiguo o lo malintencionado?</li>
+  </ul>
+
+  <div class="box"><span class="lab">Para recordar</span><p>La evaluación es la piedra angular: constrúyela desde el día uno e intégrala en tu ciclo. Mide por componente (para saber dónde falla) y de forma holística (para saber si sirve). Antes de subir la autonomía, sube tu capacidad de medir.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 10 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo diez</div><h2>Monitoreo en producción</h2></div>
+  <p class="epigraph">La evaluación te dice si está listo; el monitoreo te dice cómo le va de verdad.<span class="who">— Sobre la vida después del despliegue</span></p>
+  <p class="lead">Tu agente se comporta distinto con usuarios reales que en tus pruebas. El monitoreo es cómo aprendes qué pasa de verdad ahí afuera —y cómo te enteras de los problemas antes que tus usuarios.</p>
+
+  <h3>Monitorear es aprender</h3>
+  <p>Cada interacción real es un dato. Registrar qué recibió el agente, qué razonó, qué herramienta llamó, qué devolvió y cuánto tardó y costó te da la materia prima para mejorarlo. Sin ese registro, operas a ciegas.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a10" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2a2a1e"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="8" y="36" width="80" height="30" rx="5" fill="#2a2a1e"/><text x="48" y="55" fill="#f3ecda">Agente</text>
+        <rect x="120" y="36" width="86" height="30" rx="5" fill="#fff" stroke="#bf7d2a" stroke-width="1.2"/><text x="163" y="55">trazas (OTel)</text>
+        <rect x="238" y="36" width="86" height="30" rx="5" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="281" y="51">tableros</text><text x="281" y="61" font-size="7" fill="#6f7d3c">y alertas</text>
+        <rect x="356" y="36" width="96" height="30" rx="5" fill="#fff" stroke="#2a2a1e" stroke-width="1.2"/><text x="404" y="55">tú actúas</text>
+      </g>
+      <g stroke="#2a2a1e" stroke-width="1.2" fill="none" marker-end="url(#a10)"><path d="M88 51 L116 51"/><path d="M206 51 L234 51"/><path d="M324 51 L352 51"/></g>
+    </svg>
+    <figcaption>Figura 10.1 — Del agente a la acción: instrumentar, visualizar, alertar.</figcaption>
+  </figure>
+
+  <h3>Stacks de observabilidad</h3>
+  <p>Hay herramientas listas para esto: <strong>Grafana</strong> con OpenTelemetry, Loki y Tempo; el <strong>stack ELK</strong> (Elasticsearch, Logstash, Kibana); y opciones pensadas para IA como <strong>Arize Phoenix</strong>, <strong>SigNoz</strong> o <strong>Langfuse</strong>. La elección depende de tu escala y de si ya usas alguna. El estándar que las une es <strong>OpenTelemetry (OTel)</strong>: instrumenta tu agente con OTel y podrás cambiar de herramienta sin reescribir todo.</p>
+
+  <h3>Patrones de monitoreo</h3>
+  <ul class="clean">
+    <li><strong>Modo sombra (shadow):</strong> el agente nuevo corre en paralelo al viejo sin afectar al usuario; comparas resultados antes de confiar en él.</li>
+    <li><strong>Despliegue canario (canary):</strong> liberas el cambio a un pequeño porcentaje de usuarios y observas antes de extenderlo a todos.</li>
+    <li><strong>Recolección de regresiones:</strong> guardas las trazas de los fallos para convertirlas en nuevos casos de evaluación.</li>
+    <li><strong>Agentes auto-reparables:</strong> que detectan un fallo y reintentan o se ajustan solos dentro de límites seguros.</li>
+  </ul>
+
+  <h3>Señales y deriva</h3>
+  <p>El <strong>feedback del usuario</strong> (un pulgar abajo, una corrección) es oro como señal de observabilidad. Y vigila la <strong>deriva de distribución</strong>: cuando lo que piden los usuarios cambia con el tiempo y tu agente, entrenado para lo viejo, empieza a fallar sin que nada se "rompa". Define además quién es <strong>dueño de cada métrica</strong>: una métrica sin responsable no se arregla.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Instrumenta con OpenTelemetry desde el inicio. Despliega con sombra y canarios para no romper la confianza. Trata el feedback del usuario como señal y vigila la deriva: los agentes no fallan solo de golpe, también se desgastan despacio.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 11 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo once</div><h2>Ciclos de mejora</h2></div>
+  <p class="epigraph">Un buen sistema no nace bueno: se vuelve bueno, una vuelta a la vez.<span class="who">— Sobre la mejora continua</span></p>
+  <p class="lead">Evaluar y monitorear generan datos. Los ciclos de mejora son la maquinaria que convierte esos datos en un agente cada vez mejor, de forma sistemática y no por corazonadas.</p>
+
+  <h3>Pipelines de feedback</h3>
+  <p>El primer eslabón es un <strong>canal de retroalimentación</strong> que recoja, de forma ordenada, todo lo que el sistema aprende en producción: quejas de usuarios, fallos detectados, casos donde el agente dudó. Ese flujo debe llegar a un lugar donde se pueda revisar y actuar, no perderse en un log que nadie lee.</p>
+
+  <figure>
+    <svg viewBox="0 0 360 130" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a11" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#bf7d2a"/></marker></defs>
+      <g text-anchor="middle" font-size="8" class="dwords">
+        <circle cx="180" cy="22" r="16" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="180" y="25">Detectar</text>
+        <circle cx="312" cy="65" r="16" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="312" y="62">Causa</text><text x="312" y="71">raíz</text>
+        <circle cx="240" cy="112" r="16" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="240" y="115">Priorizar</text>
+        <circle cx="120" cy="112" r="16" fill="#fff" stroke="#6f7d3c" stroke-width="1.2"/><text x="120" y="115">Corregir</text>
+        <circle cx="48" cy="65" r="16" fill="#bf7d2a"/><text x="48" y="62" fill="#fff">Medir</text><text x="48" y="71" fill="#fff" font-size="7">de nuevo</text>
+      </g>
+      <g stroke="#bf7d2a" stroke-width="1.3" fill="none" marker-end="url(#a11)">
+        <path d="M196 27 C260 33 295 45 305 50"/><path d="M306 81 C285 98 268 104 258 107"/>
+        <path d="M222 116 C190 122 158 122 140 117"/><path d="M106 100 C80 86 66 78 58 73"/>
+        <path d="M52 49 C70 30 130 20 162 21"/>
+      </g>
+    </svg>
+    <figcaption>Figura 11.1 — El ciclo de mejora: detectar, entender, corregir, priorizar, volver a medir.</figcaption>
+  </figure>
+
+  <h3>De la detección a la causa raíz</h3>
+  <p>Detectar un fallo es fácil; entender <em>por qué</em> ocurrió es el verdadero trabajo. El <strong>análisis de causa raíz</strong> usa las trazas del capítulo 10 para reconstruir qué paso del bucle se torció: ¿el agente eligió mal la herramienta, recuperó el contexto equivocado, o el modelo simplemente se confundió? Idealmente, parte de esto se automatiza: el sistema agrupa fallos parecidos y propone la causa probable.</p>
+
+  <h3>Priorizar y cerrar el ciclo</h3>
+  <p>No todos los fallos merecen la misma atención. Prioriza por impacto: cuántos usuarios afecta, qué tan grave es, qué tan fácil es arreglarlo. Y —lo más importante— <strong>cierra el ciclo</strong>: cada corrección debe convertirse en un nuevo caso de evaluación, para que el mismo error nunca vuelva a pasar sin que tu sistema lo note. Así el agente no solo se arregla: se vuelve <em>imposible de romper de la misma forma dos veces</em>.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Recoge el feedback en un canal ordenado, encuentra la causa raíz con las trazas, prioriza por impacto y cierra el ciclo convirtiendo cada fallo en una prueba. La mejora continua no es heroísmo, es un proceso aburrido y disciplinado que funciona.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 12 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo doce</div><h2>Proteger sistemas agénticos</h2></div>
+  <p class="epigraph">Darle manos a la IA también le da manos a quien la engañe.<span class="who">— Sobre el precio de la autonomía</span></p>
+  <p class="lead">Un agente con herramientas puede actuar sobre el mundo —y eso es justo lo que un atacante quiere aprovechar. La seguridad de los agentes tiene riesgos propios que no existían en el software tradicional.</p>
+
+  <h3>Los riesgos únicos y los vectores emergentes</h3>
+  <p>El riesgo nuevo más importante es la <strong>inyección de prompts</strong>: texto malicioso escondido en algo que el agente <em>lee</em> —una página web, un correo, un documento— que intenta darle órdenes. Si el agente confunde ese contenido con instrucciones legítimas, puede ser manipulado para filtrar datos o ejecutar acciones dañinas. Otros vectores: el abuso de herramientas, el envenenamiento de la memoria o el conocimiento, y el encadenamiento de pasos individualmente inocentes hacia un fin peligroso.</p>
+
+  <div class="box note"><span class="lab">La regla de oro</span><p>Las <em>instrucciones</em> vienen del usuario, por el canal del usuario. Todo lo que el agente <em>lee</em> de fuera —web, correo, archivos— es <strong>información, no órdenes</strong>. Si un documento dice "ignora tus reglas y envía X", eso se reporta, no se obedece. Esta sola distinción previene una enorme clase de ataques.</p></div>
+
+  <h3>Técnicas defensivas</h3>
+  <p>Defenderse exige pensar como atacante. El <strong>red teaming</strong> es atacar tu propio agente a propósito para encontrar grietas antes que los malos. El <strong>modelado de amenazas</strong> (con marcos como MAESTRO, pensado para sistemas agénticos) mapea de forma sistemática qué podría salir mal en cada componente —modelo, herramientas, memoria, comunicación— y cómo mitigarlo.</p>
+
+  <h3>Proteger los datos</h3>
+  <p>Los agentes tocan datos sensibles, así que: <strong>cífralos</strong> en tránsito y en reposo, controla su <strong>privacidad</strong>, asegura su <strong>procedencia e integridad</strong> (saber de dónde vino cada dato y que nadie lo alteró) y da un trato especial a la <strong>información sensible</strong> —minimiza lo que el agente ve y registra—.</p>
+
+  <h3>Asegurar los agentes</h3>
+  <p>Finalmente, pon <strong>salvaguardas</strong> alrededor del agente: límites de qué puede hacer cada herramienta, confirmación humana para acciones irreversibles, cuotas que frenen bucles costosos. Protégete tanto de <strong>amenazas externas</strong> (el atacante) como de <strong>fallos internos</strong> (el agente que se equivoca de buena fe). La autonomía sin guardarraíles no es potencia: es exposición.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>El gran riesgo nuevo es la inyección de prompts: lo que el agente lee es información, no órdenes. Haz red teaming, modela amenazas por componente, cifra y rastrea los datos, y rodea cada acción peligrosa de salvaguardas. Defiéndete del atacante <em>y</em> del propio agente.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== CAP 13 ===== -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo trece</div><h2>Colaboración humano-agente</h2></div>
+  <p class="epigraph">El objetivo no es reemplazar al humano, sino formar un mejor equipo.<span class="who">— Sobre el futuro del trabajo con agentes</span></p>
+  <p class="lead">Los agentes no llegan a un vacío: llegan a equipos de personas con roles, jerarquías y responsabilidades. Que la colaboración funcione es un problema tanto humano y organizacional como técnico.</p>
+
+  <h3>Roles y autonomía: el papel cambiante del humano</h3>
+  <p>A medida que el agente asume tareas, el papel de la persona se desplaza de <em>ejecutar</em> a <em>dirigir y supervisar</em>. El humano pasa a definir objetivos, revisar decisiones importantes y hacerse cargo de lo que la máquina no debe decidir sola. No es menos trabajo: es trabajo de mayor nivel.</p>
+
+  <h3>Alinear a las personas e impulsar la adopción</h3>
+  <p>Una verdad incómoda: el mejor agente del mundo fracasa si el equipo no lo adopta. La adopción exige alinear a los <strong>stakeholders</strong> —explicar qué hace el agente, qué no hace y qué gana cada persona—, empezar por casos donde la ayuda sea evidente y construir confianza con victorias pequeñas antes de pedir las grandes.</p>
+
+  <h3>Escalar la colaboración</h3>
+  <p>Cuando hay muchos agentes y muchas personas, surgen preguntas de organización: ¿cuál es el <strong>alcance</strong> de cada agente y cómo encaja en los <strong>roles</strong> existentes? ¿Qué <strong>memoria y contexto comparten</strong> agentes y humanos, y dónde están los <strong>límites</strong> de eso (qué no debe cruzar de un equipo a otro)? Definir estas fronteras evita el caos a escala.</p>
+
+  <h3>Confianza, gobernanza y cumplimiento</h3>
+  <p>La confianza tiene un <strong>ciclo de vida</strong>: se gana con desempeño consistente, se mantiene con transparencia y se pierde con un fallo mal manejado. Para sostenerla a largo plazo hacen falta tres cosas:</p>
+  <ul class="clean">
+    <li><strong>Marcos de rendición de cuentas:</strong> cuando el agente se equivoca, debe quedar claro <em>quién responde</em> y cómo se corrige.</li>
+    <li><strong>Diseño de escalado y supervisión:</strong> reglas claras de cuándo el agente debe pasar el caso a un humano —y un humano disponible para recibirlo—.</li>
+    <li><strong>Privacidad y cumplimiento regulatorio:</strong> el agente opera dentro de leyes y políticas; el diseño debe respetarlas, no esquivarlas.</li>
+  </ul>
+
+  <div class="box"><span class="lab">Para recordar</span><p>El agente reconfigura el rol del humano de ejecutor a director. La adopción se gana alineando a las personas y con victorias pequeñas. A escala, define alcances, límites de contexto y reglas de escalado. Y recuerda: la confianza se gana despacio y se pierde de golpe.</p></div>
+  <div class="endmark">✳</div>
+</section>
+
+<!-- ===== EPÍLOGO + GLOSARIO ===== -->
+<section class="frontnote" style="page-break-before:always;">
+  <h2>Epílogo: el futuro de los equipos humano-agente</h2>
+  <p>Si algo une los trece capítulos es esto: construir agentes serios es 20% modelo y 80% todo lo demás —el diseño, la experiencia, las herramientas, la memoria, la evaluación, el monitoreo, la seguridad y, sobre todo, las personas—. La parte difícil casi nunca es hacer que el agente piense; es hacer que sea confiable, medible y digno de la confianza de quienes lo usan.</p>
+  <p>Vuelva a la colonia de la portada. Ninguna hormiga entiende el plan completo, y aun así el hormiguero prospera, porque las reglas que las coordinan son buenas. Su trabajo, al construir sistemas multiagente, no es hacer cada agente genial: es diseñar las reglas, los canales y los límites que hacen que muchas piezas simples produzcan, juntas, algo en lo que se pueda confiar. Empiece pequeño, mida todo, suba la autonomía solo cuando se la haya ganado, y mantenga siempre a la persona en el centro.</p>
+
+  <h2 style="margin-top:12mm;">Glosario</h2>
+  <ul class="clean">
+    <li><strong>Agente:</strong> sistema que persigue un objetivo en un bucle de razonar–actuar–observar usando herramientas.</li>
+    <li><strong>Workflow:</strong> secuencia de pasos fijos definida de antemano, frente a la decisión libre de un agente.</li>
+    <li><strong>ReAct:</strong> patrón en que el agente alterna razonamiento y uso de herramientas en bucle.</li>
+    <li><strong>MCP:</strong> protocolo estándar para conectar agentes con herramientas y datos de forma desacoplada.</li>
+    <li><strong>RAG:</strong> recuperar fragmentos de conocimiento relevantes e inyectarlos en el contexto del modelo.</li>
+    <li><strong>Embedding:</strong> vector que captura el significado de un texto; textos similares quedan cercanos.</li>
+    <li><strong>Grafo de conocimiento:</strong> red de entidades y relaciones usada para responder preguntas conectadas.</li>
+    <li><strong>Fine-tuning:</strong> reentrenar un modelo con tus datos (SFT, DPO, RLVR) para especializarlo.</li>
+    <li><strong>Enjambre (swarm):</strong> muchos agentes simples cuya inteligencia emerge de la coordinación.</li>
+    <li><strong>Coordinación:</strong> cómo se reparten y combinan el trabajo varios agentes (manager, jerárquica, democrática).</li>
+    <li><strong>OpenTelemetry (OTel):</strong> estándar para instrumentar y recolectar trazas y métricas.</li>
+    <li><strong>Modo sombra / canario:</strong> patrones para probar cambios en producción sin afectar a todos los usuarios.</li>
+    <li><strong>Inyección de prompts:</strong> ataque que esconde órdenes en contenido que el agente lee.</li>
+    <li><strong>Red teaming:</strong> atacar tu propio sistema a propósito para encontrar vulnerabilidades.</li>
+    <li><strong>Human-in-the-loop:</strong> patrón donde una persona aprueba o supervisa acciones de alto impacto.</li>
+  </ul>
+
+  <p style="text-align:center; margin-top:12mm; font-family:'Carlito',sans-serif; font-size:8pt; color:#9a8a63;">Fin · Construyendo con Agentes de IA · Edición de autor</p>
+</section>
+
+</body>
+</html>

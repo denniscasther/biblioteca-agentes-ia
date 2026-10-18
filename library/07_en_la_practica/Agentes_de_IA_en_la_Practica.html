@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Agentes de IA en la Práctica</title>
+<style>
+  :root{
+    --ink:#2b3138; --ink-soft:#54606a;
+    --paper:#f0eee7; --paper-deep:#e3e0d4;
+    --accent:#b07a3f; --accent-2:#5a7388;
+    --rule:#cabd9f; --code-bg:#232a30; --code-fg:#e6e2d4;
+  }
+  @page{ size:15.6cm 23.4cm; margin:20mm 18mm 18mm 18mm;
+    @bottom-center{ content:counter(page); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:8.5pt; color:#8d8674; }
+    @top-center{ content:string(chaptertitle); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:7.5pt; letter-spacing:.12em; text-transform:uppercase; color:#a39a85; } }
+  @page cover{ margin:0; @bottom-center{content:none;} @top-center{content:none;} }
+  @page plain{ @top-center{content:none;} }
+
+  html{ font-family:"Bitstream Charter","GFS Baskerville",serif; color:var(--ink); }
+  body{ margin:0; line-height:1.5; font-size:10.5pt; text-align:justify; hyphens:auto; }
+  h1,h2,h3,.display{ font-family:"GFS Baskerville","Bitstream Charter",serif; }
+
+  .cover{ page:cover; position:relative; height:23.4cm; width:15.6cm;
+    background:radial-gradient(125% 85% at 50% 10%, #3a4750 0%, #2a343c 52%, #1a2026 100%), #232b31;
+    color:var(--paper); overflow:hidden; display:flex; flex-direction:column; align-items:center; page-break-after:always; }
+  .cover .frame{ position:absolute; inset:8mm; border:1.2pt solid rgba(240,238,231,.42); }
+  .cover .frame::after{ content:""; position:absolute; inset:2.2mm; border:.5pt solid rgba(240,238,231,.28); }
+  .cover .kicker{ margin-top:15mm; font-family:"Carlito",sans-serif; font-size:8pt; letter-spacing:.3em; text-transform:uppercase; color:#dcab73; z-index:2; }
+  .cover h1{ z-index:2; text-align:center; font-size:26pt; line-height:1.06; margin:5mm 12mm 0; font-weight:700; }
+  .cover .sub{ z-index:2; text-align:center; font-family:"Carlito",sans-serif; font-size:9.5pt; color:#d6dae0; margin:3.5mm 14mm 0; letter-spacing:.03em; }
+  .beaver{ z-index:2; margin-top:6mm; width:90mm; height:90mm; }
+  .cover .author{ z-index:2; margin-top:auto; margin-bottom:16mm; text-align:center; font-family:"Carlito",sans-serif; }
+  .cover .author .by{ font-size:8pt; letter-spacing:.3em; text-transform:uppercase; color:#dcab73; }
+  .cover .author .name{ font-family:"GFS Baskerville",serif; font-size:13pt; margin-top:2mm; color:var(--paper); }
+
+  .titlepage{ page:plain; page-break-after:always; text-align:center; padding-top:32mm; }
+  .titlepage h1{ font-size:21pt; line-height:1.1; margin:0 6mm; }
+  .titlepage .sub{ font-family:"Carlito",sans-serif; color:var(--ink-soft); margin-top:5mm; font-size:10pt; }
+  .titlepage .rule{ width:42mm; height:1.4pt; background:var(--accent); margin:9mm auto; }
+  .titlepage .meta{ font-family:"Carlito",sans-serif; font-size:9pt; color:var(--ink-soft); }
+
+  .frontnote{ page:plain; page-break-after:always; }
+  .frontnote h2{ font-size:15pt; color:var(--accent); margin-bottom:4mm; }
+
+  .partpage{ page-break-before:always; page:plain; text-align:center; padding-top:44mm; }
+  .partpage .pk{ font-family:"Carlito",sans-serif; font-size:9pt; letter-spacing:.34em; text-transform:uppercase; color:var(--accent); }
+  .partpage h1{ font-size:23pt; margin:4mm 10mm 0; }
+  .partpage .pd{ font-family:"Carlito",sans-serif; color:var(--ink-soft); font-size:9.5pt; margin-top:5mm; }
+  .partpage svg{ margin-top:10mm; }
+
+  .toc{ page-break-after:always; }
+  .toc h2{ font-size:18pt; border-bottom:1.5pt solid var(--rule); padding-bottom:3mm; }
+  .toc .part{ font-family:"Carlito",sans-serif; font-size:8pt; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:5mm 0 1mm; }
+  .toc ol{ list-style:none; padding:0; margin:0; }
+  .toc li{ display:flex; align-items:baseline; margin:2.4mm 0; gap:3mm; }
+  .toc li .n{ font-family:"Carlito",sans-serif; color:var(--accent); font-weight:700; width:8mm; flex:none; }
+  .toc li .t{ font-weight:600; } .toc li .d{ font-family:"Carlito",sans-serif; font-size:7.6pt; color:var(--ink-soft); }
+
+  .chapter{ page-break-before:always; }
+  .chapter .chead{ margin-bottom:6mm; border-bottom:1.5pt solid var(--rule); padding-bottom:4mm; }
+  .chapter .cnum{ font-family:"Carlito",sans-serif; font-size:9pt; letter-spacing:.3em; text-transform:uppercase; color:var(--accent); }
+  .chapter h2{ string-set:chaptertitle content(); font-size:19pt; line-height:1.1; margin:2mm 0 0; }
+  .epigraph{ font-style:italic; color:var(--ink-soft); margin:0 0 5mm; padding-left:5mm; border-left:2pt solid var(--accent-2); font-size:9.8pt; }
+  .epigraph .who{ display:block; font-style:normal; font-family:"Carlito",sans-serif; font-size:8pt; margin-top:1.5mm; color:#8d8674; }
+  h3{ font-size:12.5pt; color:var(--ink); margin:6mm 0 2mm; }
+  p{ margin:0 0 3mm; } .lead{ font-size:11.3pt; color:var(--ink-soft); }
+  strong{ color:var(--ink); } em{ color:var(--ink-soft); }
+
+  .box{ break-inside:avoid; background:var(--paper-deep); border-left:3pt solid var(--accent); padding:4mm 5mm; margin:5mm 0; border-radius:0 2pt 2pt 0; }
+  .box .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:1.5mm; }
+  .box.note{ border-left-color:var(--accent-2); } .box.note .lab{ color:var(--accent-2); }
+  .box p:last-child{ margin-bottom:0; }
+  .def{ break-inside:avoid; background:#e7eaee; border:.7pt solid #b6c2cc; border-left:4pt solid var(--accent-2); padding:4mm 5mm; margin:5mm 0; border-radius:3pt; }
+  .def .term{ font-family:"GFS Baskerville",serif; font-size:11.5pt; color:var(--ink); }
+  .def .term::before{ content:"DEFINICIÓN — "; font-family:"Carlito",sans-serif; font-size:7.3pt; letter-spacing:.18em; color:var(--accent-2); vertical-align:middle; }
+  .def p{ margin:1.5mm 0 0; }
+  .analogy{ break-inside:avoid; background:#faf9f3; border:.6pt solid var(--rule); padding:4mm 5mm; margin:5mm 0; border-radius:3pt; }
+  .analogy .lab{ font-family:"Carlito",sans-serif; font-size:7.5pt; letter-spacing:.22em; text-transform:uppercase; color:var(--accent-2); display:block; margin-bottom:1.5mm; }
+
+  pre{ break-inside:avoid; background:var(--code-bg); color:var(--code-fg); font-family:"DejaVu Sans Mono",monospace; font-size:7.6pt; line-height:1.45; padding:4mm 4.5mm; border-radius:4pt; margin:4mm 0; white-space:pre-wrap; text-align:left; }
+  pre .c{ color:#8a93a0; } pre .k{ color:#e0a96d; } pre .s{ color:#a9cc9e; } pre .f{ color:#7fb0c8; }
+  code.inline{ font-family:"DejaVu Sans Mono",monospace; font-size:8.3pt; background:var(--paper-deep); padding:.3mm 1.2mm; border-radius:2pt; }
+
+  figure{ break-inside:avoid; margin:5mm 0; text-align:center; }
+  figure svg{ width:100%; height:auto; }
+  figcaption{ font-family:"Carlito",sans-serif; font-size:8pt; color:var(--ink-soft); margin-top:2mm; text-align:center; }
+  .dlabel,.dwords{ font-family:"Carlito","DejaVu Sans",sans-serif; fill:var(--ink); }
+  ul.clean{ margin:3mm 0 4mm; padding-left:6mm; } ul.clean li{ margin:1.6mm 0; }
+  table.t{ width:100%; border-collapse:collapse; margin:4mm 0; font-size:9pt; break-inside:avoid; }
+  table.t th{ background:var(--ink); color:var(--paper); font-family:"Carlito",sans-serif; font-size:8pt; padding:2.5mm 3mm; text-align:left; }
+  table.t td{ border-bottom:.6pt solid var(--rule); padding:2.5mm 3mm; vertical-align:top; }
+  table.t td:first-child{ font-weight:600; color:var(--accent); white-space:nowrap; }
+  .endmark{ text-align:center; margin-top:7mm; }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PORTADA ===== -->
+<section class="cover">
+  <div class="frame"></div>
+  <div class="kicker">Guía práctica y didáctica · Edición de autor</div>
+  <h1>Agentes de IA<br>en la Práctica</h1>
+  <div class="sub">Diseñar, implementar y escalar sistemas autónomos para producción</div>
+
+  <svg class="beaver" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- suelo -->
+    <path d="M24 174 C70 170 140 170 182 176" fill="none" stroke="#f0eee7" stroke-width="1.2" opacity=".45"/>
+    <!-- cola plana y escamosa (detras, abajo-izq) -->
+    <path d="M86 138 C58 142 36 154 28 170 C40 182 66 184 88 176 C100 172 102 158 96 148 Z"
+          fill="#b07a3f" fill-opacity=".2" stroke="#f0eee7" stroke-width="1.7" stroke-linejoin="round"/>
+    <g stroke="#f0eee7" stroke-width="0.6" opacity=".5">
+      <path d="M40 156 L92 154" fill="none"/><path d="M36 164 L92 162" fill="none"/><path d="M40 172 L88 170" fill="none"/>
+      <path d="M52 148 L48 178" fill="none"/><path d="M64 146 L62 178" fill="none"/><path d="M76 146 L76 176" fill="none"/>
+    </g>
+
+    <!-- cuerpo robusto, sentado, mirando a la derecha -->
+    <path d="M84 100 C66 108 58 132 64 152 C70 168 90 174 110 172 C132 170 150 158 150 136
+             C150 120 142 106 126 100 C112 94 96 94 84 100 Z"
+          fill="#b07a3f" fill-opacity=".12" stroke="#f0eee7" stroke-width="1.8" stroke-linejoin="round"/>
+    <!-- pecho mas claro -->
+    <path d="M120 110 C116 130 116 152 120 168 C112 160 110 138 112 122 C114 116 117 112 120 110 Z"
+          fill="#f0eee7" fill-opacity=".4" stroke="none"/>
+
+    <!-- cabeza -->
+    <ellipse cx="142" cy="92" rx="25" ry="23" fill="#b07a3f" fill-opacity=".12" stroke="#f0eee7" stroke-width="1.8"/>
+    <!-- oreja -->
+    <circle cx="130" cy="74" r="6" fill="#b07a3f" fill-opacity=".22" stroke="#f0eee7" stroke-width="1.5"/>
+    <!-- hocico (bulto a la derecha) -->
+    <path d="M163 86 C170 88 172 96 167 101 C162 104 156 102 154 97" fill="#b07a3f" fill-opacity=".12" stroke="#f0eee7" stroke-width="1.6"/>
+    <!-- ojo y nariz -->
+    <circle cx="148" cy="86" r="2.2" fill="#2b3138"/>
+    <ellipse cx="167" cy="92" rx="3" ry="2.6" fill="#2b3138"/>
+    <!-- dientes de castor (incisivos) -->
+    <rect x="159" y="98" width="9" height="9" rx="1.2" fill="#f0eee7" stroke="#2b3138" stroke-width="0.7"/>
+    <line x1="163.5" y1="98" x2="163.5" y2="107" stroke="#2b3138" stroke-width="0.6"/>
+
+    <!-- tronco que sostiene (el ingeniero al trabajo) -->
+    <g transform="translate(150,120) rotate(38)">
+      <rect x="-4" y="-30" width="8" height="58" rx="4" fill="#b07a3f" fill-opacity=".3" stroke="#f0eee7" stroke-width="1.4"/>
+      <line x1="-4" y1="-14" x2="4" y2="-14" stroke="#f0eee7" stroke-width="0.6" opacity=".6"/>
+      <line x1="-4" y1="2" x2="4" y2="2" stroke="#f0eee7" stroke-width="0.6" opacity=".6"/>
+    </g>
+    <!-- patitas delanteras agarrando -->
+    <path d="M134 134 C140 130 146 130 150 134" fill="none" stroke="#f0eee7" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M126 168 C132 164 140 164 146 168" fill="none" stroke="#f0eee7" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+
+  <div class="author">
+    <div class="by">Escrito e ilustrado por</div>
+    <div class="name">Claude</div>
+  </div>
+</section>
+
+<!-- ===== PORTADILLA ===== -->
+<section class="titlepage">
+  <h1>Agentes de IA en la Práctica</h1>
+  <div class="sub">Diseñar, implementar y escalar para producción</div>
+  <div class="rule"></div>
+  <p class="meta">De los fundamentos a la producción: orquestadores, memoria,<br>herramientas, sistemas multiagente, protocolos y ética.</p>
+  <p class="meta" style="margin-top:14mm;">Escrito e ilustrado por Claude · Anthropic<br>Edición de autor · Primera edición</p>
+</section>
+
+<!-- ===== SOBRE LA PORTADA ===== -->
+<section class="frontnote">
+  <h2>Sobre la portada</h2>
+  <p>El animal de esta portada es un <strong>castor</strong>, y lo eligió la palabra clave del título: <em>práctica</em>.</p>
+  <p>Al castor se le llama, con razón, <em>el ingeniero de la naturaleza</em>. No solo sueña con represar un río: lo <strong>diseña</strong> leyendo la corriente, lo <strong>construye</strong> talando y acarreando troncos uno a uno, y lo <strong>mantiene a escala</strong> —sus diques pueden medir cientos de metros y durar generaciones, reconfigurando ecosistemas enteros—. Diseñar, implementar y escalar algo robusto y duradero: exactamente el subtítulo de este libro.</p>
+  <p>Mientras otros animales de esta colección representaban una idea (la comunicación, los patrones, el enjambre), el castor representa el <strong>oficio</strong>: arremangarse y construir cosas que funcionen en el mundo real y aguanten el uso. Por eso lleva un tronco entre las patas. Este libro va precisamente de eso —de pasar de la idea a un sistema en producción— y no hay mejor maestro de obra que el castor.</p>
+</section>
+
+<!-- ===== PREFACIO ===== -->
+<section class="frontnote">
+  <h2>Prefacio</h2>
+  <p class="lead">Hay una distancia enorme entre un agente que funciona en una demo y uno que funciona en producción —barato, fiable, observable y a escala—. Este libro trata de cruzar esa distancia con oficio de ingeniero.</p>
+  <p>El recorrido tiene tres partes. La <strong>Parte 1</strong> sienta los cimientos: de dónde vienen los LLMs y por qué surgieron los agentes. La <strong>Parte 2</strong> es el taller: cómo se diseñan, construyen y escalan —el orquestador que lo coordina todo, la memoria que recuerda, las herramientas que actúan, tu primer agente real, y los sistemas multiagente—. La <strong>Parte 3</strong> mira al horizonte: los protocolos abiertos que conectarán a los agentes entre sí, y los desafíos éticos que no podemos ignorar si esto va a vivir en el mundo real.</p>
+  <p>Mi compromiso es ser práctico y didáctico a partes iguales: cada concepto trae una <em>definición</em> clara, una <em>gráfica</em> que lo muestra, una <em>analogía</em> y, cuando aporta, código. No verás juguetes; verás las piezas que de verdad necesitas para construir algo que aguante.</p>
+  <div class="box note"><span class="lab">Cómo leer este libro</span><p>La Parte 1 da contexto; la Parte 2 es el núcleo práctico; la Parte 3, la visión. Cada capítulo cierra con una caja "Para recordar". Si ya conoces los fundamentos, salta directo a la Parte 2.</p></div>
+</section>
+
+<!-- ===== ÍNDICE ===== -->
+<section class="toc">
+  <h2>Contenido</h2>
+  <div class="part">Parte 1 · Fundamentos: de los workflows al auge de los agentes</div>
+  <ol>
+    <li><span class="n">1</span><span><span class="t">La evolución de los flujos de IA generativa</span><br><span class="d">De la IA estrecha a los modelos fundacionales · el camino hacia los agentes</span></span></li>
+    <li><span class="n">2</span><span><span class="t">El auge de los agentes de IA</span><br><span class="d">De RPA a agentes · componentes · tipos: recuperación, tarea, autónomos</span></span></li>
+  </ol>
+  <div class="part">Parte 2 · Diseñar, construir y escalar</div>
+  <ol start="3">
+    <li><span class="n">3</span><span><span class="t">La necesidad de un orquestador</span><br><span class="d">Autonomía, modularidad y los componentes que coordinan todo</span></span></li>
+    <li><span class="n">4</span><span><span class="t">Memoria y gestión del contexto</span><br><span class="d">Tipos de memoria, cachés semánticos y cómo almacenar y recuperar</span></span></li>
+    <li><span class="n">5</span><span><span class="t">Herramientas e integraciones externas</span><br><span class="d">Funciones, APIs, bases de datos y llamadas síncronas vs asíncronas</span></span></li>
+    <li><span class="n">6</span><span><span class="t">Construir tu primer agente</span><br><span class="d">El ciclo construir-ejecutar-gestionar y un caso real de e-commerce</span></span></li>
+    <li><span class="n">7</span><span><span class="t">Aplicaciones multiagente</span><br><span class="d">Diseñar flujos y orquestar equipos de agentes</span></span></li>
+  </ol>
+  <div class="part">Parte 3 · Hacia un ecosistema agéntico abierto</div>
+  <ol start="8">
+    <li><span class="n">8</span><span><span class="t">Protocolos de próxima generación</span><br><span class="d">MCP, Agente-a-Agente (A2A), comercio entre agentes y la web agéntica</span></span></li>
+    <li><span class="n">9</span><span><span class="t">Desafíos éticos en el mundo real</span><br><span class="d">Equidad, transparencia, guardrails y gobernanza</span></span></li>
+  </ol>
+</section>
+
+<!-- ===== PARTE 1 ===== -->
+<section class="partpage">
+  <div class="pk">Parte uno</div>
+  <h1>Fundamentos: del workflow al agente</h1>
+  <div class="pd">De dónde venimos y por qué surgieron los agentes.</div>
+  <svg width="80" height="40" viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b07a3f" stroke-width="1.6" stroke-linecap="round"><rect x="10" y="24" width="60" height="9" rx="4.5"/><rect x="16" y="14" width="48" height="9" rx="4.5"/><rect x="24" y="4" width="32" height="9" rx="4.5"/></g></svg>
+</section>
+
+<!-- CAP 1 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo uno</div><h2>La evolución de los flujos de IA generativa</h2></div>
+  <p class="epigraph">Cada gran salto tecnológico parece magia hasta que entiendes los peldaños que lo precedieron.<span class="who">— Sobre cómo llegamos a los agentes</span></p>
+  <p class="lead">Los agentes no nacieron de la nada: son el último peldaño de una escalera que empezó con modelos que solo hacían una cosa y llegó a modelos que razonan sobre casi todo.</p>
+
+  <h3>De la IA estrecha a los modelos fundacionales</h3>
+  <p>Durante décadas, cada modelo de IA hacía <em>una</em> tarea: detectar spam, reconocer una cara. Eran "estrechos". El cambio llegó con los <strong>modelos fundacionales</strong>: entrenados sobre cantidades enormes de datos, sirven como base general para muchísimas tareas. Los <strong>LLMs</strong> son los más conocidos.</p>
+
+  <div class="def"><span class="term">Modelo fundacional / LLM</span><p>Un <strong>modelo fundacional</strong> es un modelo grande entrenado con datos masivos que sirve de base para múltiples tareas. Un <strong>LLM</strong> (gran modelo de lenguaje) es un modelo fundacional de texto: dado un fragmento, predice qué viene después, y de esa predicción repetida emerge la capacidad de conversar y razonar.</p></div>
+
+  <h3>Avances recientes que importan</h3>
+  <p>El campo se mueve rápido. Cuatro avances cambian cómo construimos agentes: los <strong>modelos pequeños (SLMs) y el fine-tuning</strong> —un modelo pequeño afinado a tu dominio suele ganarle a uno gigante genérico, y cuesta mucho menos—; la <strong>destilación</strong> —entrenar un modelo pequeño para que imite a uno grande—; los <strong>modelos de razonamiento</strong> —que "piensan" más antes de responder—; y la aparición de competidores eficientes que han abaratado el acceso. La lección práctica: hoy tienes un menú de modelos, no uno solo, y elegir bien por tarea ahorra mucho.</p>
+
+  <h3>El camino hacia los agentes</h3>
+  <figure>
+    <svg viewBox="0 0 460 90" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b07a3f"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="6" y="34" width="92" height="28" rx="5" fill="#fff" stroke="#5a7388" stroke-width="1.2"/><text x="52" y="51">Generar texto</text>
+        <rect x="120" y="34" width="92" height="28" rx="5" fill="#fff" stroke="#5a7388" stroke-width="1.2"/><text x="166" y="48">Chatear con</text><text x="166" y="57" font-size="7" fill="#5a7388">tus datos</text>
+        <rect x="234" y="34" width="92" height="28" rx="5" fill="#fff" stroke="#5a7388" stroke-width="1.2"/><text x="280" y="51">Multimodal</text>
+        <rect x="348" y="34" width="106" height="28" rx="5" fill="#2b3138"/><text x="401" y="48" fill="#f0eee7">Agentes</text><text x="401" y="57" fill="#b9cc9e" font-size="7">+ inteligencia</text>
+      </g>
+      <g stroke="#b07a3f" stroke-width="1.3" fill="none" marker-end="url(#m1)"><path d="M98 48 L118 48"/><path d="M212 48 L232 48"/><path d="M326 48 L346 48"/></g>
+    </svg>
+    <figcaption>Figura 1.1 — El camino hacia los agentes: cada paso añade una capa de capacidad.</figcaption>
+  </figure>
+  <p>El LLM aprendió primero a <strong>generar texto</strong>, luego a <strong>chatear con tus datos</strong> (RAG), luego a manejar <strong>varios medios</strong> (texto, imagen, voz). Pero seguía siendo reactivo: respondía y se detenía. Faltaba una capa: la capacidad de <em>actuar por sí mismo</em> hacia un objetivo. Esa capa extra de inteligencia es, precisamente, el <strong>agente</strong>.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>De la IA estrecha → modelos fundacionales → LLMs → agentes. Hoy hay un menú de modelos (grandes, pequeños afinados, destilados, de razonamiento): elige por tarea. El agente es la capa que convierte un LLM reactivo en un sistema que actúa hacia un objetivo.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+<!-- CAP 2 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo dos</div><h2>El auge de los agentes de IA</h2></div>
+  <p class="epigraph">Automatizar pasos fijos es útil; automatizar el criterio para decidir los pasos es revolucionario.<span class="who">— De la automatización clásica al agente</span></p>
+  <p class="lead">Antes de los agentes ya automatizábamos: la automatización de procesos (RPA) repetía clics y reglas fijas. El agente da el salto: en vez de seguir un guion, <em>decide</em> qué hacer.</p>
+
+  <h3>De RPA al agente</h3>
+  <p>La RPA tradicional es como una pianola: reproduce exactamente lo que se le programó, y se rompe si algo cambia un poco. El agente es como un pianista: entiende la pieza y se adapta. Donde la RPA necesita reglas para cada caso, el agente razona ante lo nuevo. Por eso los agentes están absorbiendo tareas que la automatización clásica nunca pudo.</p>
+
+  <h3>Los componentes de un agente</h3>
+  <p>Todo agente, por simple o complejo, combina las mismas piezas: un <strong>modelo</strong> que razona, <strong>instrucciones</strong> que lo guían, <strong>memoria</strong> que recuerda, <strong>herramientas</strong> que le permiten actuar y un <strong>bucle</strong> que coordina percibir, decidir y actuar hasta cumplir el objetivo.</p>
+
+  <h3>Tres tipos de agentes</h3>
+  <table class="t">
+    <tr><th>Tipo</th><th>Qué hace</th><th>Ejemplo</th></tr>
+    <tr><td>De recuperación</td><td>Busca y entrega información relevante; su fuerte es <em>saber</em>.</td><td>Asistente que responde con tu base de conocimiento (RAG).</td></tr>
+    <tr><td>De tarea</td><td>Ejecuta acciones concretas con herramientas; su fuerte es <em>hacer</em>.</td><td>Agente que crea un ticket, agenda una cita o procesa un pedido.</td></tr>
+    <tr><td>Autónomo</td><td>Persigue objetivos abiertos, planifica y se adapta; su fuerte es <em>decidir</em>.</td><td>Agente que investiga un tema durante horas y entrega un informe.</td></tr>
+  </table>
+  <p>La mayoría de los sistemas reales mezclan los tres: recuperan información, ejecutan tareas y, en lo alto, deciden con cierta autonomía. Entender en qué punto del espectro estás te dice cuánta libertad —y cuántos controles— necesitas.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>El agente supera a la RPA porque <em>decide</em> en vez de repetir. Se compone de modelo, instrucciones, memoria, herramientas y bucle. Y viene en tres sabores —de recuperación (saber), de tarea (hacer) y autónomo (decidir)— que en la práctica se combinan.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+<!-- ===== PARTE 2 ===== -->
+<section class="partpage">
+  <div class="pk">Parte dos</div>
+  <h1>Diseñar, construir y escalar</h1>
+  <div class="pd">El taller: las piezas que convierten una idea en un sistema de producción.</div>
+  <svg width="110" height="40" viewBox="0 0 110 40" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b07a3f" stroke-width="1.6" stroke-linecap="round"><rect x="6" y="24" width="98" height="9" rx="4.5"/><rect x="14" y="14" width="82" height="9" rx="4.5"/><rect x="26" y="4" width="58" height="9" rx="4.5"/></g></svg>
+</section>
+
+<!-- CAP 3 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo tres</div><h2>La necesidad de un orquestador</h2></div>
+  <p class="epigraph">Tener buenos músicos no basta; alguien tiene que decidir quién toca, cuándo y cómo encajan.<span class="who">— Sobre el director de la orquesta agéntica</span></p>
+  <p class="lead">A medida que un agente crece —más herramientas, más memoria, más pasos— necesitas algo que coordine todo de forma ordenada y reutilizable. Ese algo es el <strong>orquestador</strong>.</p>
+
+  <div class="def"><span class="term">Orquestador de IA</span><p>Capa que coordina las piezas de un sistema agéntico —el modelo, la memoria, las herramientas y el flujo de trabajo— y gestiona cómo interactúan, manejando además errores, observabilidad y seguridad. Es el "sistema operativo" del agente.</p></div>
+
+  <h3>Por qué hace falta: autonomía y modularidad</h3>
+  <p>El orquestador aporta dos virtudes. <strong>Autonomía</strong>: deja que el agente decida pasos sin que tú programes cada rama. Y <strong>abstracción y modularidad</strong>: separa las piezas para que puedas cambiar el modelo, añadir una herramienta o ajustar la memoria sin reescribir todo. Sin orquestador, cada agente es código a medida; con él, ensamblas piezas reutilizables.</p>
+
+  <h3>Sus componentes clave</h3>
+  <figure>
+    <svg viewBox="0 0 460 120" xmlns="http://www.w3.org/2000/svg">
+      <rect x="170" y="46" width="120" height="34" rx="6" fill="#2b3138"/><text x="230" y="63" text-anchor="middle" fill="#f0eee7" font-size="9.5" class="dlabel">Orquestador</text><text x="230" y="74" text-anchor="middle" fill="#b9cc9e" font-size="7" class="dlabel">coordina todo</text>
+      <g font-size="7.8" text-anchor="middle" class="dwords">
+        <rect x="14" y="12" width="120" height="22" rx="4" fill="#fff" stroke="#b07a3f" stroke-width="1.1"/><text x="74" y="27">Gestión del flujo</text>
+        <rect x="326" y="12" width="120" height="22" rx="4" fill="#fff" stroke="#b07a3f" stroke-width="1.1"/><text x="386" y="27">Memoria y contexto</text>
+        <rect x="14" y="48" width="120" height="22" rx="4" fill="#fff" stroke="#5a7388" stroke-width="1.1"/><text x="74" y="63">Herramientas / APIs</text>
+        <rect x="326" y="48" width="120" height="22" rx="4" fill="#fff" stroke="#5a7388" stroke-width="1.1"/><text x="386" y="63">Errores y monitoreo</text>
+        <rect x="170" y="92" width="120" height="22" rx="4" fill="#fff" stroke="#b07a3f" stroke-width="1.1"/><text x="230" y="107">Seguridad y cumplimiento</text>
+      </g>
+      <g stroke="#a39a85" stroke-width="1.1" fill="none"><path d="M134 23 L170 50"/><path d="M326 23 L290 50"/><path d="M134 59 L170 63"/><path d="M326 59 L290 63"/><path d="M230 80 L230 92"/></g>
+    </svg>
+    <figcaption>Figura 3.1 — Los cinco componentes que todo buen orquestador gestiona.</figcaption>
+  </figure>
+  <p>Un orquestador maduro maneja: el <strong>flujo de trabajo</strong> (qué pasa después de qué), la <strong>memoria y el contexto</strong>, la <strong>integración de herramientas y APIs</strong>, el <strong>manejo de errores y el monitoreo</strong>, y la <strong>seguridad y el cumplimiento</strong>. Existen varios en el mercado; elegir el adecuado depende de tu escala, tu stack y qué tanto control frente a comodidad necesitas.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>El orquestador es el sistema operativo del agente: aporta autonomía y modularidad, y gestiona flujo, memoria, herramientas, errores y seguridad. Elegirlo bien es una decisión de arquitectura, no de moda: prioriza el que encaje con tu escala y tu stack.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+<!-- CAP 4 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cuatro</div><h2>Memoria y gestión del contexto</h2></div>
+  <p class="epigraph">Sin memoria, cada conversación es la primera. Con buena memoria, el agente por fin acumula experiencia.<span class="who">— Sobre recordar con criterio</span></p>
+  <p class="lead">El modelo olvida todo entre llamadas. Construir su memoria —y gestionar qué cabe en su limitado contexto— es una de las decisiones de diseño que más impacta la calidad y el costo.</p>
+
+  <h3>Los tipos de memoria</h3>
+  <table class="t">
+    <tr><th>Memoria</th><th>Qué guarda</th></tr>
+    <tr><td>Corto plazo</td><td>La conversación actual; lo que el agente "tiene en mente" ahora.</td></tr>
+    <tr><td>Largo plazo</td><td>Lo que persiste entre sesiones, fuera del modelo.</td></tr>
+    <tr><td>Semántica</td><td>Hechos y conocimiento general ("la garantía es de 1 año").</td></tr>
+    <tr><td>Episódica</td><td>Experiencias concretas ("la última vez, este cliente devolvió X").</td></tr>
+    <tr><td>Procedimental</td><td>Cómo hacer cosas, destrezas ("los pasos para un reembolso").</td></tr>
+  </table>
+  <p>Entre el corto y el largo plazo viven los <strong>cachés semánticos</strong>: guardan respuestas a preguntas frecuentes para no recalcularlas —ahorran tiempo y dinero cuando la misma duda vuelve—.</p>
+
+  <h3>Gestionar la ventana de contexto</h3>
+  <p>La memoria de corto plazo cabe en la <strong>ventana de contexto</strong>, que es limitada y cuesta. Gestionarla es un arte: resumir lo viejo, conservar lo relevante, descartar el ruido. Un contexto saturado no solo es caro: confunde al modelo.</p>
+
+  <figure>
+    <svg viewBox="0 0 440 80" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b07a3f"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="20" y="30" width="90" height="26" rx="5" fill="#fff" stroke="#5a7388" stroke-width="1.2"/><text x="65" y="47">Almacenar</text>
+        <rect x="150" y="30" width="90" height="26" rx="5" fill="#fff" stroke="#b07a3f" stroke-width="1.2"/><text x="195" y="47">Recuperar</text>
+        <rect x="280" y="30" width="90" height="26" rx="5" fill="#fff" stroke="#5a7388" stroke-width="1.2"/><text x="325" y="47">Refrescar</text>
+      </g>
+      <g stroke="#b07a3f" stroke-width="1.3" fill="none" marker-end="url(#m4)"><path d="M110 43 L148 43"/><path d="M240 43 L278 43"/><path d="M370 43 C400 43 400 70 195 60 L195 58" stroke-dasharray="3 2"/></g>
+    </svg>
+    <figcaption>Figura 4.1 — El ciclo de la memoria: almacenar lo relevante, recuperarlo cuando hace falta, refrescarlo.</figcaption>
+  </figure>
+
+  <p>Hay herramientas dedicadas a esto (como LangMem, Mem0 o Letta) que gestionan el almacenar, recuperar y refrescar por ti, e incluso añaden <strong>razonamiento temporal y espacial</strong> —recordar <em>cuándo</em> y <em>dónde</em> ocurrió algo, no solo qué—.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Cinco memorias: corto plazo (contexto), largo plazo (persistente), semántica (hechos), episódica (experiencias) y procedimental (destrezas); más cachés semánticos para lo frecuente. Gestiona la ventana de contexto con disciplina: recupera lo justo, no lo vuelques todo.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+<!-- CAP 5 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo cinco</div><h2>Herramientas e integraciones externas</h2></div>
+  <p class="epigraph">Un agente vale lo que valen sus herramientas. Sin manos, solo opina.<span class="who">— Sobre tocar el mundo real</span></p>
+  <p class="lead">Las herramientas son las manos del agente: lo que le permite consultar, calcular, enviar y actuar sobre sistemas reales. Diseñarlas e integrarlas bien es la mitad del trabajo de producción.</p>
+
+  <h3>La anatomía de una herramienta</h3>
+  <p>Una herramienta tiene un <strong>nombre</strong>, una <strong>descripción</strong> en lenguaje natural (lo que el modelo lee para decidir cuándo usarla) y unos <strong>parámetros</strong>. Hay dos grandes familias: las <strong>funciones hardcoded</strong> (código determinista: un cálculo, una consulta SQL) y las <strong>funciones semánticas</strong> (un prompt reutilizable tratado como función: "resume esto"). Las primeras son precisas; las segundas, flexibles. Los buenos agentes combinan ambas.</p>
+
+  <h3>Cómo se conecta al mundo</h3>
+  <ul class="clean">
+    <li><strong>APIs y servicios web:</strong> públicas (un mapa, el clima), internas/empresariales (tu ERP), de microservicios, o funciones serverless ligeras.</li>
+    <li><strong>Bases de datos y conocimiento:</strong> datos <em>estructurados</em> (tablas, SQL) y <em>no estructurados</em> (documentos, que se consultan con búsqueda semántica/RAG).</li>
+  </ul>
+
+  <h3>Síncrono vs. asíncrono</h3>
+  <p>Una decisión práctica con gran impacto: una llamada <strong>síncrona</strong> espera la respuesta antes de seguir (simple, pero bloquea); una <strong>asíncrona</strong> lanza la tarea y continúa, recogiendo el resultado después (más complejo, pero no bloquea y escala mejor). Para herramientas rápidas, síncrono; para tareas lentas o muchas a la vez, asíncrono.</p>
+
+<pre><span class="c"># Una herramienta: nombre + descripción (lo que el modelo lee) + parámetros</span>
+herramienta = {
+  <span class="s">"name"</span>: <span class="s">"consultar_pedido"</span>,
+  <span class="s">"description"</span>: <span class="s">"Devuelve el estado de un pedido por su número."</span>,
+  <span class="s">"params"</span>: {<span class="s">"numero_pedido"</span>: <span class="s">"string"</span>}
+}
+<span class="c"># El modelo PIDE consultar_pedido(...); tu código la EJECUTA y valida.</span></pre>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Una herramienta = nombre + descripción + parámetros. Combina funciones hardcoded (precisas) y semánticas (flexibles). Conéctate vía APIs y bases de datos (estructuradas y no estructuradas). Y elige síncrono para lo rápido, asíncrono para lo lento o lo masivo.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+<!-- CAP 6 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo seis</div><h2>Construir tu primer agente</h2></div>
+  <p class="epigraph">La teoría se entiende leyendo; la práctica, construyendo y viendo qué se rompe.<span class="who">— Manos a la obra</span></p>
+  <p class="lead">Ahora ensamblamos las piezas en un agente real. Frameworks como LangChain organizan el trabajo en tres fases que conviene tener claras: construir, ejecutar y gestionar.</p>
+
+  <h3>Construir, ejecutar, gestionar</h3>
+  <figure>
+    <svg viewBox="0 0 440 90" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b07a3f"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <rect x="14" y="32" width="110" height="30" rx="5" fill="#fff" stroke="#5a7388" stroke-width="1.2"/><text x="69" y="49">Construir</text><text x="69" y="58" font-size="6.8" fill="#5a7388">el agente y su lógica</text>
+        <rect x="164" y="32" width="110" height="30" rx="5" fill="#2b3138"/><text x="219" y="49" fill="#f0eee7">Ejecutar</text><text x="219" y="58" fill="#b9cc9e" font-size="6.8">en operación</text>
+        <rect x="314" y="32" width="112" height="30" rx="5" fill="#fff" stroke="#b07a3f" stroke-width="1.2"/><text x="370" y="49">Gestionar</text><text x="370" y="58" font-size="6.8" fill="#5a7388">observar y mejorar</text>
+      </g>
+      <g stroke="#b07a3f" stroke-width="1.3" fill="none" marker-end="url(#m6)"><path d="M124 47 L162 47"/><path d="M274 47 L312 47"/></g>
+    </svg>
+    <figcaption>Figura 6.1 — El ciclo de vida de un agente: construir, ejecutar y gestionar (observar y mejorar).</figcaption>
+  </figure>
+
+  <h3>Un caso real: el agente de e-commerce</h3>
+  <p>Imagina un asistente de compras para una tienda. Sus <strong>bloques</strong>: un modelo que conversa, herramientas para consultar catálogo y pedidos, memoria de la conversación, y conexión a la base de conocimiento de la tienda (RAG). Lo construyes ensamblando esos bloques, lo ejecutas atendiendo a clientes reales, y —clave— lo <strong>gestionas</strong>.</p>
+
+  <h3>Observabilidad, trazabilidad y evaluación</h3>
+  <p>Aquí está lo que separa una demo de un producto. <strong>Observabilidad</strong>: ver qué hace el agente en vivo (qué herramienta usó, cuánto tardó, cuánto costó). <strong>Trazabilidad</strong>: reconstruir paso a paso una conversación que salió mal. <strong>Evaluación</strong>: medir con un conjunto de casos si una mejora realmente mejora. Sin estas tres, operar un agente es conducir con los ojos vendados. Una vez listo y medido, lo <em>infundes</em> en tu producto real —por ejemplo, dentro de tu app móvil—.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Construir un agente real es ensamblar bloques (modelo, herramientas, memoria, conocimiento) y recorrer el ciclo construir → ejecutar → gestionar. Lo que lo vuelve producción es la terna observabilidad + trazabilidad + evaluación. Demo no es producto.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+<!-- CAP 7 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo siete</div><h2>Aplicaciones multiagente</h2></div>
+  <p class="epigraph">Cuando un agente se sobrecarga, no lo hagas más listo: dale compañeros.<span class="who">— Sobre repartir el trabajo</span></p>
+  <p class="lead">Cuando una tarea desborda a un solo agente, la repartes entre varios especializados que colaboran. Diseñar bien ese reparto —el flujo— es lo que decide si el equipo funciona.</p>
+
+  <div class="def"><span class="term">Sistema multiagente</span><p>Conjunto de agentes especializados que colaboran —repartiéndose el trabajo y comunicándose— para resolver una tarea que sería demasiado grande, variada o frágil para un solo agente.</p></div>
+
+  <h3>Diseñar el flujo del equipo</h3>
+  <p>No hay un único modo de coordinar. Los más comunes: <strong>secuencial</strong> (la salida de uno alimenta al siguiente), <strong>supervisor</strong> (un coordinador reparte y reúne), <strong>en paralelo</strong> (varios trabajan a la vez y se combinan) y <strong>colaborativo</strong> (los agentes conversan y negocian). Elegir el flujo correcto depende de si las sub-tareas son independientes, dependientes o requieren acuerdo.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 120" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m7" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#a39a85"/></marker></defs>
+      <g text-anchor="middle" font-size="8.5" class="dwords">
+        <circle cx="230" cy="28" r="24" fill="#2b3138"/><text x="230" y="26" fill="#f0eee7" font-size="8">Coordinador</text><text x="230" y="38" fill="#b9cc9e" font-size="7">reparte/reúne</text>
+        <rect x="56" y="86" width="92" height="28" rx="7" fill="#fff" stroke="#b07a3f" stroke-width="1.2"/><text x="102" y="104">Agente A</text>
+        <rect x="184" y="86" width="92" height="28" rx="7" fill="#fff" stroke="#b07a3f" stroke-width="1.2"/><text x="230" y="104">Agente B</text>
+        <rect x="312" y="86" width="92" height="28" rx="7" fill="#fff" stroke="#b07a3f" stroke-width="1.2"/><text x="358" y="104">Agente C</text>
+      </g>
+      <g stroke="#a39a85" stroke-width="1.2" fill="none" marker-end="url(#m7)"><path d="M210 44 C160 62 125 76 104 84"/><path d="M230 52 L230 84"/><path d="M250 44 C300 62 335 76 356 84"/></g>
+    </svg>
+    <figcaption>Figura 7.1 — Un flujo con supervisor: el más controlable para empezar en multiagente.</figcaption>
+  </figure>
+
+  <p>Para implementarlo hay orquestadores multiagente (AutoGen, TaskWeaver, el SDK de agentes de OpenAI, LangGraph, entre otros). LangGraph, por ejemplo, modela el sistema como un <strong>grafo</strong> donde los nodos son agentes o pasos y las aristas, el flujo —lo que hace explícito y depurable quién hace qué y en qué orden—.</p>
+
+  <div class="box note"><span class="lab">El costo del equipo</span><p>Cada agente es otra serie de llamadas al modelo. Un equipo cuesta varias veces más que un agente solo. Empieza con uno; suma agentes solo cuando la tarea se divida con claridad en especialidades.</p></div>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Multiagente = especialistas que colaboran. Diseña el flujo según la tarea (secuencial, supervisor, paralelo o colaborativo) y empieza por el supervisor, el más controlable. Usa un orquestador (como LangGraph) para hacer el flujo explícito y depurable, y crece solo cuando convenga.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+<!-- ===== PARTE 3 ===== -->
+<section class="partpage">
+  <div class="pk">Parte tres</div>
+  <h1>Hacia un ecosistema agéntico abierto</h1>
+  <div class="pd">El horizonte: cómo se conectarán los agentes y cómo hacerlo con responsabilidad.</div>
+  <svg width="80" height="40" viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#b07a3f" stroke-width="1.6" stroke-linecap="round"><rect x="10" y="24" width="60" height="9" rx="4.5"/><rect x="16" y="14" width="48" height="9" rx="4.5"/><rect x="24" y="4" width="32" height="9" rx="4.5"/></g></svg>
+</section>
+
+<!-- CAP 8 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo ocho</div><h2>Protocolos de próxima generación</h2></div>
+  <p class="epigraph">Internet despegó cuando las máquinas acordaron un idioma común. Los agentes están en ese mismo umbral.<span class="who">— Sobre los protocolos abiertos</span></p>
+  <p class="lead">Hasta ahora construimos agentes aislados. El siguiente salto es que <em>se conecten entre sí y con el mundo</em> mediante estándares abiertos. Eso requiere protocolos.</p>
+
+  <div class="def"><span class="term">Protocolo</span><p>Acuerdo sobre cómo dos partes se comunican: qué mensajes se envían, en qué formato y en qué orden. Un protocolo común permite que sistemas distintos —hechos por gente distinta— se entiendan sin integraciones a medida.</p></div>
+
+  <h3>MCP: conectar agentes con herramientas y datos</h3>
+  <p>El <strong>Model Context Protocol</strong> es el "USB-C de la IA": un estándar para que un agente use herramientas, datos y prompts de cualquier proveedor sin código a medida. Construyes un servidor una vez y cualquier agente compatible lo usa.</p>
+
+  <h3>A2A: agentes que hablan con agentes</h3>
+  <p>Si MCP conecta al agente con <em>herramientas</em>, <strong>Agente-a-Agente (A2A)</strong> conecta agentes <em>entre sí</em>: un agente de tu empresa puede delegar una tarea al agente de otra, descubriendo qué sabe hacer y negociando el trabajo, aunque estén hechos por compañías distintas.</p>
+
+  <figure>
+    <svg viewBox="0 0 460 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m8" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5a7388"/></marker></defs>
+      <g font-size="8.5" text-anchor="middle" class="dwords">
+        <circle cx="80" cy="50" r="26" fill="#2b3138"/><text x="80" y="53" fill="#f0eee7">Agente A</text>
+        <circle cx="380" cy="50" r="26" fill="#2b3138"/><text x="380" y="53" fill="#f0eee7">Agente B</text>
+        <rect x="180" y="22" width="100" height="22" rx="4" fill="#fff" stroke="#b07a3f" stroke-width="1.2"/><text x="230" y="37">herramientas (MCP)</text>
+        <rect x="180" y="58" width="100" height="22" rx="4" fill="#fff" stroke="#5a7388" stroke-width="1.2"/><text x="230" y="73">delega tarea (A2A)</text>
+      </g>
+      <g stroke="#5a7388" stroke-width="1.3" fill="none" marker-end="url(#m8)"><path d="M106 50 C140 50 150 33 178 33"/><path d="M282 69 C320 69 330 56 354 54"/></g>
+    </svg>
+    <figcaption>Figura 8.1 — MCP conecta al agente con herramientas; A2A conecta agentes entre sí.</figcaption>
+  </figure>
+
+  <h3>Comercio entre agentes y la web agéntica</h3>
+  <p>El horizonte va más allá: un <strong>protocolo de comercio entre agentes</strong> permitiría que agentes negocien y paguen por servicios entre sí; y una <strong>web agéntica</strong> (con iniciativas como NLWeb) abriría los sitios para que los agentes los entiendan y usen tan fácil como hoy los usamos los humanos. Pasaríamos de una web hecha para ojos a una web hecha también para agentes.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Los protocolos abiertos son el próximo gran salto. MCP conecta agentes con herramientas y datos; A2A, agentes con agentes; y emergen estándares para el comercio entre agentes y una web que ellos puedan navegar. El valor real aparece cuando todo habla el mismo idioma.</p></div>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+<!-- CAP 9 -->
+<section class="chapter">
+  <div class="chead"><div class="cnum">Capítulo nueve</div><h2>Desafíos éticos en el mundo real</h2></div>
+  <p class="epigraph">Darle autonomía a una máquina es darle parte de nuestra responsabilidad. Conviene tomársela en serio.<span class="who">— Sobre construir con conciencia</span></p>
+  <p class="lead">Un agente que actúa en el mundo real puede hacer daño aunque nadie lo busque. Construir con responsabilidad no es un anexo legal: es parte de la ingeniería.</p>
+
+  <h3>Los desafíos de fondo</h3>
+  <ul class="clean">
+    <li><strong>Equidad y sesgo:</strong> el modelo puede heredar prejuicios de sus datos y tratar distinto a distintas personas.</li>
+    <li><strong>Transparencia:</strong> si no puedes explicar por qué el agente decidió algo, no puedes confiar en ello ni corregirlo.</li>
+    <li><strong>Privacidad:</strong> los agentes tocan datos sensibles; protegerlos es obligatorio, no opcional.</li>
+    <li><strong>Responsabilidad:</strong> cuando el agente se equivoca, debe quedar claro <em>quién responde</em>.</li>
+    <li><strong>Seguridad y fiabilidad:</strong> que no haga daño y que funcione de forma consistente.</li>
+  </ul>
+
+  <h3>La ética propia de la autonomía</h3>
+  <p>Los agentes autónomos suman dilemas nuevos: la tensión entre <strong>autonomía y control humano</strong> (¿hasta dónde decide solo?), el riesgo de <strong>engaño o manipulación</strong>, y las <strong>consecuencias no deseadas</strong> de acciones que nadie previó. A más autonomía, más cuidado.</p>
+
+  <h3>Guardrails: el cinturón de seguridad</h3>
+  <div class="def"><span class="term">Guardrail</span><p>Límite de seguridad que rodea al agente para impedir comportamientos dañinos, prohibidos o fuera de alcance —filtrando entradas y salidas, bloqueando acciones peligrosas y manteniendo al agente dentro de lo permitido.</p></div>
+  <figure>
+    <svg viewBox="0 0 460 80" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="m9" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2b3138"/></marker></defs>
+      <g font-size="8" text-anchor="middle" class="dwords">
+        <rect x="6" y="30" width="60" height="26" rx="5" fill="#fff" stroke="#5a7388"/><text x="36" y="47">Entrada</text>
+        <rect x="92" y="30" width="74" height="26" rx="5" fill="#b07a3f"/><text x="129" y="47" fill="#fff">Guardrail</text>
+        <rect x="192" y="30" width="74" height="26" rx="5" fill="#2b3138"/><text x="229" y="47" fill="#f0eee7">Agente</text>
+        <rect x="292" y="30" width="74" height="26" rx="5" fill="#b07a3f"/><text x="329" y="47" fill="#fff">Guardrail</text>
+        <rect x="392" y="30" width="62" height="26" rx="5" fill="#fff" stroke="#5a7388"/><text x="423" y="47">Salida</text>
+      </g>
+      <g stroke="#2b3138" stroke-width="1.2" fill="none" marker-end="url(#m9)"><path d="M66 43 L90 43"/><path d="M166 43 L190 43"/><path d="M266 43 L290 43"/><path d="M366 43 L390 43"/></g>
+    </svg>
+    <figcaption>Figura 9.1 — Guardrails a la entrada y a la salida: filtran lo que llega y lo que el agente produce.</figcaption>
+  </figure>
+  <p>Un mecanismo concreto es el <strong>filtrado y moderación de contenido</strong>: revisar lo que entra y lo que sale para bloquear lo dañino o prohibido. Pero la tecnología sola no basta: hace falta <strong>gobernanza</strong> —cultura y políticas en la organización, colaboración entre empresas del sector, y regulación de los gobiernos—. La IA responsable se construye en esos tres niveles a la vez.</p>
+
+  <div class="box"><span class="lab">Para recordar</span><p>Construir agentes serios incluye la ética: equidad, transparencia, privacidad, responsabilidad y seguridad. La autonomía añade dilemas propios. Los guardrails (filtros de entrada y salida) son el cinturón, pero la verdadera seguridad nace de la gobernanza: organización, sector y regulación juntos.</p></div>
+
+  <h2 style="margin-top:12mm;">Glosario</h2>
+  <ul class="clean">
+    <li><strong>Modelo fundacional / LLM:</strong> modelo general entrenado con datos masivos; el LLM es el de texto.</li>
+    <li><strong>Agente:</strong> sistema que decide y actúa hacia un objetivo (de recuperación, de tarea o autónomo).</li>
+    <li><strong>Orquestador:</strong> capa que coordina modelo, memoria, herramientas, flujo, errores y seguridad.</li>
+    <li><strong>Memorias:</strong> corto plazo, largo plazo, semántica, episódica, procedimental; + cachés semánticos.</li>
+    <li><strong>Herramienta:</strong> función (hardcoded o semántica) con la que el agente actúa.</li>
+    <li><strong>Síncrono / asíncrono:</strong> esperar la respuesta vs. continuar y recogerla después.</li>
+    <li><strong>Construir-ejecutar-gestionar:</strong> el ciclo de vida de un agente en producción.</li>
+    <li><strong>Observabilidad / trazabilidad / evaluación:</strong> lo que vuelve a un agente apto para producción.</li>
+    <li><strong>Sistema multiagente:</strong> agentes especializados que colaboran según un flujo.</li>
+    <li><strong>MCP / A2A:</strong> protocolos que conectan agentes con herramientas y con otros agentes.</li>
+    <li><strong>Guardrail:</strong> límite de seguridad que filtra entradas y salidas del agente.</li>
+    <li><strong>Gobernanza:</strong> políticas y supervisión a nivel de organización, sector y gobierno.</li>
+  </ul>
+
+  <p style="text-align:center; margin-top:12mm; font-family:'Carlito',sans-serif; font-size:8pt; color:#8d8674;">Fin · Agentes de IA en la Práctica · Edición de autor</p>
+  <div class="endmark"><svg width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#b07a3f" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" fill="none" stroke="#b07a3f" stroke-width="1"/></svg></div>
+</section>
+
+</body>
+</html>
