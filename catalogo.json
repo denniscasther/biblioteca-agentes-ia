@@ -186,7 +186,7 @@
     "accent": "#0E6B66",
     "accentDark": "#0A4D49",
     "category": "desarrollo",
-    "pages": 29,
+    "pages": 31,
     "cover": "assets/covers/R1_castor_y_el_plano.png",
     "html": "library/R1_castor_y_el_plano/spec-driven-development.html",
     "pdf": "library/R1_castor_y_el_plano/El-Castor-y-el-Plano.pdf"
