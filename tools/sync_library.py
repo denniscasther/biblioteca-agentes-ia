@@ -47,10 +47,11 @@ INFO = {
     "08_segundo_cerebro": ("conocimiento", "Organiza el conocimiento corporativo para que personas y agentes sepan dónde buscar."),
     "09_federacion_cerebros": ("conocimiento", "Conecta cerebros por dominio con permisos, semántica compartida y trazabilidad."),
     "10_maquina_predecir": ("fundamentos", "Una explicación conceptual de cómo funcionan los modelos de lenguaje."),
+    "11_del_texto_al_contexto": ("conocimiento", "Una guía visual de tokens, embeddings, búsqueda vectorial, coseno y respuestas con fuentes."),
     "R1_castor_y_el_plano": ("desarrollo", "Especificaciones como plano vivo para desarrollar con agentes de código."),
 }
 
-ROMAN = ("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X")
+ROMAN = ("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI")
 
 
 def main() -> None:

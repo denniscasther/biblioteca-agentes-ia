@@ -1,0 +1,363 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Del texto al contexto</title>
+<style>/* =====================================================================
+   BIBLIOTECA DE AGENTES DE IA — sistema editorial común
+   Formato evolucionado 170 × 240 mm (base: Vols. VIII–X).
+
+   Cada libro define SOLO sus tokens en un <style> propio:
+     :root{
+       --accent:#......;       color protagonista (lomo, etiquetas, filetes)
+       --accent-dark:#......;  versión oscura (banda, títulos h3, tablas)
+       --accent-soft:#......;  versión suave (epígrafes, fondos)
+     }
+   Opcionales: --paper, --ink, --ink-soft, --rule, --box, --code-bg.
+
+   Pensado para WeasyPrint (string-set, márgenes @page). Chrome/Edge
+   también lo imprime, sin encabezados corridos.
+   ===================================================================== */
+
+:root{
+  --ink:#23231f;
+  --ink-soft:#4a4a42;
+  --muted:#77736a;
+  --paper:#ffffff;
+  --accent:#555555;
+  --accent-dark:#333333;
+  --accent-soft:#eeeeee;
+  --rule:#cfcabd;
+  --box:#f6f5f1;
+  --code-bg:#f3f3ef;
+
+  /* Colores semánticos de cajas: fijos en toda la colección */
+  --ana:#5f8a5f;   --ana-bg:#f2f6f0;   --ana-ink:#3f6b3f;
+  --warn:#b0512f;  --warn-bg:#fbf1ec;  --warn-ink:#8f3d22;
+  --case:#3f6480;  --case-bg:#eef3f7;  --case-ink:#2f4f66;
+  --anti:#8a3a3a;  --anti-bg:#f8eeee;  --anti-ink:#6e2a2a;
+
+  --sans:"Carlito","Space Grotesk","DejaVu Sans","Segoe UI",sans-serif;
+  --serif:"Bitstream Charter","Source Serif 4","Source Serif Pro","DejaVu Serif",Georgia,serif;
+  --mono:"DejaVu Sans Mono","JetBrains Mono",Consolas,monospace;
+}
+
+/* ---------- PÁGINA ---------- */
+@page{
+  size:170mm 240mm;
+  margin:20mm 18mm 20mm 18mm;
+  @bottom-center{ content:counter(page); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:8.5pt; color:#7a7a70; }
+  @top-center{ content:string(runhead); font-family:"Carlito","DejaVu Sans",sans-serif; font-size:7.8pt;
+    letter-spacing:.09em; text-transform:uppercase; color:#9a9488; }
+}
+@page :first{ margin:0; @top-center{content:""} @bottom-center{content:""} }
+@page cover{ margin:0; @top-center{content:""} @bottom-center{content:""} }
+@page front{ @top-center{content:""} @bottom-center{content:""} }
+
+html{font-family:var(--serif);}
+body{margin:0;color:var(--ink);background:var(--paper);font-size:10.4pt;line-height:1.52;}
+p{margin:0 0 3.2mm 0;text-align:justify;hyphens:auto;orphans:3;widows:3;}
+h1,h2,h3,h4{font-family:var(--sans);color:var(--ink);line-height:1.2;
+  page-break-after:avoid;break-after:avoid;}
+strong{color:var(--accent-dark);}
+em{color:var(--ink-soft);}
+a{color:var(--accent-dark);text-decoration:none;}
+code{font-family:var(--mono);font-size:8.6pt;background:var(--code-bg);padding:0 .6mm;border-radius:1px;}
+
+/* Vista en pantalla: simula la página para revisar sin imprimir */
+@media screen{
+  body{background:#e9e7e1;}
+  section{background:var(--paper);width:170mm;box-sizing:border-box;margin:8mm auto;
+    padding:20mm 18mm;box-shadow:0 1px 4px rgba(0,0,0,.12);}
+  section.cover{padding:0;}
+}
+
+/* ---------- PORTADA ---------- */
+section.cover{page:cover;height:240mm;width:170mm;position:relative;
+  page-break-after:always;background:var(--paper);overflow:hidden;}
+.cover .spine{position:absolute;left:0;top:0;width:9mm;height:240mm;background:var(--accent);}
+.cover .band{position:absolute;left:9mm;top:0;width:161mm;height:7mm;background:var(--accent-dark);}
+.cover .pub{position:absolute;left:20mm;top:14mm;font-family:var(--sans);font-size:8pt;
+  letter-spacing:.28em;text-transform:uppercase;color:#8d8579;}
+.cover h1{position:absolute;left:20mm;top:24mm;width:135mm;font-size:29pt;font-weight:700;
+  letter-spacing:-.01em;margin:0;}
+.cover .sub{position:absolute;left:20mm;top:56mm;width:132mm;font-family:var(--sans);
+  font-size:11.5pt;color:var(--accent-dark);line-height:1.35;}
+.cover .art{position:absolute;left:26mm;top:76mm;width:120mm;}
+.cover .art svg{width:100%;height:auto;}
+.cover .author{position:absolute;left:20mm;bottom:20mm;font-family:var(--sans);}
+.cover .author .by{font-size:8pt;letter-spacing:.22em;text-transform:uppercase;color:#8d8579;}
+.cover .author .name{font-size:16pt;margin-top:1.5mm;}
+.cover .num{position:absolute;right:16mm;bottom:20mm;font-family:var(--sans);font-size:8pt;
+  letter-spacing:.2em;text-transform:uppercase;color:#8d8579;text-align:right;}
+
+/* ---------- PÁGINAS PRELIMINARES ---------- */
+section.front,section.frontnote{page:front;page-break-after:always;}
+section.titlepage{page:front;page-break-after:always;padding-top:45mm;}
+.titlepage h1{font-size:24pt;margin:0 0 4mm 0;}
+.titlepage .sub{font-family:var(--sans);font-size:12pt;color:var(--accent-dark);}
+.titlepage .rule{height:2px;background:var(--accent);width:38mm;margin:7mm 0;}
+.titlepage .meta{font-family:var(--sans);font-size:9.5pt;color:var(--ink-soft);}
+.frontnote h2{font-size:15pt;margin:0 0 5mm 0;padding-bottom:2mm;border-bottom:2px solid var(--accent);}
+.frontnote p.lead{font-size:11.4pt;color:var(--accent-dark);}
+
+/* ---------- ÍNDICE ---------- */
+.toc h2{font-size:15pt;margin:0 0 6mm 0;padding-bottom:2mm;border-bottom:2px solid var(--accent);}
+.toc .part{font-family:var(--sans);font-size:9pt;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin:6mm 0 2.5mm 0;}
+.toc ul{list-style:none;margin:0;padding:0;}
+.toc li{font-family:var(--sans);font-size:10pt;margin:0 0 1.9mm 0;}
+.toc li span.n{display:inline-block;width:8mm;color:var(--accent);font-weight:700;}
+.toc li .subs{display:block;margin:.8mm 0 0 8mm;font-size:8.6pt;color:var(--muted);line-height:1.35;}
+
+/* ---------- PARTES Y CAPÍTULOS ---------- */
+section.partpage{page-break-before:always;page-break-after:always;padding-top:80mm;text-align:center;}
+.partpage .kicker,.chapter .chapnum{font-family:var(--sans);font-size:9pt;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);}
+.partpage h2{font-size:22pt;margin:4mm 0 0 0;}
+.partpage .line{height:2px;width:30mm;background:var(--accent);margin:6mm auto;}
+.partpage p{text-align:center;font-size:10.5pt;color:var(--ink-soft);max-width:100mm;margin:0 auto;}
+
+section.chapter{page-break-before:always;}
+.chapter h2{font-size:19pt;margin:2mm 0 4mm 0;string-set:runhead content();}
+.chapter .epi{border-left:3px solid var(--accent-soft);padding-left:5mm;margin:0 0 6mm 0;
+  font-style:italic;color:var(--ink-soft);font-size:10pt;}
+.chapter h3{font-size:12pt;margin:7mm 0 2.5mm 0;color:var(--accent-dark);}
+.chapter h4{font-size:10.2pt;margin:5mm 0 1.5mm 0;}
+
+/* ---------- CAJAS EDITORIALES ----------
+   def      DEFINICIÓN              ana     ANALOGÍA
+   case     CASO                    warn    ADVERTENCIA
+   recall   RECUERDA                adr     DECISIÓN DE ARQUITECTURA
+   pattern  PATRÓN                  anti    ANTIPATRÓN                      */
+.box{border:1px solid var(--rule);background:var(--box);padding:4mm 5mm;margin:5mm 0;
+  page-break-inside:avoid;break-inside:avoid;border-radius:1.5mm;}
+.box .lab{display:block;font-family:var(--sans);font-size:7.6pt;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:2mm;font-weight:700;}
+.box p:last-child{margin-bottom:0;}
+.box.def{border-left:4px solid var(--accent);}
+.box.ana{border-left:4px solid var(--ana);background:var(--ana-bg);}   .box.ana .lab{color:var(--ana-ink);}
+.box.warn{border-left:4px solid var(--warn);background:var(--warn-bg);} .box.warn .lab{color:var(--warn-ink);}
+.box.case{border-left:4px solid var(--case);background:var(--case-bg);} .box.case .lab{color:var(--case-ink);}
+.box.anti{border-left:4px solid var(--anti);background:var(--anti-bg);} .box.anti .lab{color:var(--anti-ink);}
+.box.recall{border:1px dashed var(--accent);background:var(--paper);}
+.box.adr{border:1px solid var(--accent-dark);border-top:4px solid var(--accent-dark);background:var(--paper);}
+.box.adr dl{margin:0;display:grid;grid-template-columns:22mm 1fr;gap:1.2mm 3mm;font-size:9.4pt;}
+.box.adr dt{font-family:var(--sans);font-weight:700;color:var(--accent-dark);}
+.box.adr dd{margin:0;}
+.box.pattern{border-left:4px solid var(--accent-dark);background:var(--accent-soft);}
+.box.pattern .lab{color:var(--accent-dark);}
+
+/* ---------- FIGURAS ---------- */
+figure{margin:6mm 0;page-break-inside:avoid;break-inside:avoid;text-align:center;}
+figure svg{width:100%;height:auto;max-height:150mm;}
+figcaption{font-family:var(--sans);font-size:8.2pt;color:var(--muted);margin-top:2mm;text-align:center;}
+figcaption b{color:var(--accent);}
+
+/* ---------- TABLAS ---------- */
+table{width:100%;border-collapse:collapse;margin:5mm 0;font-family:var(--sans);
+  font-size:8.8pt;page-break-inside:avoid;break-inside:avoid;}
+th{background:var(--accent-dark);color:#fff;text-align:left;padding:2mm 2.5mm;font-weight:600;}
+td{border-bottom:1px solid var(--rule);padding:2mm 2.5mm;vertical-align:top;}
+tr:nth-child(even) td{background:var(--box);}
+
+/* ---------- CÓDIGO ---------- */
+pre{background:var(--code-bg);border:1px solid var(--rule);border-left:3px solid var(--accent);
+  padding:3.5mm 4mm;font-family:var(--mono);font-size:8pt;line-height:1.42;
+  overflow-wrap:break-word;white-space:pre-wrap;page-break-inside:avoid;break-inside:avoid;
+  margin:4mm 0;color:#33322c;}
+pre[data-lang]::before{content:attr(data-lang);display:block;font-family:var(--sans);font-size:7pt;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1.5mm;}
+pre .c{color:#7d8a72;}
+pre .k{color:var(--accent-dark);font-weight:700;}
+pre .s{color:#8a5a2b;}
+
+/* ---------- LISTAS Y GLOSARIO ---------- */
+ul.plain{margin:0 0 3.5mm 0;padding-left:5mm;}
+ul.plain li,ol li{margin-bottom:1.6mm;}
+ol{padding-left:6mm;}
+dl.gloss dt{font-family:var(--sans);font-weight:700;color:var(--accent-dark);font-size:9.6pt;
+  margin-top:3.5mm;page-break-after:avoid;}
+dl.gloss dd{margin:.8mm 0 0 0;font-size:9.6pt;color:var(--ink-soft);}
+
+/* ---------- COLOFÓN ---------- */
+section.colophon{page-break-before:always;}
+section.colophon tr.current td{font-weight:700;color:var(--accent-dark);}
+
+:root{--accent:#673267;--accent-dark:#673267;--accent-soft:#e8e0e8;--rule:#a292a2;--box:#f7f5f7;--code-bg:#f4f1f4}</style><meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="biblioteca-web-mobile">
+@media screen and (max-width: 700px) {
+  html,body{width:auto!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important}
+  body{margin:0!important;padding:0 17px 32px!important;font-size:15px!important;line-height:1.6!important;text-align:left!important}
+  section,main,article,.chapter,.frontnote,.titlepage,.partpage,.toc{width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:22px 0!important;box-shadow:none!important}
+  section.cover,.cover{display:none!important}
+  .titlepage{padding-top:25px!important}
+  h1,h2,h3,h4{max-width:100%!important;overflow-wrap:anywhere}
+  p,li,dd,dt{font-size:1em!important;overflow-wrap:anywhere}
+  figure,svg,img{max-width:100%!important;height:auto!important}
+  figure{margin:20px 0!important;overflow-x:auto}
+  pre,code{max-width:100%!important;overflow-wrap:anywhere;white-space:pre-wrap!important}
+  table{display:block;max-width:100%!important;overflow-x:auto;font-size:12px!important}
+  .toc li{display:block!important}
+}
+</style>
+</head><body>
+<section class="cover"><div class="spine"></div><div class="band"></div>
+<div class="pub">Biblioteca de Agentes de IA · XI</div><h1>Del texto al contexto</h1>
+<div class="sub">Tokens, vectores y búsqueda semántica paso a paso</div><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 470" role="img" aria-label="Murciélago lineal entre ondas y puntos"><title>Murciélago y señales</title><g fill="none" stroke="#23231f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M260 165 C228 137 204 136 184 149 C167 128 143 126 123 140 C106 116 80 115 60 138 C67 145 73 158 74 173 C84 161 98 155 112 160 C101 175 96 193 98 209 C112 200 126 202 139 214 C133 232 137 247 148 258 C164 245 181 245 197 255 C213 271 236 278 260 277"/>
+<path d="M260 165 C292 137 316 136 336 149 C353 128 377 126 397 140 C414 116 440 115 460 138 C453 145 447 158 446 173 C436 161 422 155 408 160 C419 175 424 193 422 209 C408 200 394 202 381 214 C387 232 383 247 372 258 C356 245 339 245 323 255 C307 271 284 278 260 277"/>
+<path d="M239 165 L231 134 L252 148 L260 139 L268 148 L289 134 L281 165"/>
+<path d="M239 165 C230 184 232 217 243 245 C248 257 253 266 260 277 M281 165 C290 184 288 217 277 245 C272 257 267 266 260 277"/>
+<path d="M245 174 C250 183 255 187 260 188 C265 187 270 183 275 174 M247 202 C253 208 267 208 273 202 M243 245 C252 239 268 239 277 245"/>
+<path d="M155 151 C167 176 174 195 197 255 M365 151 C353 176 346 195 323 255 M112 160 C122 177 130 194 139 214 M408 160 C398 177 390 194 381 214"/>
+<path d="M207 74 C229 61 250 56 270 57 M199 58 C225 40 253 34 281 36 M313 74 C291 61 270 56 250 57 M321 58 C295 40 267 34 239 36"/>
+<path d="M260 293 C222 305 195 326 177 354 M260 293 C298 305 325 326 343 354 M177 354 C199 353 218 361 232 376 M343 354 C321 353 302 361 288 376"/>
+<circle cx="144" cy="375" r="5"/><circle cx="177" cy="354" r="4"/><circle cx="232" cy="376" r="5"/><circle cx="376" cy="375" r="5"/><circle cx="343" cy="354" r="4"/><circle cx="288" cy="376" r="5"/>
+</g></svg>
+</div>
+<div class="author"><div class="by">Escrito e ilustrado por</div><div class="name">Biblioteca de Agentes de IA</div></div>
+<div class="num">XI<br>Murciélago</div></section>
+<section class="titlepage"><h1>Del texto al contexto</h1><div class="sub">Tokens, vectores y búsqueda semántica paso a paso</div><div class="rule"></div>
+<div class="meta">Biblioteca de Agentes de IA · XI<br>2026</div></section>
+<section class="frontnote"><h2>Sobre la portada</h2><p class="lead">Un murciélago orienta su vuelo al recibir ecos. Este libro sigue otra señal: la semejanza entre representaciones numéricas de textos.</p>
+<p>La silueta de la cubierta se dibuja entre ondas y puntos. Las ondas sugieren una consulta; los puntos, posibles fragmentos de una colección. La imagen invita a mirar el recorrido completo, desde la pregunta hasta la fuente que se recupera.</p>
+<p>La metáfora termina antes de la decisión. Un eco físico informa sobre la posición de un objeto; una puntuación vectorial solo mide semejanza según un modelo y una métrica. No sabe si una política está vigente, si el lector tiene permiso ni si el texto dice la verdad. Esas comprobaciones pertenecen al sistema y a las personas.</p>
+</section>
+<section class="frontnote"><h2>Prefacio</h2><p class="lead">¿Cómo pasa una pregunta escrita a una respuesta que cita un documento concreto?</p>
+<p>La frase «la IA busca en una base vectorial» esconde operaciones distintas. Primero se preparan los documentos. Después se convierte la pregunta en un vector, se recuperan candidatos y se verifica cuál puede usarse. Solo entonces un modelo redacta. La tokenización interviene en varios puntos, pero no es la búsqueda misma.</p>
+<p>Seguiremos una consulta ficticia y pequeña: «¿Cómo recupero el acceso al Portal de Proveedores?». La colección de ejemplo contiene una guía vigente, una guía retirada, una pregunta frecuente y un texto de facturación. Los números de los gráficos se inventaron para enseñar las operaciones; no son embeddings calculados por un servicio real.</p>
+<p>Este volumen amplía la explicación de tokens del volumen X y se conecta con la organización documental de los volúmenes VIII y IX. Está escrito para lectores que quieren entender qué hace cada etapa antes de implementar un sistema de recuperación aumentada.</p>
+</section>
+<section class="frontnote"><h2>Cómo leer este libro</h2><p>Las tres partes siguen el orden de una consulta real: preparar, recuperar y responder. Puede leerse de principio a fin sin programar. Quien ya conoce tokens puede comenzar en el capítulo 2; quien diseña sistemas debería detenerse también en los capítulos 4 y 5.</p>
+<p>Las figuras usan la misma pregunta y cuatro fragmentos ficticios. En los gráficos bidimensionales, cada vector tiene solo dos coordenadas para poder dibujarse. Los embeddings de producción suelen tener muchas más dimensiones y no poseen ejes interpretables tan cómodos.</p>
+<div class="box recall"><span class="lab">Recuerda</span><p>Convención visual: morado para consulta y proceso; verde para fuente vigente; gris para contexto auxiliar; terracota para un documento retirado. Un número alto en el gráfico indica parecido, no autoridad.</p></div>
+</section>
+<section class="frontnote toc"><h2>Índice</h2>
+<div class="part">Parte I · Preparar la información</div><ul>
+<li><span class="n">1</span><a href="#cap-1">El texto se convierte en piezas</a><span class="subs">Tres cosas que no son sinónimos</span></li>
+<li><span class="n">2</span><a href="#cap-2">Preparar la biblioteca antes de buscar</a><span class="subs">Qué hace la base vectorial</span></li>
+</ul>
+<div class="part">Parte II · Encontrar fragmentos</div><ul>
+<li><span class="n">3</span><a href="#cap-3">El coseno: comparar direcciones</a><span class="subs"></span></li>
+<li><span class="n">4</span><a href="#cap-4">De los vecinos a la evidencia</a><span class="subs">La búsqueda puede ser mixta</span></li>
+</ul>
+<div class="part">Parte III · Construir una respuesta</div><ul>
+<li><span class="n">5</span><a href="#cap-5">Del fragmento a la respuesta</a><span class="subs">Una prueba mínima de calidad</span></li>
+<li><span class="n">6</span><a href="#cap-6">Un laboratorio que cabe en una página</a><span class="subs">Pruebe tres cambios</span></li>
+</ul>
+<div class="part">Cierre</div><ul><li>Glosario</li><li>Fuentes</li><li>Colofón</li></ul></section>
+<section class="partpage"><div class="kicker">Parte I</div><h2>Preparar la información</h2><div class="line"></div><p>Antes de buscar, el sistema convierte documentos en fragmentos identificables y representaciones numéricas.</p></section>
+<section class="chapter" id="cap-1"><div class="chapnum">Capítulo 1</div><h2>El texto se convierte en piezas</h2>
+<div class="epi">Antes de calcular semejanzas, conviene saber qué objetos entran y salen de cada etapa.</div>
+<p>Una persona pregunta: «¿Cómo recupero el acceso al Portal de Proveedores?». Para nosotros es una oración. Para un modelo de lenguaje, primero se convierte en una secuencia de unidades llamadas <em>tokens</em>. Un token puede ser una palabra completa, un signo o una parte de palabra. Depende del tokenizador y de su vocabulario; no existe una separación universal para esa oración.</p>
+<div class="box def"><span class="lab">Definición</span><p><strong>Tokenización.</strong> Conversión de texto en unidades de un vocabulario, normalmente representadas por identificadores numéricos. Los modelos modernos suelen usar subpalabras para combinar un vocabulario manejable con la posibilidad de representar términos poco frecuentes.</p></div>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" role="img" aria-label="Tokens ilustrativos de la pregunta"><title>Tokens ilustrativos de la pregunta</title><rect width="520" height="300" fill="#fffdf9"/><text x="22" y="32" fill="#673267" font-family="Arial,sans-serif" font-size="17" font-weight="700">UNA ORACIÓN, VARIAS PIEZAS</text><rect x="22" y="49" width="476" height="48" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><text x="34" y="79" fill="#23231f" font-family="Arial,sans-serif" font-size="15" font-weight="700">¿Cómo recupero el acceso al Portal de Proveedores?</text><text x="22" y="132" fill="#62615d" font-family="Arial,sans-serif" font-size="13" font-weight="400">Segmentación ilustrativa en subpalabras</text><rect x="23" y="155" width="38" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="32" y="178" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">¿</text><rect x="69" y="155" width="54" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="78" y="178" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">Cómo</text><rect x="131" y="155" width="90" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="140" y="178" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">recupero</text><rect x="229" y="155" width="38" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="238" y="178" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">el</text><rect x="275" y="155" width="72" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="284" y="178" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">acceso</text><rect x="23" y="205" width="38" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="32" y="228" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">al</text><rect x="69" y="205" width="72" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="78" y="228" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">Portal</text><rect x="149" y="205" width="38" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="158" y="228" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">de</text><rect x="195" y="205" width="63" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="204" y="228" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">Prove</text><rect x="266" y="205" width="72" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="275" y="228" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">edores</text><rect x="346" y="205" width="38" height="36" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="355" y="228" fill="#673267" font-family="Arial,sans-serif" font-size="13" font-weight="700">?</text><text x="22" y="276" fill="#a85d43" font-family="Arial,sans-serif" font-size="13" font-weight="700">Un modelo real puede cortar la oración de otra manera.</text></svg>
+<figcaption><b>Figura 1.1</b> · Una división didáctica de la pregunta en piezas. La separación real depende del tokenizador.</figcaption></figure>
+<p>La ilustración divide «proveedores» en «prove» y «edores» solo para mostrar la idea de subpalabra. No afirma que un modelo concreto lo haga así. La documentación de tokenizadores describe familias como BPE, WordPiece y Unigram; cada una aprende o aplica reglas distintas. Un cambio de tokenizador puede cambiar el número de tokens aunque el texto visible no cambie.</p>
+<h3>Tres cosas que no son sinónimos</h3>
+<p>Un <strong>token</strong> es una pieza que procesa un modelo. Un <strong>fragmento</strong> o <em>chunk</em> es una sección de documento que el sistema decide guardar y recuperar, por ejemplo un párrafo con su título. Un <strong>embedding</strong> es una lista de números calculada para representar una entrada. Un fragmento puede ocupar muchos tokens y producir un único embedding para la búsqueda.</p>
+<p>Esto resuelve una confusión habitual: la tokenización por sí sola no consulta la base vectorial. El modelo que crea embeddings procesa el texto de la pregunta; luego el buscador compara el vector obtenido con vectores previamente guardados. Más tarde, el modelo que redacta también tokeniza los fragmentos recibidos en su ventana de contexto. Es posible que ambos modelos utilicen tokenizadores diferentes.</p>
+<div class="box case"><span class="lab">Caso</span><p>En nuestro ejemplo, la pregunta escrita por la persona llega al sistema de búsqueda. El texto original se conserva para mostrarlo y para la respuesta. Una representación numérica sirve para encontrar candidatos. Nunca se reconstruye la guía de acceso a partir de los números: el sistema guarda o enlaza el texto fuente por separado.</p></div>
+<div class="box recall"><span class="lab">Recuerda</span><p>Si ves «tokens → vector → resultado», pregunta siempre: ¿tokens de qué texto?, ¿qué modelo creó el vector? y ¿dónde está el fragmento original?</p></div>
+</section>
+<section class="chapter" id="cap-2"><div class="chapnum">Capítulo 2</div><h2>Preparar la biblioteca antes de buscar</h2>
+<div class="epi">Una consulta rápida depende de un trabajo previo y verificable sobre las fuentes.</div>
+<p>Supongamos que el equipo de soporte conserva cuatro textos: la guía de acceso vigente, una versión retirada, una pregunta frecuente y una instrucción de facturación. Antes de responder consultas, el sistema extrae su contenido, identifica título, fecha, versión, propietario y permisos, y los divide en fragmentos recuperables. Esta fase se llama <strong>indexación</strong>.</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" role="img" aria-label="Preparación de documentos y búsqueda posterior"><title>Preparación de documentos y búsqueda posterior</title><rect width="520" height="300" fill="#fffdf9"/><text x="22" y="32" fill="#673267" font-family="Arial,sans-serif" font-size="17" font-weight="700">DOS MOMENTOS DISTINTOS</text><text x="22" y="63" fill="#62615d" font-family="Arial,sans-serif" font-size="13" font-weight="700">ANTES · indexación</text><rect x="22" y="76" width="132" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="22" y="76" width="5" height="62" rx="7" fill="#673267" stroke="#673267"/><text x="36" y="100" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Documentos</text><text x="36" y="122" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">texto + versión</text><line x1="158" y1="107" x2="181" y2="107" stroke="#673267" stroke-width="2.5"/><path d="M173 102 L181 107 L173 112" fill="none" stroke="#673267" stroke-width="2.5"/><rect x="185" y="76" width="132" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="185" y="76" width="5" height="62" rx="7" fill="#673267" stroke="#673267"/><text x="199" y="100" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Fragmentos</text><text x="199" y="122" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">secciones</text><line x1="321" y1="107" x2="344" y2="107" stroke="#673267" stroke-width="2.5"/><path d="M336 102 L344 107 L336 112" fill="none" stroke="#673267" stroke-width="2.5"/><rect x="348" y="76" width="150" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="348" y="76" width="5" height="62" rx="7" fill="#673267" stroke="#673267"/><text x="362" y="100" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Índice</text><text x="362" y="122" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">vector + fuente</text><text x="22" y="186" fill="#62615d" font-family="Arial,sans-serif" font-size="13" font-weight="700">AHORA · consulta</text><rect x="22" y="203" width="132" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="22" y="203" width="5" height="62" rx="7" fill="#673267" stroke="#673267"/><text x="36" y="227" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Pregunta</text><text x="36" y="249" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">texto original</text><line x1="158" y1="234" x2="181" y2="234" stroke="#673267" stroke-width="2.5"/><path d="M173 229 L181 234 L173 239" fill="none" stroke="#673267" stroke-width="2.5"/><rect x="185" y="203" width="132" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="185" y="203" width="5" height="62" rx="7" fill="#673267" stroke="#673267"/><text x="199" y="227" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Embedding</text><text x="199" y="249" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">vector consulta</text><line x1="321" y1="234" x2="344" y2="234" stroke="#673267" stroke-width="2.5"/><path d="M336 229 L344 234 L336 239" fill="none" stroke="#673267" stroke-width="2.5"/><rect x="348" y="203" width="150" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="348" y="203" width="5" height="62" rx="7" fill="#427261" stroke="#427261"/><text x="362" y="227" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Vecinos</text><text x="362" y="249" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">texto + IDs</text><line x1="425" y1="138" x2="425" y2="203" stroke="#427261" stroke-width="2"/></svg>
+<figcaption><b>Figura 2.1</b> · Dos recorridos separados: preparar documentos una vez y buscar con cada pregunta.</figcaption></figure>
+<p>El tamaño del fragmento es una decisión práctica. Si se guarda el manual entero como un solo vector, la respuesta específica sobre acceso puede quedar diluida entre muchas secciones. Si se corta cada línea sin contexto, «pulse aquí» pierde el título y las condiciones. Un corte útil conserva la unidad de sentido, incluye el encabezado y apunta al documento y sección originales. A veces se repiten unas líneas entre fragmentos vecinos para no partir una explicación.</p>
+<div class="box def"><span class="lab">Definición</span><p><strong>Registro indexado.</strong> Conjunto de texto recuperable, embedding y metadatos. La base vectorial almacena el vector para localizar vecinos; el texto y la referencia permiten leer y citar lo encontrado. Según la arquitectura, texto y vector pueden vivir en la misma base o en sistemas conectados.</p></div>
+<table><tr><th>ID</th><th>Fragmento de ejemplo</th><th>Estado</th></tr><tr><td>A</td><td>«Use Olvidé mi contraseña; el enlace dura 20 minutos»</td><td>Vigente</td></tr><tr><td>B</td><td>«Solicite el restablecimiento por correo al administrador»</td><td>Retirado</td></tr><tr><td>C</td><td>«Si no llega el correo, revise spam y contacte soporte»</td><td>Vigente</td></tr><tr><td>D</td><td>«Descargue las facturas desde la sección Pagos»</td><td>Vigente</td></tr></table>
+<p>El modelo de embeddings calcula un vector para cada registro. Durante la consulta debe usarse una representación compatible con la del índice; mezclar modelos o versiones sin reindexar puede volver incomparables las coordenadas. Para mantener el índice útil, un cambio de documento requiere actualizar texto, vector y metadatos; retirar una versión requiere excluirla de futuras respuestas.</p>
+<h3>Qué hace la base vectorial</h3>
+<p>Permite encontrar registros cercanos a un vector de consulta según una distancia elegida. Algunas implementaciones ofrecen búsqueda exacta y aproximada; la segunda puede acelerar corpus grandes con una posible pérdida de resultados cercanos. <span class="vigente" data-fuente="F2">pgvector documenta distancia coseno mediante el operador <code>&lt;=&gt;</code> y calcula similitud coseno como uno menos esa distancia</span>. Eso describe una implementación, no una regla que obligue a todos los sistemas a usar coseno.</p>
+<div class="box warn"><span class="lab">Advertencia</span><p>Indexar un documento no concede permiso para mostrarlo. Los controles de acceso deben aplicarse en la recuperación y verificarse de nuevo antes de construir la respuesta.</p></div>
+<div class="box recall"><span class="lab">Recuerda</span><p>La indexación no guarda «conocimiento» libre de contexto. Guarda representaciones y enlaces a textos con versión, fecha y dueño.</p></div>
+</section>
+<section class="partpage"><div class="kicker">Parte II</div><h2>Encontrar fragmentos</h2><div class="line"></div><p>Una consulta recorre el mismo espacio vectorial y produce candidatos ordenados por semejanza.</p></section>
+<section class="chapter" id="cap-3"><div class="chapnum">Capítulo 3</div><h2>El coseno: comparar direcciones</h2>
+<div class="epi">La búsqueda ordena candidatos; el ángulo explica una forma frecuente de hacerlo.</div>
+<p>La pregunta entra al mismo tipo de modelo de embeddings que se usó al indexar. Sale un vector de consulta. Para poder dibujarlo, imaginemos un mundo de solo dos dimensiones. Nuestra pregunta vale <code>q = (3, 4)</code>. La guía vigente vale <code>A = (4, 3)</code>. Ambos tienen longitud 5. Son números inventados para la explicación: ningún eje equivale literalmente a «acceso» o «proveedores».</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 312" role="img" aria-label="Vectores de juguete en un plano cartesiano"><title>Vectores de juguete en un plano cartesiano</title><rect width="520" height="312" fill="#fffdf9"/><text x="22" y="29" fill="#673267" font-family="Arial,sans-serif" font-size="16" font-weight="700">PLANO DE DOS DIMENSIONES · SOLO DIDÁCTICO</text><line x1="57" y1="252" x2="472" y2="252" stroke="#999" stroke-width="2"/><line x1="260" y1="45" x2="260" y2="270" stroke="#999" stroke-width="2"/><text x="473" y="273" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">x</text><text x="245" y="54" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">y</text><line x1="116" y1="249" x2="116" y2="255" stroke="#999" stroke-width="1"/><text x="111" y="272" fill="#62615d" font-family="Arial,sans-serif" font-size="11" font-weight="400">-4</text><line x1="188" y1="249" x2="188" y2="255" stroke="#999" stroke-width="1"/><text x="183" y="272" fill="#62615d" font-family="Arial,sans-serif" font-size="11" font-weight="400">-2</text><line x1="260" y1="249" x2="260" y2="255" stroke="#999" stroke-width="1"/><text x="255" y="272" fill="#62615d" font-family="Arial,sans-serif" font-size="11" font-weight="400">0</text><line x1="332" y1="249" x2="332" y2="255" stroke="#999" stroke-width="1"/><text x="327" y="272" fill="#62615d" font-family="Arial,sans-serif" font-size="11" font-weight="400">2</text><line x1="404" y1="249" x2="404" y2="255" stroke="#999" stroke-width="1"/><text x="399" y="272" fill="#62615d" font-family="Arial,sans-serif" font-size="11" font-weight="400">4</text><line x1="260" y1="252" x2="368" y2="108" stroke="#673267" stroke-width="2"/><circle cx="368" cy="108" r="5" fill="#673267"/><text x="375" y="98" fill="#673267" font-family="Arial,sans-serif" font-size="14" font-weight="700">q</text><line x1="260" y1="252" x2="404" y2="144" stroke="#427261" stroke-width="2"/><circle cx="404" cy="144" r="5" fill="#427261"/><text x="411" y="135" fill="#427261" font-family="Arial,sans-serif" font-size="14" font-weight="700">A</text><line x1="260" y1="252" x2="368" y2="108" stroke="#a85d43" stroke-width="2"/><circle cx="368" cy="108" r="5" fill="#a85d43"/><text x="343" y="126" fill="#a85d43" font-family="Arial,sans-serif" font-size="14" font-weight="700">B</text><line x1="260" y1="252" x2="260" y2="72" stroke="#58788d" stroke-width="2"/><circle cx="260" cy="72" r="5" fill="#58788d"/><text x="268" y="76" fill="#58788d" font-family="Arial,sans-serif" font-size="14" font-weight="700">C</text><line x1="260" y1="252" x2="116" y2="144" stroke="#777" stroke-width="2"/><circle cx="116" cy="144" r="5" fill="#777"/><text x="91" y="136" fill="#777" font-family="Arial,sans-serif" font-size="14" font-weight="700">D</text><text x="22" y="297" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">q pregunta · A vigente · B retirada · C ayuda · D facturas</text></svg>
+<figcaption><b>Figura 3.1</b> · Vectores didácticos de dos dimensiones. La guía retirada B está en la misma dirección que la consulta, aunque ya no es válida.</figcaption></figure>
+<p>La similitud coseno compara el ángulo entre dos vectores. Se calcula como <strong>(q · d) / (||q|| × ||d||)</strong>, donde «·» es el producto escalar y las barras dobles son las longitudes. Para A: <code>(3×4 + 4×3) / (5×5) = 24/25 = 0,96</code>. La guía retirada B tiene <code>(3,4)</code>, de modo que puntúa <code>1,00</code>. C, la ayuda sobre correo, tiene <code>(0,5)</code> y puntúa <code>0,80</code>. D, sobre facturas, tiene <code>(−4,3)</code> y puntúa <code>0,00</code>.</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" role="img" aria-label="Ángulo y operación de similitud coseno"><title>Ángulo y operación de similitud coseno</title><rect width="520" height="300" fill="#fffdf9"/><text x="22" y="31" fill="#673267" font-family="Arial,sans-serif" font-size="17" font-weight="700">COSENO = (q · d) / (||q|| × ||d||)</text><line x1="55" y1="237" x2="275" y2="237" stroke="#999" stroke-width="2"/><line x1="55" y1="237" x2="55" y2="66" stroke="#999" stroke-width="2"/><line x1="55" y1="237" x2="205" y2="87" stroke="#673267" stroke-width="2.5"/><path d="M197 82 L205 87 L197 92" fill="none" stroke="#673267" stroke-width="2.5"/><line x1="55" y1="237" x2="237" y2="123" stroke="#427261" stroke-width="2.5"/><path d="M229 118 L237 123 L229 128" fill="none" stroke="#427261" stroke-width="2.5"/><text x="153" y="86" fill="#673267" font-family="Arial,sans-serif" font-size="14" font-weight="700">q = (3, 4)</text><text x="239" y="122" fill="#427261" font-family="Arial,sans-serif" font-size="14" font-weight="700">A = (4, 3)</text><text x="92" y="198" fill="#a85d43" font-family="Arial,sans-serif" font-size="12" font-weight="400">ángulo</text><rect x="302" y="71" width="196" height="166" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><text x="317" y="102" fill="#673267" font-family="Arial,sans-serif" font-size="14" font-weight="700">Producto escalar</text><text x="317" y="128" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="400">3×4 + 4×3 = 24</text><text x="317" y="157" fill="#673267" font-family="Arial,sans-serif" font-size="14" font-weight="700">Longitudes</text><text x="317" y="182" fill="#23231f" font-family="Arial,sans-serif" font-size="13" font-weight="400">||q|| = 5; ||A|| = 5</text><text x="317" y="214" fill="#427261" font-family="Arial,sans-serif" font-size="16" font-weight="700">24 / 25 = 0,96</text><text x="22" y="277" fill="#a85d43" font-family="Arial,sans-serif" font-size="13" font-weight="700">Un parecido alto no certifica vigencia ni verdad.</text></svg>
+<figcaption><b>Figura 3.2</b> · La longitud de la flecha no decide la similitud coseno; importa su dirección relativa.</figcaption></figure>
+<div class="box def"><span class="lab">Definición</span><p><strong>Similitud coseno.</strong> Medida de alineación entre dos vectores no nulos. Vale 1 si apuntan en la misma dirección, 0 si son perpendiculares y −1 si apuntan en direcciones opuestas. En embeddings reales, un puntaje alto no se traduce automáticamente en un porcentaje de verdad o de relevancia.</p></div>
+<p>En muchas búsquedas se ordenan primero los resultados de mayor similitud. Una base también puede trabajar con <em>distancia coseno</em>, donde menor es mejor. La definición concreta y los índices disponibles dependen de la herramienta. Además, hay sistemas que prefieren producto escalar u otras distancias, y otros combinan señales semánticas con términos exactos.</p>
+<div class="box warn"><span class="lab">Advertencia</span><p>El 1,00 de B es una trampa deliberada: representa una coincidencia perfecta con un procedimiento que ya fue retirado. El coseno no lee la fecha ni decide qué documento tiene autoridad.</p></div>
+<div class="box recall"><span class="lab">Recuerda</span><p>El coseno ayuda a responder «¿qué vector se parece?». La pregunta «¿qué fuente puedo usar?» requiere metadatos, permisos y lectura del contenido.</p></div>
+</section>
+<section class="chapter" id="cap-4"><div class="chapnum">Capítulo 4</div><h2>De los vecinos a la evidencia</h2>
+<div class="epi">Los candidatos de la base son el comienzo de la lectura, no el final de la decisión.</div>
+<p>Una búsqueda ingenua que pidiera los dos vecinos más próximos devolvería B y A. Si el sistema entregara ambos sin más, el modelo recibiría instrucciones contradictorias: un correo al administrador y un botón de autoservicio. Nuestro corpus contiene el dato que resuelve la contradicción: B está marcado como retirado. La recuperación útil debe considerar esa marca antes de redactar.</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" role="img" aria-label="Ranking de coseno y selección por metadatos"><title>Ranking de coseno y selección por metadatos</title><rect width="520" height="300" fill="#fffdf9"/><text x="22" y="31" fill="#673267" font-family="Arial,sans-serif" font-size="16" font-weight="700">ORDEN BRUTO</text><text x="302" y="31" fill="#673267" font-family="Arial,sans-serif" font-size="15" font-weight="700">TRAS COMPROBAR FUENTES</text><text x="22" y="59" fill="#23231f" font-family="Arial,sans-serif" font-size="12" font-weight="700">B retirada</text><rect x="22" y="66" width="200" height="16" rx="7" fill="#efefeb" stroke="#efefeb"/><rect x="22" y="66" width="200" height="16" rx="7" fill="#a85d43" stroke="#a85d43"/><text x="230" y="80" fill="#a85d43" font-family="Arial,sans-serif" font-size="12" font-weight="700">1,00</text><text x="22" y="108" fill="#23231f" font-family="Arial,sans-serif" font-size="12" font-weight="700">A vigente</text><rect x="22" y="115" width="200" height="16" rx="7" fill="#efefeb" stroke="#efefeb"/><rect x="22" y="115" width="192.0" height="16" rx="7" fill="#427261" stroke="#427261"/><text x="230" y="129" fill="#427261" font-family="Arial,sans-serif" font-size="12" font-weight="700">0,96</text><text x="22" y="157" fill="#23231f" font-family="Arial,sans-serif" font-size="12" font-weight="700">C ayuda</text><rect x="22" y="164" width="200" height="16" rx="7" fill="#efefeb" stroke="#efefeb"/><rect x="22" y="164" width="160.0" height="16" rx="7" fill="#58788d" stroke="#58788d"/><text x="230" y="178" fill="#58788d" font-family="Arial,sans-serif" font-size="12" font-weight="700">0,80</text><text x="22" y="206" fill="#23231f" font-family="Arial,sans-serif" font-size="12" font-weight="700">D facturas</text><rect x="22" y="213" width="200" height="16" rx="7" fill="#efefeb" stroke="#efefeb"/><text x="230" y="227" fill="#777" font-family="Arial,sans-serif" font-size="12" font-weight="700">0,00</text><line x1="264" y1="149" x2="289" y2="149" stroke="#673267" stroke-width="2.5"/><path d="M281 144 L289 149 L281 154" fill="none" stroke="#673267" stroke-width="2.5"/><rect x="301" y="63" width="197" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="301" y="63" width="5" height="62" rx="7" fill="#427261" stroke="#427261"/><text x="315" y="87" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">A · guía vigente</text><text x="315" y="109" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">0,96 · paso principal</text><rect x="301" y="141" width="197" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="301" y="141" width="5" height="62" rx="7" fill="#58788d" stroke="#58788d"/><text x="315" y="165" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">C · ayuda correo</text><text x="315" y="187" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">0,80 · contingencia</text><text x="302" y="235" fill="#a85d43" font-family="Arial,sans-serif" font-size="12" font-weight="700">B: excluida por versión</text><text x="302" y="258" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">D: no responde</text></svg>
+<figcaption><b>Figura 4.1</b> · El orden bruto de similitud y el resultado después de excluir la guía retirada.</figcaption></figure>
+<p>El filtro puede aplicarse durante la consulta si la base lo soporta, o mediante una comprobación estricta antes de entregar los textos. En ambos casos hay que evitar que un fragmento sin autorización se cuele en el contexto. Después de filtrar, A queda como guía principal y C como ayuda complementaria. D no responde a la pregunta aunque pertenezca al mismo portal.</p>
+<h3>La búsqueda puede ser mixta</h3>
+<p>La semejanza semántica resulta útil cuando el usuario dice «no puedo entrar» y la guía dice «restablecimiento de credenciales». Sin embargo, un código de error, un número de contrato o el nombre exacto de una función puede beneficiarse de búsqueda por términos. Una arquitectura puede combinar búsqueda textual, filtros por dominio y vectores; incluso puede reordenar los candidatos con otra etapa. La base vectorial es una pieza, no todo el sistema.</p>
+<p>También importa la procedencia. Cada resultado debe llevar una ruta estable, sección, versión y fecha. Si dos fragmentos se contradicen, no basta con que uno tenga 0,96 y otro 0,80: se revisa cuál es la fuente autorizada y qué afirma realmente. Si ningún texto vigente contesta, la salida correcta es indicar que falta evidencia.</p>
+<div class="box case"><span class="lab">Caso</span><p>Consulta: «¿Cómo recupero el acceso?». B aparece primero por similitud, pero se descarta porque su estado es «retirado». A indica el paso de autoservicio. C explica qué hacer si no llega el correo. El conjunto final contiene A y C con sus referencias; B se conserva solo para auditoría, nunca para instruir al usuario.</p></div>
+<div class="box adr"><span class="lab">Decisión de arquitectura</span><dl><dt>Contexto</dt><dd>Hay documentos parecidos con distintas fechas y permisos.</dd><dt>Decisión</dt><dd>Recuperar por similitud dentro del dominio y aplicar versión, vigencia y acceso antes del contexto generativo.</dd><dt>Consecuencia</dt><dd>El índice necesita metadatos mantenidos y pruebas con versiones retiradas.</dd></dl></div>
+<div class="box recall"><span class="lab">Recuerda</span><p>El buscador propone candidatos. La política del sistema y el contenido de la fuente determinan cuáles pueden sostener una respuesta.</p></div>
+</section>
+<section class="partpage"><div class="kicker">Parte III</div><h2>Construir una respuesta</h2><div class="line"></div><p>Los fragmentos elegidos se comprueban y pasan al modelo para redactar una respuesta trazable.</p></section>
+<section class="chapter" id="cap-5"><div class="chapnum">Capítulo 5</div><h2>Del fragmento a la respuesta</h2>
+<div class="epi">La generación ocurre después de recuperar texto; el vector ya cumplió su función de búsqueda.</div>
+<p>El sistema prepara una entrada para el modelo de lenguaje: la pregunta original, una instrucción de responder con la información disponible y los fragmentos A y C con sus referencias. El modelo no recibe una «verdad vectorial». Recibe texto legible dentro de su ventana de contexto. Lo procesa en tokens y genera la respuesta token a token, como se explica en el volumen X.</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" role="img" aria-label="Flujo desde la consulta hasta la respuesta con citas"><title>Flujo desde la consulta hasta la respuesta con citas</title><rect width="520" height="300" fill="#fffdf9"/><text x="22" y="30" fill="#673267" font-family="Arial,sans-serif" font-size="16" font-weight="700">EL VECTOR LOCALIZA; EL TEXTO SOSTIENE</text><rect x="22" y="49" width="220" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="22" y="49" width="5" height="62" rx="7" fill="#673267" stroke="#673267"/><text x="36" y="73" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Consulta</text><text x="36" y="95" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">texto + vector</text><line x1="247" y1="80" x2="269" y2="80" stroke="#673267" stroke-width="2.5"/><path d="M261 75 L269 80 L261 85" fill="none" stroke="#673267" stroke-width="2.5"/><rect x="275" y="49" width="223" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="275" y="49" width="5" height="62" rx="7" fill="#673267" stroke="#673267"/><text x="289" y="73" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Búsqueda</text><text x="289" y="95" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">IDs A, B, C, D</text><line x1="385" y1="111" x2="385" y2="138" stroke="#673267" stroke-width="2"/><rect x="22" y="144" width="220" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="22" y="144" width="5" height="62" rx="7" fill="#a85d43" stroke="#a85d43"/><text x="36" y="168" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Verificación</text><text x="36" y="190" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">B retirada; D irrelevante</text><line x1="246" y1="175" x2="269" y2="175" stroke="#673267" stroke-width="2.5"/><path d="M261 170 L269 175 L261 180" fill="none" stroke="#673267" stroke-width="2.5"/><rect x="275" y="144" width="223" height="62" rx="7" fill="#f7f5f7" stroke="#d6cbd6"/><rect x="275" y="144" width="5" height="62" rx="7" fill="#427261" stroke="#427261"/><text x="289" y="168" fill="#23231f" font-family="Arial,sans-serif" font-size="14" font-weight="700">Contexto modelo</text><text x="289" y="190" fill="#62615d" font-family="Arial,sans-serif" font-size="12" font-weight="400">textos A y C + citas</text><line x1="385" y1="206" x2="385" y2="231" stroke="#673267" stroke-width="2"/><rect x="94" y="233" width="404" height="46" rx="7" fill="#e8e0e8" stroke="#673267"/><text x="111" y="263" fill="#673267" font-family="Arial,sans-serif" font-size="14" font-weight="700">Respuesta basada en A y C</text></svg>
+<figcaption><b>Figura 5.1</b> · El vector sirve para localizar; la respuesta se fundamenta en texto y referencias.</figcaption></figure>
+<p>Una respuesta razonable para el caso sería: «En el Portal de Proveedores, pulse “Olvidé mi contraseña” y use el enlace recibido dentro de 20 minutos (Guía de acceso, sección 2). Si no llega el correo, revise spam y contacte a soporte (Preguntas frecuentes, sección 4)». Es un ejemplo construido con documentos ficticios. Las citas identifican el origen de cada afirmación; el sistema debe generar enlaces reales cuando trabaje con fuentes reales.</p>
+<div class="box def"><span class="lab">Definición</span><p><strong>Generación aumentada por recuperación (RAG).</strong> Patrón en el que un sistema aporta al modelo información recuperada de una fuente externa para una tarea de generación. Recuperar texto útil puede mejorar una respuesta, pero la arquitectura necesita controles de selección, vigencia, permisos y verificación.</p></div>
+<p>Hay dos fallos distintos. El primero es recuperar el texto equivocado: un fragmento antiguo o una coincidencia superficial. El segundo es redactar algo que no está sostenido por el texto correcto: una cifra inventada, un paso omitido o una cita que apunta a otra sección. Por eso conviene evaluar la recuperación y la respuesta por separado. Una puntuación alta de búsqueda no certifica la respuesta final.</p>
+<h3>Una prueba mínima de calidad</h3>
+<p>Para cada pregunta de prueba, registre qué fragmentos eran esperados, cuáles llegaron, cuáles se excluyeron y por qué. Luego revise si cada afirmación de la respuesta aparece en las fuentes citadas. En este caso, el sistema pasa si omite la guía B, usa A para el primer paso, usa C solo para la contingencia y reconoce cuando no encuentra un procedimiento vigente.</p>
+<div class="box warn"><span class="lab">Advertencia</span><p>El texto recuperado puede contener instrucciones dirigidas al modelo, pero sigue siendo contenido de una fuente. No debe adquirir autoridad para cambiar las reglas del sistema ni para pedir datos o acciones ajenas a la pregunta.</p></div>
+<div class="box recall"><span class="lab">Recuerda</span><p>El flujo completo es: pregunta → embedding de consulta → vecinos → filtros y lectura → fragmentos autorizados → modelo generativo → respuesta con citas.</p></div>
+</section>
+<section class="chapter" id="cap-6"><div class="chapnum">Capítulo 6</div><h2>Un laboratorio que cabe en una página</h2>
+<div class="epi">Repetir el cálculo a mano revela qué hace la métrica y qué nunca puede decidir.</div>
+<p>Use la tabla del capítulo 2 y estos vectores didácticos: consulta <code>q=(3,4)</code>, A vigente <code>(4,3)</code>, B retirado <code>(3,4)</code>, C vigente <code>(0,5)</code> y D vigente <code>(−4,3)</code>. Todos tienen longitud 5; por eso cada producto escalar se divide por 25. El resultado es reproducible con lápiz o calculadora.</p>
+<table><tr><th>Registro</th><th>Producto q·d</th><th>Coseno</th><th>Decisión</th></tr><tr><td>B · guía retirada</td><td>25</td><td>1,00</td><td>Excluir por versión</td></tr><tr><td>A · guía vigente</td><td>24</td><td>0,96</td><td>Usar como fuente principal</td></tr><tr><td>C · ayuda de correo</td><td>20</td><td>0,80</td><td>Usar si aporta la contingencia</td></tr><tr><td>D · facturas</td><td>0</td><td>0,00</td><td>Descartar por tema</td></tr></table>
+<h3>Pruebe tres cambios</h3>
+<p><strong>1. Cambie la pregunta.</strong> «¿Dónde descargo una factura?» exigiría otro vector de consulta. No basta con cambiar las palabras en la pantalla y conservar <code>(3,4)</code>. El modelo de embeddings debe volver a codificarla.</p>
+<p><strong>2. Cambie la versión.</strong> Si B se convierte en la guía vigente y A se retira, el cálculo coseno permanece igual. La decisión cambia por los metadatos. Esto muestra por qué la política de fuentes no puede esconderse dentro de la métrica.</p>
+<p><strong>3. Quite la evidencia.</strong> Si A y C no son accesibles para la persona, el sistema no debe componer una respuesta a partir de B o D. Debe explicar que no dispone de una guía autorizada y orientar al canal responsable.</p>
+<div class="box case"><span class="lab">Caso</span><p><strong>Resultado esperado.</strong> El lector puede señalar el tokenizador de cada modelo, el lugar donde se guarda el texto, la operación de coseno, el filtro que elimina B y las frases de A y C que sostienen la respuesta. Si uno de esos pasos no se puede señalar, el diagrama del sistema todavía está incompleto.</p></div>
+<p>El ejercicio es pequeño a propósito. En producción habrá miles o millones de registros, vectores de muchas dimensiones y un índice optimizado. La estructura lógica, sin embargo, sigue siendo reconocible: representar, encontrar, comprobar y responder. Los volúmenes VIII y IX de esta biblioteca profundizan en la organización, autoridad y federación de las fuentes.</p>
+<div class="box recall"><span class="lab">Recuerda</span><p>La semejanza es una pista útil para encontrar información. La respuesta fiable surge al unir esa pista con un texto verificable y una decisión explícita sobre qué fuente se puede usar.</p></div>
+</section>
+<section class="chapter"><div class="chapnum">Cierre</div><h2>Síntesis</h2><p>Un token es una unidad de texto para un modelo. Un fragmento es una porción de documento elegida para indexar o leer. Un embedding representa un texto como un vector. Son tres objetos diferentes.</p>
+<p>Durante la preparación se extraen y dividen documentos, se guardan texto y metadatos, y se calculan embeddings de los fragmentos. Durante la consulta se calcula el embedding de la pregunta con un sistema compatible y se buscan vecinos. El coseno compara direcciones: producto escalar dividido por las longitudes. La base devuelve candidatos y referencias a sus textos.</p>
+<p>La lista debe pasar por permisos, vigencia y comprobación de evidencia. Una guía retirada puede puntuar más alto que la actual. El modelo generativo recibe la pregunta y los fragmentos autorizados dentro de su contexto; produce la respuesta token a token. Una cita debe apuntar al texto de origen, no al número del vector.</p>
+</section>
+<section class="chapter"><div class="chapnum">Referencia</div><h2>Glosario</h2><dl class="gloss">
+<dt>Base vectorial</dt><dd>Sistema que almacena vectores y permite buscar los más cercanos según una distancia o similitud. El diseño también debe conservar o enlazar texto y metadatos.</dd>
+<dt>Coseno</dt><dd>Medida de alineación entre vectores no nulos: producto escalar dividido por el producto de sus longitudes.</dd>
+<dt>Embedding</dt><dd>Vector numérico calculado por un modelo para representar una entrada, como un fragmento de texto o una pregunta.</dd>
+<dt>Fragmento</dt><dd>Porción de documento que el sistema decide indexar y recuperar como unidad, normalmente acompañada de título y referencia.</dd>
+<dt>Índice</dt><dd>Estructura que permite localizar registros; en la búsqueda vectorial puede incluir mecanismos exactos o aproximados.</dd>
+<dt>Metadatos</dt><dd>Datos sobre una fuente, como título, versión, fecha, propietario, permisos y ubicación.</dd>
+<dt>RAG</dt><dd>Generación aumentada por recuperación: patrón que aporta al modelo información recuperada de una fuente externa para generar una respuesta.</dd>
+<dt>Similitud coseno</dt><dd>Valor que expresa cuánto coinciden las direcciones de dos vectores; no mide verdad, vigencia ni autorización.</dd>
+<dt>Token</dt><dd>Unidad de un vocabulario que procesa un modelo; puede ser palabra, subpalabra, signo u otra pieza según el tokenizador.</dd>
+<dt>Tokenización</dt><dd>Proceso que convierte texto en tokens e identificadores según las reglas de un tokenizador.</dd>
+</dl></section>
+<section class="chapter"><div class="chapnum">Referencia</div><h2>Fuentes</h2><ol>
+<li id="fuente-F1">Hugging Face. Tokenization algorithms. https://huggingface.co/docs/transformers/v5.4.0/tokenizer_summary. Consulta: 2026-10-17.</li>
+<li id="fuente-F2">pgvector. pgvector README. https://github.com/pgvector/pgvector. Consulta: 2026-10-17.</li>
+<li id="fuente-F3">Lewis et al.. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. https://arxiv.org/abs/2005.11401. Consulta: 2026-10-17.</li>
+</ol></section>
+<section class="chapter colophon"><div class="chapnum">Colofón</div><h2>Sobre esta colección</h2>
+<p>Del texto al contexto · Murciélago · Encontrar señales parecidas sin confundirlas con hechos · 2026.</p>
+<table><tr><th>#</th><th>Título</th><th>Animal</th><th>Ángulo</th></tr>
+<tr><td>I</td><td>Agentes de IA: De la idea a la producción</td><td>Pulpo</td><td>Inteligencia distribuida</td></tr>
+<tr><td>II</td><td>Construyendo con Agentes de IA</td><td>Hormiga</td><td>Enjambre emergente</td></tr>
+<tr><td>III</td><td>Agentes de IA: Una guía ilustrada</td><td>Cuervo</td><td>Uso inteligente de herramientas</td></tr>
+<tr><td>IV</td><td>Patrones Arquitectónicos para Sistemas Multiagente</td><td>Abeja</td><td>Patrones de coordinación probados</td></tr>
+<tr><td>V</td><td>Agentes de IA con MCP</td><td>Delfín</td><td>Comunicación y protocolo</td></tr>
+<tr><td>VI</td><td>Agentes de IA en Acción</td><td>Zorro</td><td>Acción inteligente y adaptativa</td></tr>
+<tr><td>VII</td><td>Agentes de IA en la práctica</td><td>Castor</td><td>Ingeniería orientada a producción</td></tr>
+<tr><td>VIII</td><td>El Segundo Cerebro Corporativo</td><td>Ardilla</td><td>Conocimiento almacenado y recuperable</td></tr>
+<tr><td>IX</td><td>La Federación de Cerebros</td><td>Suricata</td><td>Vigilancia distribuida</td></tr>
+<tr><td>X</td><td>La Máquina de Predecir</td><td>Cachalote</td><td>Percepción construida desde señales y patrones</td></tr>
+<tr class="current"><td>XI</td><td>Del texto al contexto</td><td>Murciélago</td><td>Encontrar señales parecidas sin confundirlas con hechos</td></tr>
+<tr><td>—</td><td>El Castor y el Plano — Spec-Driven Development con agentes</td><td>Castor</td><td>Construir siguiendo un plano vivo</td></tr>
+</table></section></body></html>

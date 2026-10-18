@@ -13,8 +13,8 @@ def main() -> None:
     if DEST.parent != SITE.resolve() or DEST.name != "dist":
         raise RuntimeError("Destino de compilación fuera del sitio")
     catalog = json.loads((SITE / "catalogo.json").read_text(encoding="utf-8"))
-    if len(catalog) != 11:
-        raise RuntimeError(f"Se esperaban 11 libros; hay {len(catalog)}")
+    if len(catalog) != 12:
+        raise RuntimeError(f"Se esperaban 12 libros; hay {len(catalog)}")
     if DEST.exists():
         shutil.rmtree(DEST)
     shutil.copytree(SITE / "src", DEST)

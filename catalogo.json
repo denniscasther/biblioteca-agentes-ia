@@ -160,6 +160,22 @@
     "pdf": "library/10_maquina_predecir/maquina-de-predecir.pdf"
   },
   {
+    "id": "11_del_texto_al_contexto",
+    "volume": 11,
+    "number": "XI",
+    "title": "Del texto al contexto",
+    "animal": "Murciélago",
+    "angle": "Encontrar señales parecidas sin confundirlas con hechos",
+    "description": "Una guía visual de tokens, embeddings, búsqueda vectorial, coseno y respuestas con fuentes.",
+    "accent": "#673267",
+    "accentDark": "#673267",
+    "category": "conocimiento",
+    "pages": 31,
+    "cover": "assets/covers/11_del_texto_al_contexto.png",
+    "html": "library/11_del_texto_al_contexto/libro.html",
+    "pdf": "library/11_del_texto_al_contexto/libro.pdf"
+  },
+  {
     "id": "R1_castor_y_el_plano",
     "volume": null,
     "number": "R",

@@ -14,9 +14,9 @@ const categories = {
   desarrollo: 'Desarrollo'
 };
 const routes = {
-  entender: ['01_agentes_idea_produccion', '03_guia_ilustrada', '10_maquina_predecir'],
+  entender: ['01_agentes_idea_produccion', '03_guia_ilustrada', '10_maquina_predecir', '11_del_texto_al_contexto'],
   construir: ['02_construyendo_agentes', '04_patrones_multiagente', '05_mcp', '06_en_accion', '07_en_la_practica'],
-  organizar: ['08_segundo_cerebro', '09_federacion_cerebros', 'R1_castor_y_el_plano']
+  organizar: ['08_segundo_cerebro', '09_federacion_cerebros', '11_del_texto_al_contexto', 'R1_castor_y_el_plano']
 };
 let books = [];
 let activeFilter = 'todos';

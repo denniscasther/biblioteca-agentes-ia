@@ -1,6 +1,6 @@
 # Biblioteca de Agentes de IA — sitio web
 
-Catálogo responsive de los diez volúmenes y el libro relacionado. Las portadas, HTML y PDF se copian desde el proyecto editorial a `library/` mediante `tools/sync_library.py`; solo este directorio del sitio se publica como repositorio GitHub. Los documentos internos de `referencias/`, `project_state/` y las herramientas de trabajo no se envían.
+Catálogo responsive de los once volúmenes y el libro relacionado. Las portadas, HTML y PDF se copian desde el proyecto editorial a `library/` mediante `tools/sync_library.py`; solo este directorio del sitio se publica como repositorio GitHub. Los documentos internos de `referencias/`, `project_state/` y las herramientas de trabajo no se envían.
 
 ## Actualizar libros
 
