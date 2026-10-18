@@ -176,6 +176,22 @@
     "pdf": "library/11_del_texto_al_contexto/libro.pdf"
   },
   {
+    "id": "12_la_red_que_aprende",
+    "volume": 12,
+    "number": "XII",
+    "title": "La red que aprende",
+    "animal": "Araña",
+    "angle": "Las conexiones aprenden patrones; cada arquitectura incorpora decisiones y límites distintos",
+    "description": "Cómo aprenden las redes neuronales y qué arquitecturas llevan la inteligencia artificial moderna a producción.",
+    "accent": "#45413e",
+    "accentDark": "#45413e",
+    "category": "fundamentos",
+    "pages": 35,
+    "cover": "assets/covers/12_la_red_que_aprende.png",
+    "html": "library/12_la_red_que_aprende/libro.html",
+    "pdf": "library/12_la_red_que_aprende/libro.pdf"
+  },
+  {
     "id": "R1_castor_y_el_plano",
     "volume": null,
     "number": "R",
