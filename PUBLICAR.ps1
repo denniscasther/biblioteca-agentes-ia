@@ -36,6 +36,17 @@ function Push-Main {
     }
 }
 
+function Find-RunId {
+    param([string]$Event, [string]$Commit)
+    for ($attempt = 0; $attempt -lt 12; $attempt++) {
+        $id = gh run list --repo $repo --workflow pages.yml --event $Event --commit $Commit --limit 1 --json databaseId --jq '.[0].databaseId'
+        if ($LASTEXITCODE -ne 0) { throw 'No se pudo consultar GitHub Actions.' }
+        if ($id -and $id -ne 'null') { return $id }
+        Start-Sleep -Seconds 3
+    }
+    return $null
+}
+
 # Esta carpeta fue creada desde un entorno aislado con otro propietario Windows.
 $env:GIT_CONFIG_COUNT = '1'
 $env:GIT_CONFIG_KEY_0 = 'safe.directory'
@@ -71,6 +82,14 @@ if (-not (Test-NativeCommand -Program 'gh' -Arguments @('repo', 'view', $repo, '
     Write-Host 'El repositorio ya existe.'
 }
 
+$headSha = git rev-parse HEAD
+if ($LASTEXITCODE -ne 0) { throw 'No se pudo leer el commit local.' }
+$trackedSha = $null
+if (Test-NativeCommand -Program 'git' -Arguments @('rev-parse', '--verify', 'refs/remotes/origin/main')) {
+    $trackedSha = git rev-parse refs/remotes/origin/main
+}
+$newPush = $headSha -ne $trackedSha
+
 Write-Host 'Subiendo main...'
 if (-not (Push-Main)) {
     Write-Host 'El push fallo. GitHub puede requerir permiso workflow para publicar el archivo de Actions.'
@@ -86,15 +105,45 @@ if (-not (Test-NativeCommand -Program 'gh' -Arguments @('api', "repos/$repo/page
     if ($LASTEXITCODE -ne 0) { throw 'El repositorio se subio, pero no se pudo activar Pages.' }
 }
 
-Write-Host 'Iniciando despliegue de Pages...'
-gh workflow run pages.yml --repo $repo
-if ($LASTEXITCODE -ne 0) { throw 'El repositorio se subio, pero no se pudo iniciar el despliegue.' }
+if ($newPush) {
+    Write-Host 'Esperando la accion iniciada por el push...'
+    $runId = Find-RunId -Event 'push' -Commit $headSha
+} else {
+    $successId = gh run list --repo $repo --workflow pages.yml --commit $headSha --status success --limit 1 --json databaseId --jq '.[0].databaseId'
+    if ($LASTEXITCODE -ne 0) { throw 'No se pudo revisar el despliegue previo.' }
+    if ($successId -and $successId -ne 'null') {
+        Write-Host "Pages ya tuvo una accion correcta para este commit: $successId"
+        $runId = $null
+    } else {
+        Write-Host 'Iniciando despliegue de Pages...'
+        gh workflow run pages.yml --repo $repo
+        if ($LASTEXITCODE -ne 0) { throw 'No se pudo iniciar el despliegue.' }
+        $runId = Find-RunId -Event 'workflow_dispatch' -Commit $headSha
+    }
+}
 
-Start-Sleep -Seconds 5
-$runId = gh run list --repo $repo --workflow pages.yml --limit 1 --json databaseId --jq '.[0].databaseId'
-if ($LASTEXITCODE -ne 0 -or -not $runId) { throw 'No se encontro la ejecucion de Pages.' }
-gh run watch $runId --repo $repo --exit-status
-if ($LASTEXITCODE -ne 0) { throw 'La accion de Pages fallo. Revisa el resultado en GitHub.' }
+if ($runId) {
+    Write-Host "Esperando la accion $runId..."
+    gh run watch $runId --repo $repo --exit-status
+    if ($LASTEXITCODE -ne 0) { throw "La accion $runId fallo. Revisa el resultado en GitHub." }
+} elseif (-not $successId) {
+    throw 'No se encontro la ejecucion de Pages para este commit.'
+}
+
+$siteReady = $false
+for ($attempt = 0; $attempt -lt 12; $attempt++) {
+    try {
+        $response = Invoke-WebRequest -UseBasicParsing $pagesUrl -TimeoutSec 15
+        if ($response.StatusCode -eq 200 -and $response.Content.Contains('<title>Biblioteca de Agentes de IA</title>')) {
+            $siteReady = $true
+            break
+        }
+    } catch {
+        # GitHub Pages puede tardar unos segundos en propagar el despliegue.
+    }
+    Start-Sleep -Seconds 5
+}
+if (-not $siteReady) { throw "La accion termino, pero el sitio aun no responde en $pagesUrl" }
 
 Write-Host ''
 Write-Host "Publicacion terminada: $pagesUrl"
