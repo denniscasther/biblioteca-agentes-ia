@@ -50,10 +50,11 @@ INFO = {
     "11_del_texto_al_contexto": ("conocimiento", "Una guía visual de tokens, embeddings, búsqueda vectorial, coseno y respuestas con fuentes."),
     "12_la_red_que_aprende": ("fundamentos", "Cómo aprenden las redes neuronales y qué arquitecturas llevan la inteligencia artificial moderna a producción."),
     "13_aprender_de_los_datos": ("fundamentos", "Machine Learning aplicado a logística, comercial, finanzas y operaciones, desde el ERP hasta los servicios en producción."),
+    "14_arquitectura_empresa_inteligente": ("arquitectura", "Mapas y casos ilustrados para conectar ERP, BI, Machine Learning, agentes y MCP en una arquitectura empresarial."),
     "R1_castor_y_el_plano": ("desarrollo", "Especificaciones como plano vivo para desarrollar con agentes de código."),
 }
 
-ROMAN = ("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII")
+ROMAN = ("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV")
 
 
 def main() -> None:

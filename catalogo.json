@@ -208,6 +208,22 @@
     "pdf": "library/13_aprender_de_los_datos/libro.pdf"
   },
   {
+    "id": "14_arquitectura_empresa_inteligente",
+    "volume": 14,
+    "number": "XIV",
+    "title": "La arquitectura de la empresa inteligente",
+    "animal": "Pájaro tejedor",
+    "angle": "La arquitectura conecta piezas con propósitos y límites; el nido tejido es solo una metáfora visual de las relaciones entre componentes",
+    "description": "Mapas y casos ilustrados para conectar ERP, BI, Machine Learning, agentes y MCP en una arquitectura empresarial.",
+    "accent": "#9a6d8e",
+    "accentDark": "#66465e",
+    "category": "arquitectura",
+    "pages": 72,
+    "cover": "assets/covers/14_arquitectura_empresa_inteligente.png",
+    "html": "library/14_arquitectura_empresa_inteligente/libro.html",
+    "pdf": "library/14_arquitectura_empresa_inteligente/libro.pdf"
+  },
+  {
     "id": "R1_castor_y_el_plano",
     "volume": null,
     "number": "R",
