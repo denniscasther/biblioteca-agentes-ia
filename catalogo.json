@@ -192,6 +192,22 @@
     "pdf": "library/12_la_red_que_aprende/libro.pdf"
   },
   {
+    "id": "13_aprender_de_los_datos",
+    "volume": 13,
+    "number": "XIII",
+    "title": "Aprender de los datos",
+    "animal": "Mapache",
+    "angle": "Explora señales y organiza hallazgos; la metáfora termina antes del aprendizaje estadístico y la decisión empresarial",
+    "description": "Machine Learning aplicado a logística, comercial, finanzas y operaciones, desde el ERP hasta los servicios en producción.",
+    "accent": "#822b2b",
+    "accentDark": "#822b2b",
+    "category": "fundamentos",
+    "pages": 61,
+    "cover": "assets/covers/13_aprender_de_los_datos.png",
+    "html": "library/13_aprender_de_los_datos/libro.html",
+    "pdf": "library/13_aprender_de_los_datos/libro.pdf"
+  },
+  {
     "id": "R1_castor_y_el_plano",
     "volume": null,
     "number": "R",

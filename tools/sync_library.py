@@ -49,10 +49,11 @@ INFO = {
     "10_maquina_predecir": ("fundamentos", "Una explicación conceptual de cómo funcionan los modelos de lenguaje."),
     "11_del_texto_al_contexto": ("conocimiento", "Una guía visual de tokens, embeddings, búsqueda vectorial, coseno y respuestas con fuentes."),
     "12_la_red_que_aprende": ("fundamentos", "Cómo aprenden las redes neuronales y qué arquitecturas llevan la inteligencia artificial moderna a producción."),
+    "13_aprender_de_los_datos": ("fundamentos", "Machine Learning aplicado a logística, comercial, finanzas y operaciones, desde el ERP hasta los servicios en producción."),
     "R1_castor_y_el_plano": ("desarrollo", "Especificaciones como plano vivo para desarrollar con agentes de código."),
 }
 
-ROMAN = ("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII")
+ROMAN = ("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII")
 
 
 def main() -> None:
